@@ -1,0 +1,646 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>entities package &mdash; DnD Editor  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="flow package" href="models.flow.html" />
+    <link rel="prev" title="Models Package" href="models.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DnD Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Introduction:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">DnD Project Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Overviews</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview/architecture_overview.html">System Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview/trigger_system.html">Trigger System Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview/data_flow.html">Runtime Data Flow</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="models.html">Models Package</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">entities package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-models.entities.character">models.entities.character module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#models.entities.character.Character"><code class="docutils literal notranslate"><span class="pre">Character</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-models.entities.enemy">models.entities.enemy module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#models.entities.enemy.Enemy"><code class="docutils literal notranslate"><span class="pre">Enemy</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-models.entities.entity_type">models.entities.entity_type module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#models.entities.entity_type.EntityType"><code class="docutils literal notranslate"><span class="pre">EntityType</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-models.entities.game_entity">models.entities.game_entity module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#models.entities.game_entity.GameEntity"><code class="docutils literal notranslate"><span class="pre">GameEntity</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-models.entities.named_enemy">models.entities.named_enemy module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#models.entities.named_enemy.NamedEnemy"><code class="docutils literal notranslate"><span class="pre">NamedEnemy</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-models.entities.npc">models.entities.npc module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#models.entities.npc.NPC"><code class="docutils literal notranslate"><span class="pre">NPC</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-models.entities.player">models.entities.player</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#models.entities.player.Player"><code class="docutils literal notranslate"><span class="pre">Player</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-models.entities.trap">models.entities.trap module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#models.entities.trap.Trap"><code class="docutils literal notranslate"><span class="pre">Trap</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="models.flow.html">flow package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.flow.action.html">action package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.flow.condition.html">condition package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.flow.reaction.html">reaction package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.tiles.html">tiles package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.world.html">world package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="registries.html">registries package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.profile.profile_manager.html">profile_manager module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">ui package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.commands.html">commands package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html">dialogs package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.entity_editor_dialog">entity_editor_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.entity_preview_dialog">entity_preview_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.new_entity_dialog">new_entity_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.tile_dialog">tile_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.trigger_editor_dialog">trigger_editor_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.universal_search_dialog">universal_search_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.trigger_editor">trigger_editor module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.trigger_editor.html">trigger_editor package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.tile_edit.html">tile_edit package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.tile_edit.html#module-ui.dialogs.tile_edit.tile_edit_command">tile_edit_command module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.backup.html">backup module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.string.slugify.html">slugify module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versioning.html">versioning package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versioning.migrations.html">migrations package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trigger_flow.html">Trigger System Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trigger_logic_mermaid.html">Trigger Chain (Mermaid)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DnD Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="models.html">Models Package</a></li>
+      <li class="breadcrumb-item active">entities package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/models.entities.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-models.entities">
+<span id="entities-package"></span><h1>entities package<a class="headerlink" href="#module-models.entities" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-models.entities.character">
+<span id="models-entities-character-module"></span><h2>models.entities.character module<a class="headerlink" href="#module-models.entities.character" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="models.entities.character.Character">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.entities.character.</span></span><span class="sig-name descname"><span class="pre">Character</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">appearance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backstory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">personality</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">languages</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spellslots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spellcasting_ability</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">char_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">char_class_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">species</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">species_traits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subclass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">armor_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">death_saves</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inventory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_proficiencies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spells</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proficiency_bonus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hit_dice</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saving_throws</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skills</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temporary_hp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inspiration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">passive_perception</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">currency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exhaustion_level</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">armor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weapons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initiative</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resistances</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">immunities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vulnerabilities</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.character.Character" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.entities.game_entity.GameEntity" title="models.entities.game_entity.GameEntity"><code class="xref py py-class docutils literal notranslate"><span class="pre">GameEntity</span></code></a></p>
+<p>Class representing a character.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.character.Character.cast_spell">
+<span class="sig-name descname"><span class="pre">cast_spell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spell_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.character.Character.cast_spell" title="Link to this definition"></a></dt>
+<dd><p>Cast a spell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spell_name</strong> (<em>str</em>) – Name of the spell to cast</p></li>
+<li><p><strong>target</strong> (<em>Any</em>) – Target of the spell</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.character.Character.heal">
+<span class="sig-name descname"><span class="pre">heal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.character.Character.heal" title="Link to this definition"></a></dt>
+<dd><p>Heal the character.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>amount</strong> (<em>int</em>) – Amount of healing to apply</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.character.Character.save_to_db">
+<span class="sig-name descname"><span class="pre">save_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_conn</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.character.Character.save_to_db" title="Link to this definition"></a></dt>
+<dd><p>Save the character to the database.</p>
+<p>Uses the <code class="docutils literal notranslate"><span class="pre">characters</span></code> table schema from db_init.py:
+name, class, level, hp, stats, inventory, spells.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>db_conn</strong> (<em>sqlite3.Connection</em>) – Database connection object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.character.Character.take_damage">
+<span class="sig-name descname"><span class="pre">take_damage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">damage</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.character.Character.take_damage" title="Link to this definition"></a></dt>
+<dd><p>Apply damage to the character.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>damage</strong> (<em>int</em>) – Amount of damage to apply</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-models.entities.enemy">
+<span id="models-entities-enemy-module"></span><h2>models.entities.enemy module<a class="headerlink" href="#module-models.entities.enemy" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="models.entities.enemy.Enemy">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.entities.enemy.</span></span><span class="sig-name descname"><span class="pre">Enemy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">armor_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saving_throws</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attacks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resistances</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">immunities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vulnerabilities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition_immunities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">challenge_rating</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initiative</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spells</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.enemy.Enemy" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.entities.game_entity.GameEntity" title="models.entities.game_entity.GameEntity"><code class="xref py py-class docutils literal notranslate"><span class="pre">GameEntity</span></code></a></p>
+<p>Represents an enemy entity in the game.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the enemy</p></li>
+<li><p><strong>armor_class</strong> (<em>int</em>) – Armor class value</p></li>
+<li><p><strong>hp</strong> (<em>int</em>) – Hit points</p></li>
+<li><p><strong>stats</strong> (<em>dict</em>) – Dictionary of stats (e.g., {“Strength”: 10, …})</p></li>
+<li><p><strong>saving_throws</strong> (<em>dict</em>) – Dictionary of saving throw values</p></li>
+<li><p><strong>attacks</strong> (<em>list</em>) – List of attack dictionaries</p></li>
+<li><p><strong>speed</strong> (<em>int</em>) – Movement speed</p></li>
+<li><p><strong>resistances</strong> (<em>list</em>) – List of resistances</p></li>
+<li><p><strong>immunities</strong> (<em>list</em>) – List of immunities</p></li>
+<li><p><strong>vulnerabilities</strong> (<em>list</em>) – List of vulnerabilities</p></li>
+<li><p><strong>condition_immunities</strong> (<em>list</em>) – List of condition immunities</p></li>
+<li><p><strong>challenge_rating</strong> (<em>float</em>) – Challenge rating</p></li>
+<li><p><strong>xp</strong> (<em>int</em>) – Experience points</p></li>
+<li><p><strong>conditions</strong> (<em>list</em>) – List of current conditions</p></li>
+<li><p><strong>initiative</strong> (<em>int</em>) – Initiative value</p></li>
+<li><p><strong>spells</strong> (<em>list</em>) – List of spells</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.enemy.Enemy.cast_spell">
+<span class="sig-name descname"><span class="pre">cast_spell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spell_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.enemy.Enemy.cast_spell" title="Link to this definition"></a></dt>
+<dd><p>Cast a spell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spell_name</strong> (<em>str</em>) – Name of the spell to cast</p></li>
+<li><p><strong>target</strong> (<em>object</em>) – Target of the spell</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.enemy.Enemy.heal">
+<span class="sig-name descname"><span class="pre">heal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.enemy.Enemy.heal" title="Link to this definition"></a></dt>
+<dd><p>Heal the enemy by a specified amount, up to its maximum hit points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>amount</strong> (<em>int</em>) – Amount to heal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.enemy.Enemy.save_to_db">
+<span class="sig-name descname"><span class="pre">save_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_conn</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.enemy.Enemy.save_to_db" title="Link to this definition"></a></dt>
+<dd><p>Save the enemy to the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>db_conn</strong> (<em>sqlite3.Connection</em>) – Database connection object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.enemy.Enemy.take_damage">
+<span class="sig-name descname"><span class="pre">take_damage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">damage</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.enemy.Enemy.take_damage" title="Link to this definition"></a></dt>
+<dd><p>Apply damage to the enemy, reducing its hit points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>damage</strong> (<em>int</em>) – Amount of damage to apply</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-models.entities.entity_type">
+<span id="models-entities-entity-type-module"></span><h2>models.entities.entity_type module<a class="headerlink" href="#module-models.entities.entity_type" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="models.entities.entity_type.EntityType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.entities.entity_type.</span></span><span class="sig-name descname"><span class="pre">EntityType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.entity_type.EntityType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Enumeration of possible entity types in the DnD project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>PLAYER</strong> – Represents a player entity.</p></li>
+<li><p><strong>ENEMY</strong> – Represents an enemy entity.</p></li>
+<li><p><strong>NPC</strong> – Represents a non-player character entity.</p></li>
+<li><p><strong>OBJECT</strong> – Represents an object entity.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.entities.entity_type.EntityType.ENEMY">
+<span class="sig-name descname"><span class="pre">ENEMY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'enemy'</span></em><a class="headerlink" href="#models.entities.entity_type.EntityType.ENEMY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.entities.entity_type.EntityType.NPC">
+<span class="sig-name descname"><span class="pre">NPC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'npc'</span></em><a class="headerlink" href="#models.entities.entity_type.EntityType.NPC" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.entities.entity_type.EntityType.OBJECT">
+<span class="sig-name descname"><span class="pre">OBJECT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'object'</span></em><a class="headerlink" href="#models.entities.entity_type.EntityType.OBJECT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="models.entities.entity_type.EntityType.PLAYER">
+<span class="sig-name descname"><span class="pre">PLAYER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'player'</span></em><a class="headerlink" href="#models.entities.entity_type.EntityType.PLAYER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-models.entities.game_entity">
+<span id="models-entities-game-entity-module"></span><h2>models.entities.game_entity module<a class="headerlink" href="#module-models.entities.game_entity" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="models.entities.game_entity.GameEntity">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.entities.game_entity.</span></span><span class="sig-name descname"><span class="pre">GameEntity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inventory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.game_entity.GameEntity" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents a game entity with stats, inventory, and triggers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The name of the entity.</p></li>
+<li><p><strong>entity_type</strong> (<em>str</em>) – The type/category of the entity.</p></li>
+<li><p><strong>stats</strong> (<em>dict</em><em>, </em><em>optional</em>) – The stats dictionary for the entity.</p></li>
+<li><p><strong>inventory</strong> (<em>list</em><em>, </em><em>optional</em>) – The inventory list for the entity.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.game_entity.GameEntity.from_dict">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.game_entity.GameEntity.from_dict" title="Link to this definition"></a></dt>
+<dd><p>Create a GameEntity instance from a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – Dictionary containing entity data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A GameEntity instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#models.entities.game_entity.GameEntity" title="models.entities.game_entity.GameEntity">GameEntity</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.game_entity.GameEntity.handle_event">
+<span class="sig-name descname"><span class="pre">handle_event</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.game_entity.GameEntity.handle_event" title="Link to this definition"></a></dt>
+<dd><p>Handle a tile-based event by running any triggers matching event_type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event_type</strong> (<em>str</em>) – The type of event to handle.</p></li>
+<li><p><strong>data</strong> (<em>Any</em>) – Data associated with the event.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.game_entity.GameEntity.register_trigger">
+<span class="sig-name descname"><span class="pre">register_trigger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trigger</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.game_entity.GameEntity.register_trigger" title="Link to this definition"></a></dt>
+<dd><p>Register a trigger for this entity if not already registered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>trigger</strong> (<a class="reference internal" href="gameCreation.trigger.html#core.gameCreation.trigger.Trigger" title="core.gameCreation.trigger.Trigger"><em>Trigger</em></a>) – The trigger to register.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.game_entity.GameEntity.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.game_entity.GameEntity.to_dict" title="Link to this definition"></a></dt>
+<dd><p>Serialize the entity to a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary representation of the entity.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-models.entities.named_enemy">
+<span id="models-entities-named-enemy-module"></span><h2>models.entities.named_enemy module<a class="headerlink" href="#module-models.entities.named_enemy" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="models.entities.named_enemy.NamedEnemy">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.entities.named_enemy.</span></span><span class="sig-name descname"><span class="pre">NamedEnemy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">armor_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saving_throws</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attacks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resistances</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">immunities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vulnerabilities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition_immunities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">challenge_rating</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initiative</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spells</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backstory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legendary_actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lair_actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regional_effects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spellcasting_ability</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phases</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.named_enemy.NamedEnemy" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.entities.enemy.Enemy" title="models.entities.enemy.Enemy"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enemy</span></code></a></p>
+<p>Represents a named enemy with additional lore, actions, and spellcasting abilities.</p>
+<p>Inherits from <code class="xref py py-class docutils literal notranslate"><span class="pre">Enemy</span></code> and adds properties such as backstory, legendary actions,
+lair actions, regional effects, spellcasting ability, and combat phases.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.named_enemy.NamedEnemy.cast_spell">
+<span class="sig-name descname"><span class="pre">cast_spell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spell_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.named_enemy.NamedEnemy.cast_spell" title="Link to this definition"></a></dt>
+<dd><p>Cast a spell by name on a target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spell_name</strong> (<em>str</em>) – Name of the spell to cast.</p></li>
+<li><p><strong>target</strong> (<em>object</em>) – Target of the spell.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.named_enemy.NamedEnemy.heal">
+<span class="sig-name descname"><span class="pre">heal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.named_enemy.NamedEnemy.heal" title="Link to this definition"></a></dt>
+<dd><p>Heal the enemy, increasing its hit points up to max_hp.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>amount</strong> (<em>int</em>) – Amount of hit points to restore.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.named_enemy.NamedEnemy.save_to_db">
+<span class="sig-name descname"><span class="pre">save_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_conn</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.named_enemy.NamedEnemy.save_to_db" title="Link to this definition"></a></dt>
+<dd><p>Save the enemy’s data to the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>db_conn</strong> (<em>sqlite3.Connection</em>) – Database connection object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.named_enemy.NamedEnemy.take_damage">
+<span class="sig-name descname"><span class="pre">take_damage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">damage</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.named_enemy.NamedEnemy.take_damage" title="Link to this definition"></a></dt>
+<dd><p>Apply damage to the enemy, reducing its hit points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>damage</strong> (<em>int</em>) – Amount of damage to apply.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-models.entities.npc">
+<span id="models-entities-npc-module"></span><h2>models.entities.npc module<a class="headerlink" href="#module-models.entities.npc" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="models.entities.npc.NPC">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.entities.npc.</span></span><span class="sig-name descname"><span class="pre">NPC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">behavior</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.npc.NPC" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.entities.game_entity.GameEntity" title="models.entities.game_entity.GameEntity"><code class="xref py py-class docutils literal notranslate"><span class="pre">GameEntity</span></code></a></p>
+<p>Represents a Non-Player Character (NPC) in the game.</p>
+<p>Inherits from <code class="xref py py-class docutils literal notranslate"><span class="pre">GameEntity</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.npc.NPC.take_turn">
+<span class="sig-name descname"><span class="pre">take_turn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.npc.NPC.take_turn" title="Link to this definition"></a></dt>
+<dd><p>Defines the NPC’s behavior during their turn.</p>
+<p>The action taken depends on the NPC’s behavior attribute:
+- “friendly”: May move around or interact with the player.
+- “neutral”: May idle or react passively.
+- “hostile”: May flee or attack.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-models.entities.player">
+<span id="models-entities-player"></span><h2>models.entities.player<a class="headerlink" href="#module-models.entities.player" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="models.entities.player.Player">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.entities.player.</span></span><span class="sig-name descname"><span class="pre">Player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">character</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_conn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.player.Player" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.entities.game_entity.GameEntity" title="models.entities.game_entity.GameEntity"><code class="xref py py-class docutils literal notranslate"><span class="pre">GameEntity</span></code></a></p>
+<p>Represents a player in the game.</p>
+<p>Inherits from <code class="xref py py-class docutils literal notranslate"><span class="pre">GameEntity</span></code> and manages player-specific data and actions.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.player.Player.attack">
+<span class="sig-name descname"><span class="pre">attack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.player.Player.attack" title="Link to this definition"></a></dt>
+<dd><p>Perform a simple STR-based attack against a target and log the result in the combat log.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>target</strong> (<em>object</em>) – The entity being attacked. Must have <cite>armor_class</cite> and <cite>take_damage()</cite> attributes.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple indicating if the attack hit and the damage dealt (hit: bool, damage: int).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.player.Player.cast_spell">
+<span class="sig-name descname"><span class="pre">cast_spell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spell_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.player.Player.cast_spell" title="Link to this definition"></a></dt>
+<dd><p>Cast a spell using the associated Character’s <cite>cast_spell</cite> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spell_name</strong> (<em>str</em>) – Name of the spell to cast.</p></li>
+<li><p><strong>target</strong> (<em>object</em>) – The target of the spell.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Result of the Character’s <cite>cast_spell</cite> method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.player.Player.interact">
+<span class="sig-name descname"><span class="pre">interact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.player.Player.interact" title="Link to this definition"></a></dt>
+<dd><p>Interact with an object if it has an <cite>interact(player)</cite> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>obj</strong> (<em>object</em>) – The object to interact with.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The result of the object’s <cite>interact</cite> method, or None if not available.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.player.Player.investigate">
+<span class="sig-name descname"><span class="pre">investigate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">location</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.player.Player.investigate" title="Link to this definition"></a></dt>
+<dd><p>Perform a Wisdom-based investigation check (d20 + WIS modifier).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>location</strong> (<em>object</em>) – The location or object being investigated.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The total roll (d20 + WIS modifier).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.player.Player.move">
+<span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.player.Player.move" title="Link to this definition"></a></dt>
+<dd><p>Move the player north, south, east, or west by one tile and persist the new position to the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>direction</strong> (<em>str</em>) – Direction to move (‘north’, ‘south’, ‘east’, ‘west’).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The new position as a tuple (x, y).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.player.Player.take_turn">
+<span class="sig-name descname"><span class="pre">take_turn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.player.Player.take_turn" title="Link to this definition"></a></dt>
+<dd><p>Stub for the per-turn loop.</p>
+<p>You’ll want to hook this into your UI or CLI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotImplementedError</strong> – Always, as this should be implemented by the game loop or UI.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-models.entities.trap">
+<span id="models-entities-trap-module"></span><h2>models.entities.trap module<a class="headerlink" href="#module-models.entities.trap" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="models.entities.trap.Trap">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.entities.trap.</span></span><span class="sig-name descname"><span class="pre">Trap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">damage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trigger_range</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.trap.Trap" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#models.entities.game_entity.GameEntity" title="models.entities.game_entity.GameEntity"><code class="xref py py-class docutils literal notranslate"><span class="pre">GameEntity</span></code></a></p>
+<p>Represents a trap entity in the game.</p>
+<p>Inherits from <code class="xref py py-class docutils literal notranslate"><span class="pre">GameEntity</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.entities.trap.Trap.take_turn">
+<span class="sig-name descname"><span class="pre">take_turn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.entities.trap.Trap.take_turn" title="Link to this definition"></a></dt>
+<dd><p>Traps don’t take actions, but they may be triggered during movement.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="models.html" class="btn btn-neutral float-left" title="Models Package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="models.flow.html" class="btn btn-neutral float-right" title="flow package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Fabio Rempel.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,511 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>world package &mdash; DnD Editor  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="registries package" href="registries.html" />
+    <link rel="prev" title="tiles package" href="models.tiles.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DnD Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Introduction:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">DnD Project Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Overviews</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview/architecture_overview.html">System Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview/trigger_system.html">Trigger System Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview/data_flow.html">Runtime Data Flow</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="models.html">Models Package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="models.entities.html">entities package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.flow.html">flow package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.flow.action.html">action package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.flow.condition.html">condition package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.flow.reaction.html">reaction package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.tiles.html">tiles package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">world package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-models.world.world">models.world.world module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#models.world.world.World"><code class="docutils literal notranslate"><span class="pre">World</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-models.world.world_lore">models.world.world_lore module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#models.world.world_lore.WorldLore"><code class="docutils literal notranslate"><span class="pre">WorldLore</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-models.world.world_tile_manager">models.world.world_tile_manager module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#models.world.world_tile_manager.WorldTileManager"><code class="docutils literal notranslate"><span class="pre">WorldTileManager</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="registries.html">registries package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.profile.profile_manager.html">profile_manager module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">ui package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.commands.html">commands package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html">dialogs package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.entity_editor_dialog">entity_editor_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.entity_preview_dialog">entity_preview_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.new_entity_dialog">new_entity_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.tile_dialog">tile_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.trigger_editor_dialog">trigger_editor_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.universal_search_dialog">universal_search_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.trigger_editor">trigger_editor module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.trigger_editor.html">trigger_editor package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.tile_edit.html">tile_edit package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.tile_edit.html#module-ui.dialogs.tile_edit.tile_edit_command">tile_edit_command module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.backup.html">backup module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.string.slugify.html">slugify module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versioning.html">versioning package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versioning.migrations.html">migrations package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trigger_flow.html">Trigger System Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trigger_logic_mermaid.html">Trigger Chain (Mermaid)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DnD Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="models.html">Models Package</a></li>
+      <li class="breadcrumb-item active">world package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/models.world.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-models.world">
+<span id="world-package"></span><h1>world package<a class="headerlink" href="#module-models.world" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-models.world.world">
+<span id="models-world-world-module"></span><h2>models.world.world module<a class="headerlink" href="#module-models.world.world" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="models.world.world.World">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.world.world.</span></span><span class="sig-name descname"><span class="pre">World</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">world_version</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tile_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_of_day</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weather_conditions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world.World" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The World class combines tile management with world lore.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.world.world.World.can_see">
+<span class="sig-name descname"><span class="pre">can_see</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_range</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world.World.can_see" title="Link to this definition"></a></dt>
+<dd><p>Determine if an entity at <cite>from_pos</cite> can see a tile at <cite>to_pos</cite>.</p>
+<p>Visibility is blocked if:
+- Manhattan distance &gt; max_range
+- Any intermediate tile has TileTag.BLOCKS_VISION</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from_pos</strong> (<em>tuple</em>) – (x, y) tuple of the observer’s position.</p></li>
+<li><p><strong>to_pos</strong> (<em>tuple</em>) – (x, y) tuple of the target position.</p></li>
+<li><p><strong>max_range</strong> (<em>int</em>) – Maximum vision range.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if visible, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.world.world.World.describe_world">
+<span class="sig-name descname"><span class="pre">describe_world</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world.World.describe_world" title="Link to this definition"></a></dt>
+<dd><p>Get a description of the world.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Description string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.world.world.World.get_adjacent_tiles">
+<span class="sig-name descname"><span class="pre">get_adjacent_tiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world.World.get_adjacent_tiles" title="Link to this definition"></a></dt>
+<dd><p>Get tiles adjacent to the specified coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>int</em>) – X-coordinate.</p></li>
+<li><p><strong>y</strong> (<em>int</em>) – Y-coordinate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of adjacent tiles.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.world.world.World.get_entities_at">
+<span class="sig-name descname"><span class="pre">get_entities_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world.World.get_entities_at" title="Link to this definition"></a></dt>
+<dd><p>Get all entities at the specified coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>int</em>) – X-coordinate.</p></li>
+<li><p><strong>y</strong> (<em>int</em>) – Y-coordinate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of entities at the given position.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.world.world.World.move_entity">
+<span class="sig-name descname"><span class="pre">move_entity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world.World.move_entity" title="Link to this definition"></a></dt>
+<dd><p>Move an entity to a new position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entity</strong> (<em>Any</em>) – The entity to move.</p></li>
+<li><p><strong>new_x</strong> (<em>int</em>) – New X-coordinate.</p></li>
+<li><p><strong>new_y</strong> (<em>int</em>) – New Y-coordinate.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.world.world.World.place_entity">
+<span class="sig-name descname"><span class="pre">place_entity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world.World.place_entity" title="Link to this definition"></a></dt>
+<dd><p>Place an entity at the specified coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entity</strong> (<em>Any</em>) – The entity to place.</p></li>
+<li><p><strong>x</strong> (<em>int</em>) – X-coordinate.</p></li>
+<li><p><strong>y</strong> (<em>int</em>) – Y-coordinate.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.world.world.World.save_to_db">
+<span class="sig-name descname"><span class="pre">save_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_conn</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world.World.save_to_db" title="Link to this definition"></a></dt>
+<dd><p>Save the world’s lore to the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>db_conn</strong> (<em>Any</em>) – Database connection object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.world.world.World.update_time_of_day">
+<span class="sig-name descname"><span class="pre">update_time_of_day</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world.World.update_time_of_day" title="Link to this definition"></a></dt>
+<dd><p>Update the world’s time of day.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_time</strong> (<em>str</em>) – New time of day.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.world.world.World.update_weather">
+<span class="sig-name descname"><span class="pre">update_weather</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_weather</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world.World.update_weather" title="Link to this definition"></a></dt>
+<dd><p>Update the world’s weather conditions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_weather</strong> (<em>str</em>) – New weather conditions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-models.world.world_lore">
+<span id="models-world-world-lore-module"></span><h2>models.world.world_lore module<a class="headerlink" href="#module-models.world.world_lore" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="models.world.world_lore.WorldLore">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.world.world_lore.</span></span><span class="sig-name descname"><span class="pre">WorldLore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_of_day</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weather_conditions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world_lore.WorldLore" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents the lore and environmental state of the world, including description, map data, time of day, and weather conditions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>description</strong> (<em>str</em>) – String description of the world.</p></li>
+<li><p><strong>map_data</strong> (<em>dict</em><em> or </em><em>bytes</em>) – JSON-serializable or binary data representing the world map.</p></li>
+<li><p><strong>time_of_day</strong> (<em>str</em>) – String indicating the time of day (e.g., “morning”, “afternoon”).</p></li>
+<li><p><strong>weather_conditions</strong> (<em>str</em>) – String describing the current weather conditions (e.g., “sunny”, “rainy”).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.world.world_lore.WorldLore.describe_world">
+<span class="sig-name descname"><span class="pre">describe_world</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world_lore.WorldLore.describe_world" title="Link to this definition"></a></dt>
+<dd><p>Provide a textual description of the world.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A string summarizing the world’s description, time of day, and weather conditions.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.world.world_lore.WorldLore.save_to_db">
+<span class="sig-name descname"><span class="pre">save_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_conn</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world_lore.WorldLore.save_to_db" title="Link to this definition"></a></dt>
+<dd><p>Save the world lore data to a database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>db_conn</strong> (<em>sqlite3.Connection</em>) – An open database connection object supporting the SQLite interface.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.world.world_lore.WorldLore.update_time_of_day">
+<span class="sig-name descname"><span class="pre">update_time_of_day</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world_lore.WorldLore.update_time_of_day" title="Link to this definition"></a></dt>
+<dd><p>Update the time of day (morning, afternoon, evening, etc.).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_time</strong> (<em>str</em>) – The new time of day to set (e.g., “evening”, “night”).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.world.world_lore.WorldLore.update_weather">
+<span class="sig-name descname"><span class="pre">update_weather</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_weather</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world_lore.WorldLore.update_weather" title="Link to this definition"></a></dt>
+<dd><p>Update the weather in the world.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_weather</strong> (<em>str</em>) – The new weather condition to set (e.g., “cloudy”, “stormy”).</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-models.world.world_tile_manager">
+<span id="models-world-world-tile-manager-module"></span><h2>models.world.world_tile_manager module<a class="headerlink" href="#module-models.world.world_tile_manager" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="models.world.world_tile_manager.WorldTileManager">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.world.world_tile_manager.</span></span><span class="sig-name descname"><span class="pre">WorldTileManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tile_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world_tile_manager.WorldTileManager" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Manages the tiles and entities in the world grid.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.world.world_tile_manager.WorldTileManager.display_world">
+<span class="sig-name descname"><span class="pre">display_world</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world_tile_manager.WorldTileManager.display_world" title="Link to this definition"></a></dt>
+<dd><p>Display a simple debug view of the world grid.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.world.world_tile_manager.WorldTileManager.generate_tiles">
+<span class="sig-name descname"><span class="pre">generate_tiles</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world_tile_manager.WorldTileManager.generate_tiles" title="Link to this definition"></a></dt>
+<dd><p>Generate the tiles for the world grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary mapping (x, y) to TileData.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.world.world_tile_manager.WorldTileManager.get_adjacent_tiles">
+<span class="sig-name descname"><span class="pre">get_adjacent_tiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world_tile_manager.WorldTileManager.get_adjacent_tiles" title="Link to this definition"></a></dt>
+<dd><p>Get adjacent tiles based on the tile_type (“square” or “hex”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>int</em>) – X-coordinate of the tile.</p></li>
+<li><p><strong>y</strong> (<em>int</em>) – Y-coordinate of the tile.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of adjacent tile coordinates.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.world.world_tile_manager.WorldTileManager.get_entities_at">
+<span class="sig-name descname"><span class="pre">get_entities_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world_tile_manager.WorldTileManager.get_entities_at" title="Link to this definition"></a></dt>
+<dd><p>Get a list of entities at the specified tile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>int</em>) – X-coordinate of the tile.</p></li>
+<li><p><strong>y</strong> (<em>int</em>) – Y-coordinate of the tile.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of entities at the tile.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.world.world_tile_manager.WorldTileManager.is_valid_tile">
+<span class="sig-name descname"><span class="pre">is_valid_tile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world_tile_manager.WorldTileManager.is_valid_tile" title="Link to this definition"></a></dt>
+<dd><p>Check if a tile is within the grid boundaries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>int</em>) – X-coordinate of the tile.</p></li>
+<li><p><strong>y</strong> (<em>int</em>) – Y-coordinate of the tile.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the tile is valid, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.world.world_tile_manager.WorldTileManager.move_entity">
+<span class="sig-name descname"><span class="pre">move_entity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world_tile_manager.WorldTileManager.move_entity" title="Link to this definition"></a></dt>
+<dd><p>Move an entity to a new tile if the tile is valid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entity</strong> (<a class="reference internal" href="models.entities.html#models.entities.game_entity.GameEntity" title="models.entities.game_entity.GameEntity"><em>GameEntity</em></a>) – The entity to move.</p></li>
+<li><p><strong>new_x</strong> (<em>int</em>) – New X-coordinate.</p></li>
+<li><p><strong>new_y</strong> (<em>int</em>) – New Y-coordinate.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.world.world_tile_manager.WorldTileManager.place_entity">
+<span class="sig-name descname"><span class="pre">place_entity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#models.world.world_tile_manager.WorldTileManager.place_entity" title="Link to this definition"></a></dt>
+<dd><p>Place an entity at the specified tile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entity</strong> (<a class="reference internal" href="models.entities.html#models.entities.game_entity.GameEntity" title="models.entities.game_entity.GameEntity"><em>GameEntity</em></a>) – The entity to place.</p></li>
+<li><p><strong>x</strong> (<em>int</em>) – X-coordinate of the tile.</p></li>
+<li><p><strong>y</strong> (<em>int</em>) – Y-coordinate of the tile.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the tile is invalid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="models.tiles.html" class="btn btn-neutral float-left" title="tiles package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="registries.html" class="btn btn-neutral float-right" title="registries package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Fabio Rempel.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

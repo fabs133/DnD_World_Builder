@@ -1,0 +1,730 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dialogs package &mdash; DnD Editor  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="commands package" href="ui.commands.html" />
+    <link rel="prev" title="ui package" href="ui.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DnD Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Introduction:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">DnD Project Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Overviews</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview/architecture_overview.html">System Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview/trigger_system.html">Trigger System Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview/data_flow.html">Runtime Data Flow</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registries.html">registries package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.profile.profile_manager.html">profile_manager module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="ui.html">ui package</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">dialogs package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-ui.dialogs.entity_editor_dialog">entity_editor_dialog module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.entity_editor_dialog.EntityEditorDialog"><code class="docutils literal notranslate"><span class="pre">EntityEditorDialog</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.entity_editor_dialog.EntityEditorDialog.add_entity"><code class="docutils literal notranslate"><span class="pre">EntityEditorDialog.add_entity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.entity_editor_dialog.EntityEditorDialog.edit_triggers_for_selected"><code class="docutils literal notranslate"><span class="pre">EntityEditorDialog.edit_triggers_for_selected()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.entity_editor_dialog.EntityEditorDialog.import_from_rulebook"><code class="docutils literal notranslate"><span class="pre">EntityEditorDialog.import_from_rulebook()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.entity_editor_dialog.EntityEditorDialog.remove_entity"><code class="docutils literal notranslate"><span class="pre">EntityEditorDialog.remove_entity()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-ui.dialogs.entity_preview_dialog">entity_preview_dialog module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.entity_preview_dialog.EntityPreviewDialog"><code class="docutils literal notranslate"><span class="pre">EntityPreviewDialog</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.entity_preview_dialog.EntityPreviewDialog.get_entity"><code class="docutils literal notranslate"><span class="pre">EntityPreviewDialog.get_entity()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-ui.dialogs.new_entity_dialog">new_entity_dialog module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.new_entity_dialog.NewEntityDialog"><code class="docutils literal notranslate"><span class="pre">NewEntityDialog</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.new_entity_dialog.NewEntityDialog.entity"><code class="docutils literal notranslate"><span class="pre">NewEntityDialog.entity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.new_entity_dialog.NewEntityDialog.name_input"><code class="docutils literal notranslate"><span class="pre">NewEntityDialog.name_input</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.new_entity_dialog.NewEntityDialog.type_input"><code class="docutils literal notranslate"><span class="pre">NewEntityDialog.type_input</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.new_entity_dialog.NewEntityDialog.accept_entity"><code class="docutils literal notranslate"><span class="pre">NewEntityDialog.accept_entity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.new_entity_dialog.NewEntityDialog.get_entity"><code class="docutils literal notranslate"><span class="pre">NewEntityDialog.get_entity()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-ui.dialogs.tile_dialog">tile_dialog module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog"><code class="docutils literal notranslate"><span class="pre">TileDialog</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.tile_data"><code class="docutils literal notranslate"><span class="pre">TileDialog.tile_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.main_window"><code class="docutils literal notranslate"><span class="pre">TileDialog.main_window</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.tile_item"><code class="docutils literal notranslate"><span class="pre">TileDialog.tile_item</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog._original_state"><code class="docutils literal notranslate"><span class="pre">TileDialog._original_state</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.terrain_input"><code class="docutils literal notranslate"><span class="pre">TileDialog.terrain_input</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.tag_checkboxes"><code class="docutils literal notranslate"><span class="pre">TileDialog.tag_checkboxes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.label_input"><code class="docutils literal notranslate"><span class="pre">TileDialog.label_input</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.note_input"><code class="docutils literal notranslate"><span class="pre">TileDialog.note_input</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.overlay_input"><code class="docutils literal notranslate"><span class="pre">TileDialog.overlay_input</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.color_button"><code class="docutils literal notranslate"><span class="pre">TileDialog.color_button</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.entity_preview"><code class="docutils literal notranslate"><span class="pre">TileDialog.entity_preview</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.last_updated_label"><code class="docutils literal notranslate"><span class="pre">TileDialog.last_updated_label</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.edit_entities"><code class="docutils literal notranslate"><span class="pre">TileDialog.edit_entities()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.edit_triggers"><code class="docutils literal notranslate"><span class="pre">TileDialog.edit_triggers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.open_color_picker"><code class="docutils literal notranslate"><span class="pre">TileDialog.open_color_picker()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.save_attributes"><code class="docutils literal notranslate"><span class="pre">TileDialog.save_attributes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.update_tile_overlay_preview"><code class="docutils literal notranslate"><span class="pre">TileDialog.update_tile_overlay_preview()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-ui.dialogs.trigger_editor_dialog">trigger_editor_dialog module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.trigger_editor_dialog.TriggerEditorDialog"><code class="docutils literal notranslate"><span class="pre">TriggerEditorDialog</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.trigger_editor_dialog.TriggerEditorDialog.remove_trigger"><code class="docutils literal notranslate"><span class="pre">TriggerEditorDialog.remove_trigger()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-ui.dialogs.universal_search_dialog">universal_search_dialog module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.universal_search_dialog.UniversalSearchDialog"><code class="docutils literal notranslate"><span class="pre">UniversalSearchDialog</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.universal_search_dialog.UniversalSearchDialog.filter_list"><code class="docutils literal notranslate"><span class="pre">UniversalSearchDialog.filter_list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.universal_search_dialog.UniversalSearchDialog.get_selected_object"><code class="docutils literal notranslate"><span class="pre">UniversalSearchDialog.get_selected_object()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.universal_search_dialog.UniversalSearchDialog.import_selected"><code class="docutils literal notranslate"><span class="pre">UniversalSearchDialog.import_selected()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ui.dialogs.universal_search_dialog.UniversalSearchDialog.load_suggestions"><code class="docutils literal notranslate"><span class="pre">UniversalSearchDialog.load_suggestions()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-ui.dialogs.trigger_editor">trigger_editor module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ui.commands.html">commands package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">dialogs package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#module-ui.dialogs.entity_editor_dialog">entity_editor_dialog module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ui.dialogs.entity_editor_dialog.EntityEditorDialog"><code class="docutils literal notranslate"><span class="pre">EntityEditorDialog</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.entity_editor_dialog.EntityEditorDialog.add_entity"><code class="docutils literal notranslate"><span class="pre">EntityEditorDialog.add_entity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.entity_editor_dialog.EntityEditorDialog.edit_triggers_for_selected"><code class="docutils literal notranslate"><span class="pre">EntityEditorDialog.edit_triggers_for_selected()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.entity_editor_dialog.EntityEditorDialog.import_from_rulebook"><code class="docutils literal notranslate"><span class="pre">EntityEditorDialog.import_from_rulebook()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.entity_editor_dialog.EntityEditorDialog.remove_entity"><code class="docutils literal notranslate"><span class="pre">EntityEditorDialog.remove_entity()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#module-ui.dialogs.entity_preview_dialog">entity_preview_dialog module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ui.dialogs.entity_preview_dialog.EntityPreviewDialog"><code class="docutils literal notranslate"><span class="pre">EntityPreviewDialog</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.entity_preview_dialog.EntityPreviewDialog.get_entity"><code class="docutils literal notranslate"><span class="pre">EntityPreviewDialog.get_entity()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#module-ui.dialogs.new_entity_dialog">new_entity_dialog module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ui.dialogs.new_entity_dialog.NewEntityDialog"><code class="docutils literal notranslate"><span class="pre">NewEntityDialog</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.new_entity_dialog.NewEntityDialog.entity"><code class="docutils literal notranslate"><span class="pre">NewEntityDialog.entity</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.new_entity_dialog.NewEntityDialog.name_input"><code class="docutils literal notranslate"><span class="pre">NewEntityDialog.name_input</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.new_entity_dialog.NewEntityDialog.type_input"><code class="docutils literal notranslate"><span class="pre">NewEntityDialog.type_input</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.new_entity_dialog.NewEntityDialog.accept_entity"><code class="docutils literal notranslate"><span class="pre">NewEntityDialog.accept_entity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.new_entity_dialog.NewEntityDialog.get_entity"><code class="docutils literal notranslate"><span class="pre">NewEntityDialog.get_entity()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#module-ui.dialogs.tile_dialog">tile_dialog module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog"><code class="docutils literal notranslate"><span class="pre">TileDialog</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.tile_data"><code class="docutils literal notranslate"><span class="pre">TileDialog.tile_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.main_window"><code class="docutils literal notranslate"><span class="pre">TileDialog.main_window</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.tile_item"><code class="docutils literal notranslate"><span class="pre">TileDialog.tile_item</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog._original_state"><code class="docutils literal notranslate"><span class="pre">TileDialog._original_state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.terrain_input"><code class="docutils literal notranslate"><span class="pre">TileDialog.terrain_input</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.tag_checkboxes"><code class="docutils literal notranslate"><span class="pre">TileDialog.tag_checkboxes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.label_input"><code class="docutils literal notranslate"><span class="pre">TileDialog.label_input</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.note_input"><code class="docutils literal notranslate"><span class="pre">TileDialog.note_input</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.overlay_input"><code class="docutils literal notranslate"><span class="pre">TileDialog.overlay_input</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.color_button"><code class="docutils literal notranslate"><span class="pre">TileDialog.color_button</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.entity_preview"><code class="docutils literal notranslate"><span class="pre">TileDialog.entity_preview</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.last_updated_label"><code class="docutils literal notranslate"><span class="pre">TileDialog.last_updated_label</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.edit_entities"><code class="docutils literal notranslate"><span class="pre">TileDialog.edit_entities()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.edit_triggers"><code class="docutils literal notranslate"><span class="pre">TileDialog.edit_triggers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.open_color_picker"><code class="docutils literal notranslate"><span class="pre">TileDialog.open_color_picker()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.save_attributes"><code class="docutils literal notranslate"><span class="pre">TileDialog.save_attributes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.tile_dialog.TileDialog.update_tile_overlay_preview"><code class="docutils literal notranslate"><span class="pre">TileDialog.update_tile_overlay_preview()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#module-ui.dialogs.trigger_editor_dialog">trigger_editor_dialog module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ui.dialogs.trigger_editor_dialog.TriggerEditorDialog"><code class="docutils literal notranslate"><span class="pre">TriggerEditorDialog</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.trigger_editor_dialog.TriggerEditorDialog.remove_trigger"><code class="docutils literal notranslate"><span class="pre">TriggerEditorDialog.remove_trigger()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#module-ui.dialogs.universal_search_dialog">universal_search_dialog module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ui.dialogs.universal_search_dialog.UniversalSearchDialog"><code class="docutils literal notranslate"><span class="pre">UniversalSearchDialog</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.universal_search_dialog.UniversalSearchDialog.filter_list"><code class="docutils literal notranslate"><span class="pre">UniversalSearchDialog.filter_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.universal_search_dialog.UniversalSearchDialog.get_selected_object"><code class="docutils literal notranslate"><span class="pre">UniversalSearchDialog.get_selected_object()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.universal_search_dialog.UniversalSearchDialog.import_selected"><code class="docutils literal notranslate"><span class="pre">UniversalSearchDialog.import_selected()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui.dialogs.universal_search_dialog.UniversalSearchDialog.load_suggestions"><code class="docutils literal notranslate"><span class="pre">UniversalSearchDialog.load_suggestions()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#module-ui.dialogs.trigger_editor">trigger_editor module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.trigger_editor.html">trigger_editor package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.tile_edit.html">tile_edit package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.tile_edit.html#module-ui.dialogs.tile_edit.tile_edit_command">tile_edit_command module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.backup.html">backup module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.string.slugify.html">slugify module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versioning.html">versioning package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versioning.migrations.html">migrations package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trigger_flow.html">Trigger System Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trigger_logic_mermaid.html">Trigger Chain (Mermaid)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DnD Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="ui.html">ui package</a></li>
+      <li class="breadcrumb-item active">dialogs package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ui.dialogs.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ui.dialogs">
+<span id="dialogs-package"></span><h1>dialogs package<a class="headerlink" href="#module-ui.dialogs" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+</section>
+<section id="module-ui.dialogs.entity_editor_dialog">
+<span id="entity-editor-dialog-module"></span><h1>entity_editor_dialog module<a class="headerlink" href="#module-ui.dialogs.entity_editor_dialog" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="ui.dialogs.entity_editor_dialog.EntityEditorDialog">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui.dialogs.entity_editor_dialog.</span></span><span class="sig-name descname"><span class="pre">EntityEditorDialog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tile_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.entity_editor_dialog.EntityEditorDialog" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QDialog</span></code></p>
+<p>Dialog for editing entities on a specific tile.</p>
+<p>Allows adding, removing, importing, and editing triggers for entities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tile_data</strong> (<em>object</em>) – The tile data object containing entities.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ui.dialogs.entity_editor_dialog.EntityEditorDialog.add_entity">
+<span class="sig-name descname"><span class="pre">add_entity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.entity_editor_dialog.EntityEditorDialog.add_entity" title="Link to this definition"></a></dt>
+<dd><p>Open a dialog to add a new entity to the tile.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ui.dialogs.entity_editor_dialog.EntityEditorDialog.edit_triggers_for_selected">
+<span class="sig-name descname"><span class="pre">edit_triggers_for_selected</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.entity_editor_dialog.EntityEditorDialog.edit_triggers_for_selected" title="Link to this definition"></a></dt>
+<dd><p>Open the TriggerEditorDialog for the currently selected entity.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ui.dialogs.entity_editor_dialog.EntityEditorDialog.import_from_rulebook">
+<span class="sig-name descname"><span class="pre">import_from_rulebook</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.entity_editor_dialog.EntityEditorDialog.import_from_rulebook" title="Link to this definition"></a></dt>
+<dd><p>Import an entity from the rulebook using the UniversalSearchDialog.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ui.dialogs.entity_editor_dialog.EntityEditorDialog.remove_entity">
+<span class="sig-name descname"><span class="pre">remove_entity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.entity_editor_dialog.EntityEditorDialog.remove_entity" title="Link to this definition"></a></dt>
+<dd><p>Remove the currently selected entity from the tile.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ui.dialogs.entity_preview_dialog">
+<span id="entity-preview-dialog-module"></span><h1>entity_preview_dialog module<a class="headerlink" href="#module-ui.dialogs.entity_preview_dialog" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="ui.dialogs.entity_preview_dialog.EntityPreviewDialog">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui.dialogs.entity_preview_dialog.</span></span><span class="sig-name descname"><span class="pre">EntityPreviewDialog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="models.entities.html#models.entities.game_entity.GameEntity" title="models.entities.game_entity.GameEntity"><span class="pre">GameEntity</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.entity_preview_dialog.EntityPreviewDialog" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QDialog</span></code></p>
+<p>A dialog window for previewing and editing a GameEntity’s properties.</p>
+<p>Allows the user to view and modify the entity’s name, type, stats, and abilities.
+The dialog provides editable fields for each property and returns an updated
+GameEntity instance upon confirmation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entity</strong> (<a class="reference internal" href="models.entities.html#models.entities.game_entity.GameEntity" title="models.entities.game_entity.GameEntity"><em>GameEntity</em></a>) – The entity to preview and edit.</p></li>
+<li><p><strong>parent</strong> (<em>QWidget</em><em>, </em><em>optional</em>) – The parent widget of the dialog (default is None).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>entity</strong> (<a class="reference internal" href="models.entities.html#models.entities.game_entity.GameEntity" title="models.entities.game_entity.GameEntity"><em>GameEntity</em></a>) – The entity being previewed and edited.</p></li>
+<li><p><strong>name_input</strong> (<em>QLineEdit</em>) – Input field for the entity’s name.</p></li>
+<li><p><strong>type_input</strong> (<em>QComboBox</em>) – Dropdown for selecting the entity’s type.</p></li>
+<li><p><strong>stat_inputs</strong> (<em>dict</em>) – Dictionary mapping stat names to their corresponding QLineEdit fields.</p></li>
+<li><p><strong>abilities_box</strong> (<em>QTextEdit</em>) – Text box for editing the entity’s abilities/inventory.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ui.dialogs.entity_preview_dialog.EntityPreviewDialog.get_entity">
+<span class="sig-name descname"><span class="pre">get_entity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="models.entities.html#models.entities.game_entity.GameEntity" title="models.entities.game_entity.GameEntity"><span class="pre">GameEntity</span></a></span></span><a class="headerlink" href="#ui.dialogs.entity_preview_dialog.EntityPreviewDialog.get_entity" title="Link to this definition"></a></dt>
+<dd><p>Retrieve an updated GameEntity instance based on the current dialog inputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The updated entity with values from the dialog fields.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="models.entities.html#models.entities.game_entity.GameEntity" title="models.entities.game_entity.GameEntity">GameEntity</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ui.dialogs.new_entity_dialog">
+<span id="new-entity-dialog-module"></span><h1>new_entity_dialog module<a class="headerlink" href="#module-ui.dialogs.new_entity_dialog" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="ui.dialogs.new_entity_dialog.NewEntityDialog">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui.dialogs.new_entity_dialog.</span></span><span class="sig-name descname"><span class="pre">NewEntityDialog</span></span><a class="headerlink" href="#ui.dialogs.new_entity_dialog.NewEntityDialog" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QDialog</span></code></p>
+<p>Dialog window for creating a new game entity.</p>
+<p>This dialog allows the user to input a name and select a type for a new entity.
+Upon confirmation, a <code class="xref py py-class docutils literal notranslate"><span class="pre">GameEntity</span></code> instance is created and default triggers are attached
+based on the selected entity type.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ui.dialogs.new_entity_dialog.NewEntityDialog.entity">
+<span class="sig-name descname"><span class="pre">entity</span></span><a class="headerlink" href="#ui.dialogs.new_entity_dialog.NewEntityDialog.entity" title="Link to this definition"></a></dt>
+<dd><p>The created entity instance, or None if creation was cancelled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="models.entities.html#models.entities.game_entity.GameEntity" title="models.entities.game_entity.GameEntity">GameEntity</a> or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ui.dialogs.new_entity_dialog.NewEntityDialog.name_input">
+<span class="sig-name descname"><span class="pre">name_input</span></span><a class="headerlink" href="#ui.dialogs.new_entity_dialog.NewEntityDialog.name_input" title="Link to this definition"></a></dt>
+<dd><p>Input field for the entity’s name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QLineEdit</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ui.dialogs.new_entity_dialog.NewEntityDialog.type_input">
+<span class="sig-name descname"><span class="pre">type_input</span></span><a class="headerlink" href="#ui.dialogs.new_entity_dialog.NewEntityDialog.type_input" title="Link to this definition"></a></dt>
+<dd><p>Dropdown for selecting the entity’s type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QComboBox</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ui.dialogs.new_entity_dialog.NewEntityDialog.accept_entity">
+<span class="sig-name descname"><span class="pre">accept_entity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.new_entity_dialog.NewEntityDialog.accept_entity" title="Link to this definition"></a></dt>
+<dd><p>Accept the entity creation if the input is valid.</p>
+<p>Creates a <code class="xref py py-class docutils literal notranslate"><span class="pre">GameEntity</span></code> with the provided name and type, attaches default triggers,
+and closes the dialog.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ui.dialogs.new_entity_dialog.NewEntityDialog.get_entity">
+<span class="sig-name descname"><span class="pre">get_entity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.new_entity_dialog.NewEntityDialog.get_entity" title="Link to this definition"></a></dt>
+<dd><p>Get the created entity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The created entity instance, or None if no entity was created.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="models.entities.html#models.entities.game_entity.GameEntity" title="models.entities.game_entity.GameEntity">GameEntity</a> or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ui.dialogs.tile_dialog">
+<span id="tile-dialog-module"></span><h1>tile_dialog module<a class="headerlink" href="#module-ui.dialogs.tile_dialog" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="ui.dialogs.tile_dialog.TileDialog">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui.dialogs.tile_dialog.</span></span><span class="sig-name descname"><span class="pre">TileDialog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tile_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">main_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tile_item</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.tile_dialog.TileDialog" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QDialog</span></code></p>
+<p>Dialog for viewing and editing the attributes of a tile.</p>
+<p>This dialog allows users to view and modify various properties of a tile, such as terrain type, tags, user label, note, overlay color, and associated entities and triggers. It also provides undo functionality by saving the original state and pushing changes to the main window’s undo stack.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tile_data</strong> (<a class="reference internal" href="models.tiles.html#models.tiles.tile_data.TileData" title="models.tiles.tile_data.TileData"><em>TileData</em></a>) – The TileData instance representing the tile to be edited.</p></li>
+<li><p><strong>main_window</strong> (<em>QMainWindow</em><em>, </em><em>optional</em>) – Reference to the main application window, used for undo stack integration.</p></li>
+<li><p><strong>tile_item</strong> (<em>QGraphicsItem</em><em>, </em><em>optional</em>) – The graphical item representing the tile in the scene.</p></li>
+<li><p><strong>*args</strong> – Additional positional arguments for QDialog.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments for QDialog.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ui.dialogs.tile_dialog.TileDialog.tile_data">
+<span class="sig-name descname"><span class="pre">tile_data</span></span><a class="headerlink" href="#ui.dialogs.tile_dialog.TileDialog.tile_data" title="Link to this definition"></a></dt>
+<dd><p>The tile data being edited.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="models.tiles.html#models.tiles.tile_data.TileData" title="models.tiles.tile_data.TileData">TileData</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ui.dialogs.tile_dialog.TileDialog.main_window">
+<span class="sig-name descname"><span class="pre">main_window</span></span><a class="headerlink" href="#ui.dialogs.tile_dialog.TileDialog.main_window" title="Link to this definition"></a></dt>
+<dd><p>Reference to the main window for undo stack operations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QMainWindow or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ui.dialogs.tile_dialog.TileDialog.tile_item">
+<span class="sig-name descname"><span class="pre">tile_item</span></span><a class="headerlink" href="#ui.dialogs.tile_dialog.TileDialog.tile_item" title="Link to this definition"></a></dt>
+<dd><p>The graphical item for the tile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QGraphicsItem or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ui.dialogs.tile_dialog.TileDialog._original_state">
+<span class="sig-name descname"><span class="pre">_original_state</span></span><a class="headerlink" href="#ui.dialogs.tile_dialog.TileDialog._original_state" title="Link to this definition"></a></dt>
+<dd><p>The original state of the tile data for undo purposes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ui.dialogs.tile_dialog.TileDialog.terrain_input">
+<span class="sig-name descname"><span class="pre">terrain_input</span></span><a class="headerlink" href="#ui.dialogs.tile_dialog.TileDialog.terrain_input" title="Link to this definition"></a></dt>
+<dd><p>Dropdown for selecting terrain type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QComboBox</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ui.dialogs.tile_dialog.TileDialog.tag_checkboxes">
+<span class="sig-name descname"><span class="pre">tag_checkboxes</span></span><a class="headerlink" href="#ui.dialogs.tile_dialog.TileDialog.tag_checkboxes" title="Link to this definition"></a></dt>
+<dd><p>Mapping of TileTag to QCheckBox for tag selection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ui.dialogs.tile_dialog.TileDialog.label_input">
+<span class="sig-name descname"><span class="pre">label_input</span></span><a class="headerlink" href="#ui.dialogs.tile_dialog.TileDialog.label_input" title="Link to this definition"></a></dt>
+<dd><p>Input for user label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QLineEdit</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ui.dialogs.tile_dialog.TileDialog.note_input">
+<span class="sig-name descname"><span class="pre">note_input</span></span><a class="headerlink" href="#ui.dialogs.tile_dialog.TileDialog.note_input" title="Link to this definition"></a></dt>
+<dd><p>Input for tile note.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QTextEdit</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ui.dialogs.tile_dialog.TileDialog.overlay_input">
+<span class="sig-name descname"><span class="pre">overlay_input</span></span><a class="headerlink" href="#ui.dialogs.tile_dialog.TileDialog.overlay_input" title="Link to this definition"></a></dt>
+<dd><p>Input for overlay color (hex).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QLineEdit</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ui.dialogs.tile_dialog.TileDialog.color_button">
+<span class="sig-name descname"><span class="pre">color_button</span></span><a class="headerlink" href="#ui.dialogs.tile_dialog.TileDialog.color_button" title="Link to this definition"></a></dt>
+<dd><p>Button to open color picker dialog.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QPushButton</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ui.dialogs.tile_dialog.TileDialog.entity_preview">
+<span class="sig-name descname"><span class="pre">entity_preview</span></span><a class="headerlink" href="#ui.dialogs.tile_dialog.TileDialog.entity_preview" title="Link to this definition"></a></dt>
+<dd><p>Read-only preview of associated entities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QLineEdit</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ui.dialogs.tile_dialog.TileDialog.last_updated_label">
+<span class="sig-name descname"><span class="pre">last_updated_label</span></span><a class="headerlink" href="#ui.dialogs.tile_dialog.TileDialog.last_updated_label" title="Link to this definition"></a></dt>
+<dd><p>Label showing last updated timestamp.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QLabel</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ui.dialogs.tile_dialog.TileDialog.edit_entities">
+<span class="sig-name descname"><span class="pre">edit_entities</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.tile_dialog.TileDialog.edit_entities" title="Link to this definition"></a></dt>
+<dd><p>Open the entity editor dialog for this tile.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ui.dialogs.tile_dialog.TileDialog.edit_triggers">
+<span class="sig-name descname"><span class="pre">edit_triggers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.tile_dialog.TileDialog.edit_triggers" title="Link to this definition"></a></dt>
+<dd><p>Open the trigger editor dialog for this tile.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ui.dialogs.tile_dialog.TileDialog.open_color_picker">
+<span class="sig-name descname"><span class="pre">open_color_picker</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.tile_dialog.TileDialog.open_color_picker" title="Link to this definition"></a></dt>
+<dd><p>Open a color picker dialog to select overlay color.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ui.dialogs.tile_dialog.TileDialog.save_attributes">
+<span class="sig-name descname"><span class="pre">save_attributes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.tile_dialog.TileDialog.save_attributes" title="Link to this definition"></a></dt>
+<dd><p>Save the current attributes to the tile data and push an undo command if applicable.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ui.dialogs.tile_dialog.TileDialog.update_tile_overlay_preview">
+<span class="sig-name descname"><span class="pre">update_tile_overlay_preview</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hex_color</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.tile_dialog.TileDialog.update_tile_overlay_preview" title="Link to this definition"></a></dt>
+<dd><p>Update the overlay color preview for the tile item.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>hex_color</strong> (<em>str</em>) – The hex color string to set as the overlay color.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ui.dialogs.trigger_editor_dialog">
+<span id="trigger-editor-dialog-module"></span><h1>trigger_editor_dialog module<a class="headerlink" href="#module-ui.dialogs.trigger_editor_dialog" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="ui.dialogs.trigger_editor_dialog.TriggerEditorDialog">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui.dialogs.trigger_editor_dialog.</span></span><span class="sig-name descname"><span class="pre">TriggerEditorDialog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">registry</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.trigger_editor_dialog.TriggerEditorDialog" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QDialog</span></code></p>
+<p>Dialog for displaying and managing active triggers.</p>
+<p>Allows users to view all registered triggers and remove them if desired.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ui.dialogs.trigger_editor_dialog.TriggerEditorDialog.remove_trigger">
+<span class="sig-name descname"><span class="pre">remove_trigger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trigger</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.trigger_editor_dialog.TriggerEditorDialog.remove_trigger" title="Link to this definition"></a></dt>
+<dd><p>Remove a trigger from the registry and unsubscribe it from the event bus.</p>
+<p>This method also refreshes the dialog to reflect the changes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>trigger</strong> – The trigger object to remove.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ui.dialogs.universal_search_dialog">
+<span id="universal-search-dialog-module"></span><h1>universal_search_dialog module<a class="headerlink" href="#module-ui.dialogs.universal_search_dialog" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="ui.dialogs.universal_search_dialog.UniversalSearchDialog">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui.dialogs.universal_search_dialog.</span></span><span class="sig-name descname"><span class="pre">UniversalSearchDialog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'monster'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.universal_search_dialog.UniversalSearchDialog" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QDialog</span></code></p>
+<p>A dialog for searching and importing entities (e.g., monsters, spells) from a rulebook.</p>
+<p>Allows the user to select a category (such as “Monster” or “Spell”), search for entities by name,
+preview their details, and import them into the application.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – The initial category to search in (“monster” or “spell”). Defaults to “monster”.</p></li>
+<li><p><strong>args</strong> – Additional positional arguments passed to QDialog.</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments passed to QDialog.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>importer</strong> (<a class="reference internal" href="core.rulebook.html#core.rulebook.import_manager.RulebookImporter" title="core.rulebook.import_manager.RulebookImporter"><em>RulebookImporter</em></a>) – The importer used to search and import entities from the rulebook.</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – The current search category (“monster” or “spell”).</p></li>
+<li><p><strong>category_selector</strong> (<em>QComboBox</em>) – Dropdown for selecting the entity category.</p></li>
+<li><p><strong>search_input</strong> (<em>QLineEdit</em>) – Input field for typing search queries.</p></li>
+<li><p><strong>result_list</strong> (<em>QListWidget</em>) – List widget displaying search results.</p></li>
+<li><p><strong>import_btn</strong> (<em>QPushButton</em>) – Button to import the selected entity.</p></li>
+<li><p><strong>cancel_btn</strong> (<em>QPushButton</em>) – Button to cancel and close the dialog.</p></li>
+<li><p><strong>selected_object</strong> (<em>object</em>) – The imported and possibly converted entity selected by the user (set after successful import).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ui.dialogs.universal_search_dialog.UniversalSearchDialog.filter_list">
+<span class="sig-name descname"><span class="pre">filter_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.universal_search_dialog.UniversalSearchDialog.filter_list" title="Link to this definition"></a></dt>
+<dd><p>Filter the displayed list of entities based on the search input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – The text to filter the list by.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ui.dialogs.universal_search_dialog.UniversalSearchDialog.get_selected_object">
+<span class="sig-name descname"><span class="pre">get_selected_object</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.universal_search_dialog.UniversalSearchDialog.get_selected_object" title="Link to this definition"></a></dt>
+<dd><p>Get the imported entity selected by the user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The imported and possibly converted entity, or None if no selection was made.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>object or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ui.dialogs.universal_search_dialog.UniversalSearchDialog.import_selected">
+<span class="sig-name descname"><span class="pre">import_selected</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.universal_search_dialog.UniversalSearchDialog.import_selected" title="Link to this definition"></a></dt>
+<dd><p>Import the currently selected entity from the list.</p>
+<p>Opens a preview dialog for the selected entity. If the user confirms, the entity is imported
+and stored in <code class="docutils literal notranslate"><span class="pre">selected_object</span></code>. Displays error dialogs if import fails or no selection is made.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ui.dialogs.universal_search_dialog.UniversalSearchDialog.load_suggestions">
+<span class="sig-name descname"><span class="pre">load_suggestions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ui.dialogs.universal_search_dialog.UniversalSearchDialog.load_suggestions" title="Link to this definition"></a></dt>
+<dd><p>Load and display suggestions for the selected category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mode</strong> (<em>str</em>) – The category to load suggestions for (“Monster” or “Spell”).</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ui.dialogs.trigger_editor">
+<span id="trigger-editor-module"></span><h1>trigger_editor module<a class="headerlink" href="#module-ui.dialogs.trigger_editor" title="Link to this heading"></a></h1>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ui.html" class="btn btn-neutral float-left" title="ui package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ui.commands.html" class="btn btn-neutral float-right" title="commands package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Fabio Rempel.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

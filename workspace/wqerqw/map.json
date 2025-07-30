@@ -1,0 +1,554 @@
+{
+  "version": "1.0",
+  "meta": {
+    "map_name": "wqerqw",
+    "author": "fqwefqretg",
+    "created": "2025-06-12T16:30:57.572250",
+    "grid_type": "hex",
+    "rows": 6,
+    "cols": 6
+  },
+  "tiles": [
+    {
+      "tile_id": "0_0",
+      "position": [
+        0,
+        0
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "0_1",
+      "position": [
+        0,
+        1
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "0_2",
+      "position": [
+        0,
+        2
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "0_3",
+      "position": [
+        0,
+        3
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "0_4",
+      "position": [
+        0,
+        4
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "0_5",
+      "position": [
+        0,
+        5
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "1_0",
+      "position": [
+        1,
+        0
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "1_1",
+      "position": [
+        1,
+        1
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "1_2",
+      "position": [
+        1,
+        2
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "1_3",
+      "position": [
+        1,
+        3
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "1_4",
+      "position": [
+        1,
+        4
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "1_5",
+      "position": [
+        1,
+        5
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "2_0",
+      "position": [
+        2,
+        0
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "2_1",
+      "position": [
+        2,
+        1
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "2_2",
+      "position": [
+        2,
+        2
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "2_3",
+      "position": [
+        2,
+        3
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "2_4",
+      "position": [
+        2,
+        4
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "2_5",
+      "position": [
+        2,
+        5
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "3_0",
+      "position": [
+        3,
+        0
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "3_1",
+      "position": [
+        3,
+        1
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "3_2",
+      "position": [
+        3,
+        2
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "3_3",
+      "position": [
+        3,
+        3
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "3_4",
+      "position": [
+        3,
+        4
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "3_5",
+      "position": [
+        3,
+        5
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "4_0",
+      "position": [
+        4,
+        0
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "4_1",
+      "position": [
+        4,
+        1
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "4_2",
+      "position": [
+        4,
+        2
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "4_3",
+      "position": [
+        4,
+        3
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "4_4",
+      "position": [
+        4,
+        4
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "4_5",
+      "position": [
+        4,
+        5
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "5_0",
+      "position": [
+        5,
+        0
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "5_1",
+      "position": [
+        5,
+        1
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "5_2",
+      "position": [
+        5,
+        2
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "5_3",
+      "position": [
+        5,
+        3
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "5_4",
+      "position": [
+        5,
+        4
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    },
+    {
+      "tile_id": "5_5",
+      "position": [
+        5,
+        5
+      ],
+      "terrain": "FLOOR",
+      "tags": [],
+      "user_label": null,
+      "note": null,
+      "overlay_color": null,
+      "last_updated": null,
+      "entities": [],
+      "triggers": []
+    }
+  ],
+  "entities": []
+}

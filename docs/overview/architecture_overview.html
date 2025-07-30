@@ -1,0 +1,286 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>System Architecture Overview &mdash; DnD Editor  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Trigger System Overview" href="trigger_system.html" />
+    <link rel="prev" title="DnD Project Overview" href="../introduction.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            DnD Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Introduction:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">DnD Project Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Overviews</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">System Architecture Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#architecture-diagram">Architecture Diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#component-breakdown">Component Breakdown</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#support-modules">Support Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extensibility">Extensibility</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="trigger_system.html">Trigger System Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_flow.html">Runtime Data Flow</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../core.html">Core Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models.html">Models Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registries.html">registries package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data.profile.profile_manager.html">profile_manager module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ui.html">ui package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ui.commands.html">commands package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ui.dialogs.html">dialogs package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ui.dialogs.html#module-ui.dialogs.entity_editor_dialog">entity_editor_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ui.dialogs.html#module-ui.dialogs.entity_preview_dialog">entity_preview_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ui.dialogs.html#module-ui.dialogs.new_entity_dialog">new_entity_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ui.dialogs.html#module-ui.dialogs.tile_dialog">tile_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ui.dialogs.html#module-ui.dialogs.trigger_editor_dialog">trigger_editor_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ui.dialogs.html#module-ui.dialogs.universal_search_dialog">universal_search_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ui.dialogs.html#module-ui.dialogs.trigger_editor">trigger_editor module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ui.dialogs.trigger_editor.html">trigger_editor package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ui.dialogs.tile_edit.html">tile_edit package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ui.dialogs.tile_edit.html#module-ui.dialogs.tile_edit.tile_edit_command">tile_edit_command module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.backup.html">backup module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.string.slugify.html">slugify module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../versioning.html">versioning package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../versioning.migrations.html">migrations package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../trigger_flow.html">Trigger System Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../trigger_logic_mermaid.html">Trigger Chain (Mermaid)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DnD Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">System Architecture Overview</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/overview/architecture_overview.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="system-architecture-overview">
+<h1>System Architecture Overview<a class="headerlink" href="#system-architecture-overview" title="Link to this heading"></a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#overview" id="id1">Overview</a></p></li>
+<li><p><a class="reference internal" href="#architecture-diagram" id="id2">Architecture Diagram</a></p></li>
+<li><p><a class="reference internal" href="#component-breakdown" id="id3">Component Breakdown</a></p></li>
+<li><p><a class="reference internal" href="#support-modules" id="id4">Support Modules</a></p></li>
+<li><p><a class="reference internal" href="#extensibility" id="id5">Extensibility</a></p></li>
+</ul>
+</nav>
+<section id="overview">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Overview</a><a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The DnD Project is structured into modular components that interact through events, signals, and pluggable logic. The system is orchestrated by a main controller and supports map editing, trigger scripting, entity management, and serialization. This document outlines the major components and their interactions.</p>
+</section>
+<section id="architecture-diagram">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Architecture Diagram</a><a class="headerlink" href="#architecture-diagram" title="Link to this heading"></a></h2>
+<pre  class="mermaid">
+        graph TD
+  MainController --&gt; ScenarioOverview
+  MainController --&gt; MapEditor
+  MapEditor --&gt; TileManager
+  MapEditor --&gt; TriggerEditor
+  TileManager --&gt; Tile
+  Tile --&gt; TileEventEmitter
+  TileManager --&gt; Entity
+  Entity --&gt;|Fires| EventBus
+  EventBus --&gt; Trigger
+  Trigger --&gt;|Executes| Reaction
+  Reaction --&gt;|Modifies| Entity
+  EventBus --&gt;|Triggers| TurnManager
+  TurnManager --&gt;|Schedules| Trigger
+  MapEditor --&gt;|Uses| SettingsManager
+  MapEditor --&gt;|Uses| BackupManager
+  MapEditor --&gt;|Uses| ExportManager
+  MapEditor --&gt;|Imports| RulebookImporter
+  RulebookImporter --&gt;|Uses| APIHandler
+  MapEditor --&gt;|Logs| Logger
+    </pre></section>
+<section id="component-breakdown">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Component Breakdown</a><a class="headerlink" href="#component-breakdown" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt><strong>MainController</strong></dt><dd><ul class="simple">
+<li><p>Orchestrates window switching between overview and editor.</p></li>
+<li><p>Holds shared <cite>SettingsManager</cite>.</p></li>
+</ul>
+</dd>
+<dt><strong>ScenarioOverview</strong></dt><dd><ul class="simple">
+<li><p>Entry screen for creating or loading maps.</p></li>
+</ul>
+</dd>
+<dt><strong>MapEditor</strong></dt><dd><ul class="simple">
+<li><p>Central workspace combining the tile grid, entity placement, and trigger editing.</p></li>
+</ul>
+</dd>
+<dt><strong>TileManager</strong></dt><dd><ul class="simple">
+<li><p>Maintains grid layout and state.</p></li>
+<li><p>Manages <cite>Tile</cite> instances and embedded <cite>Entities</cite>.</p></li>
+</ul>
+</dd>
+<dt><strong>TileEventEmitter</strong></dt><dd><ul class="simple">
+<li><p>Emits signals for UI interactions like hover and click.</p></li>
+<li><p>Bridges tiles and PyQt GUI.</p></li>
+</ul>
+</dd>
+<dt><strong>Entity</strong></dt><dd><ul class="simple">
+<li><p>Represents NPCs, monsters, traps, or objects.</p></li>
+<li><p>Can emit events handled by the <cite>EventBus</cite>.</p></li>
+</ul>
+</dd>
+<dt><strong>EventBus</strong></dt><dd><ul class="simple">
+<li><p>Broadcasts events globally or by location.</p></li>
+<li><p>Forwards to entities and triggers.</p></li>
+</ul>
+</dd>
+<dt><strong>Trigger System</strong></dt><dd><ul class="simple">
+<li><p><cite>Trigger</cite> objects react to events.</p></li>
+<li><p>Contain a <cite>Condition</cite> and <cite>Reaction</cite>.</p></li>
+<li><p>Support chaining and cooldowns.</p></li>
+</ul>
+</dd>
+<dt><strong>TurnManager</strong></dt><dd><ul class="simple">
+<li><p>Advances game turns.</p></li>
+<li><p>Dispatches delayed trigger events.</p></li>
+</ul>
+</dd>
+<dt><strong>TriggerEditor</strong></dt><dd><ul class="simple">
+<li><p>GUI for editing trigger logic.</p></li>
+<li><p>Reflects dynamically from condition/reaction classes.</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="support-modules">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Support Modules</a><a class="headerlink" href="#support-modules" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt><strong>SettingsManager</strong></dt><dd><ul class="simple">
+<li><p>Loads and saves user configuration.</p></li>
+</ul>
+</dd>
+<dt><strong>BackupManager</strong></dt><dd><ul class="simple">
+<li><p>Automatically backs up maps on change.</p></li>
+</ul>
+</dd>
+<dt><strong>ExportManager</strong></dt><dd><ul class="simple">
+<li><p>Zips maps and assets into a distributable bundle.</p></li>
+</ul>
+</dd>
+<dt><strong>Logger</strong></dt><dd><ul class="simple">
+<li><p>Centralized logging and log rotation.</p></li>
+</ul>
+</dd>
+<dt><strong>RulebookImporter</strong></dt><dd><ul class="simple">
+<li><p>Pulls monsters and spells from the 5e API.</p></li>
+<li><p>Parses into in-world entities and objects.</p></li>
+</ul>
+</dd>
+<dt><strong>APIHandler</strong></dt><dd><ul class="simple">
+<li><p>HTTP client wrapper for 5e SRD content.</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="extensibility">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Extensibility</a><a class="headerlink" href="#extensibility" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Plugin Architecture</strong>: The trigger system is backed by registries for <cite>Condition</cite>, <cite>Reaction</cite>, and <cite>Trigger</cite> types.</p></li>
+<li><p><strong>Reflection-Based UI</strong>: The Trigger Editor uses introspection to expose arguments and preview logic.</p></li>
+<li><p><strong>Serialization</strong>: Maps, triggers, and entities are saved as JSON for easy modification or versioned migration.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../introduction.html" class="btn btn-neutral float-left" title="DnD Project Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="trigger_system.html" class="btn btn-neutral float-right" title="Trigger System Overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Fabio Rempel.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

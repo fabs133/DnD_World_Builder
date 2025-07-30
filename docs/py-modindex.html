@@ -1,0 +1,637 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Python Module Index &mdash; DnD Editor  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+ 
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DnD Editor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Introduction:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">DnD Project Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Overviews</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview/architecture_overview.html">System Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview/trigger_system.html">Trigger System Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview/data_flow.html">Runtime Data Flow</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registries.html">registries package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.profile.profile_manager.html">profile_manager module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">ui package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.commands.html">commands package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html">dialogs package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.entity_editor_dialog">entity_editor_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.entity_preview_dialog">entity_preview_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.new_entity_dialog">new_entity_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.tile_dialog">tile_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.trigger_editor_dialog">trigger_editor_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.universal_search_dialog">universal_search_dialog module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.html#module-ui.dialogs.trigger_editor">trigger_editor module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.trigger_editor.html">trigger_editor package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.tile_edit.html">tile_edit package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.dialogs.tile_edit.html#module-ui.dialogs.tile_edit.tile_edit_command">tile_edit_command module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.backup.html">backup module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.string.slugify.html">slugify module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versioning.html">versioning package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versioning.migrations.html">migrations package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trigger_flow.html">Trigger System Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trigger_logic_mermaid.html">Trigger Chain (Mermaid)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DnD Editor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Python Module Index</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+
+   <h1>Python Module Index</h1>
+
+   <div class="modindex-jumpbox">
+   <a href="#cap-c"><strong>c</strong></a> | 
+   <a href="#cap-d"><strong>d</strong></a> | 
+   <a href="#cap-m"><strong>m</strong></a> | 
+   <a href="#cap-r"><strong>r</strong></a> | 
+   <a href="#cap-u"><strong>u</strong></a> | 
+   <a href="#cap-v"><strong>v</strong></a>
+   </div>
+
+   <table class="indextable modindextable">
+     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
+     <tr class="cap" id="cap-c"><td></td><td>
+       <strong>c</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-1" style="display: none" alt="-" /></td>
+       <td>
+       <code class="xref">core</code></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="core.backup_manager.html#module-core.backup_manager"><code class="xref">core.backup_manager</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="core.characterCreation.creation_gui.html#module-core.characterCreation.creation_gui"><code class="xref">core.characterCreation.creation_gui</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="core.characterCreation.db_init.html#module-core.characterCreation.db_init"><code class="xref">core.characterCreation.db_init</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="core.db_api_handler.html#module-core.db_api_handler"><code class="xref">core.db_api_handler</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="core.export_manager.html#module-core.export_manager"><code class="xref">core.export_manager</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="gameCreation.event_bus.html#module-core.gameCreation.event_bus"><code class="xref">core.gameCreation.event_bus</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="gameCreation.main_controller.html#module-core.gameCreation.main_controller"><code class="xref">core.gameCreation.main_controller</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="gameCreation.tile_event_emitter.html#module-core.gameCreation.tile_event_emitter"><code class="xref">core.gameCreation.tile_event_emitter</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="gameCreation.trigger.html#module-core.gameCreation.trigger"><code class="xref">core.gameCreation.trigger</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="gameCreation.turn_manager.html#module-core.gameCreation.turn_manager"><code class="xref">core.gameCreation.turn_manager</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="gameCreation.turn_system.html#module-core.gameCreation.turn_system"><code class="xref">core.gameCreation.turn_system</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="core.logger.html#module-core.logger"><code class="xref">core.logger</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="core.rulebook.html#module-core.rulebook"><code class="xref">core.rulebook</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="core.rulebook.html#module-core.rulebook.entity_importer"><code class="xref">core.rulebook.entity_importer</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="core.rulebook.html#module-core.rulebook.import_manager"><code class="xref">core.rulebook.import_manager</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="core.rulebook.html#module-core.rulebook.importer_base"><code class="xref">core.rulebook.importer_base</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="core.rulebook.html#module-core.rulebook.rulebook_entity"><code class="xref">core.rulebook.rulebook_entity</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="core.rulebook.html#module-core.rulebook.rulebook_spell"><code class="xref">core.rulebook.rulebook_spell</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="core.rulebook.html#module-core.rulebook.spell_importer"><code class="xref">core.rulebook.spell_importer</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="core.settings_manager.html#module-core.settings_manager"><code class="xref">core.settings_manager</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
+     <tr class="cap" id="cap-d"><td></td><td>
+       <strong>d</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-2" style="display: none" alt="-" /></td>
+       <td>
+       <code class="xref">data</code></td><td>
+       <em></em></td></tr>
+     <tr class="cg-2">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="data.profile.profile_manager.html#module-data.profile.profile_manager"><code class="xref">data.profile.profile_manager</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
+     <tr class="cap" id="cap-m"><td></td><td>
+       <strong>m</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-3" style="display: none" alt="-" /></td>
+       <td>
+       <code class="xref">models</code></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.entities.html#module-models.entities"><code class="xref">models.entities</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.entities.html#module-models.entities.character"><code class="xref">models.entities.character</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.entities.html#module-models.entities.enemy"><code class="xref">models.entities.enemy</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.entities.html#module-models.entities.entity_type"><code class="xref">models.entities.entity_type</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.entities.html#module-models.entities.game_entity"><code class="xref">models.entities.game_entity</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.entities.html#module-models.entities.named_enemy"><code class="xref">models.entities.named_enemy</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.entities.html#module-models.entities.npc"><code class="xref">models.entities.npc</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.entities.html#module-models.entities.player"><code class="xref">models.entities.player</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.entities.html#module-models.entities.trap"><code class="xref">models.entities.trap</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.flow.html#module-models.flow"><code class="xref">models.flow</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.flow.action.html#module-models.flow.action"><code class="xref">models.flow.action</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.flow.action.html#module-models.flow.action.action"><code class="xref">models.flow.action.action</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.flow.action.html#module-models.flow.action.action_validator"><code class="xref">models.flow.action.action_validator</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.flow.action.html#module-models.flow.action.spell_action"><code class="xref">models.flow.action.spell_action</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.flow.html#module-models.flow.combat_system"><code class="xref">models.flow.combat_system</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.flow.condition.html#module-models.flow.condition"><code class="xref">models.flow.condition</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.flow.condition.html#module-models.flow.condition.condition"><code class="xref">models.flow.condition.condition</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.flow.condition.html#module-models.flow.condition.condition_list"><code class="xref">models.flow.condition.condition_list</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.flow.reaction.html#module-models.flow.reaction"><code class="xref">models.flow.reaction</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.flow.reaction.html#module-models.flow.reaction.reaction"><code class="xref">models.flow.reaction.reaction</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.flow.reaction.html#module-models.flow.reaction.reaction_queue"><code class="xref">models.flow.reaction.reaction_queue</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.flow.reaction.html#module-models.flow.reaction.reactions"><code class="xref">models.flow.reaction.reactions</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.flow.reaction.html#module-models.flow.reaction.reactions_list"><code class="xref">models.flow.reaction.reactions_list</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.flow.html#module-models.flow.skill_check"><code class="xref">models.flow.skill_check</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.flow.html#module-models.flow.turn_system"><code class="xref">models.flow.turn_system</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.tiles.html#module-models.tiles"><code class="xref">models.tiles</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.tiles.html#module-models.tiles.base_tile_item"><code class="xref">models.tiles.base_tile_item</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.tiles.html#module-models.tiles.hex_tile_item"><code class="xref">models.tiles.hex_tile_item</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.tiles.html#module-models.tiles.square_tile_item"><code class="xref">models.tiles.square_tile_item</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.tiles.html#module-models.tiles.tile_data"><code class="xref">models.tiles.tile_data</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.tiles.html#module-models.tiles.tile_preset"><code class="xref">models.tiles.tile_preset</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.world.html#module-models.world"><code class="xref">models.world</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.world.html#module-models.world.world"><code class="xref">models.world.world</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.world.html#module-models.world.world_lore"><code class="xref">models.world.world_lore</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.world.html#module-models.world.world_tile_manager"><code class="xref">models.world.world_tile_manager</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
+     <tr class="cap" id="cap-r"><td></td><td>
+       <strong>r</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-4" style="display: none" alt="-" /></td>
+       <td>
+       <a href="registries.html#module-registries"><code class="xref">registries</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-4">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="registries.html#module-registries.condition_registry"><code class="xref">registries.condition_registry</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-4">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="registries.html#module-registries.reaction_registry"><code class="xref">registries.reaction_registry</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-4">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="registries.html#module-registries.trigger_presets"><code class="xref">registries.trigger_presets</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-4">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="registries.html#module-registries.trigger_registry"><code class="xref">registries.trigger_registry</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
+     <tr class="cap" id="cap-u"><td></td><td>
+       <strong>u</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-5" style="display: none" alt="-" /></td>
+       <td>
+       <a href="ui.html#module-ui"><code class="xref">ui</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="ui.commands.html#module-ui.commands"><code class="xref">ui.commands</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="ui.commands.html#module-ui.commands.tile_edit_command"><code class="xref">ui.commands.tile_edit_command</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="ui.dialogs.html#module-ui.dialogs"><code class="xref">ui.dialogs</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="ui.dialogs.html#module-ui.dialogs.entity_editor_dialog"><code class="xref">ui.dialogs.entity_editor_dialog</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="ui.dialogs.html#module-ui.dialogs.entity_preview_dialog"><code class="xref">ui.dialogs.entity_preview_dialog</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="ui.dialogs.html#module-ui.dialogs.new_entity_dialog"><code class="xref">ui.dialogs.new_entity_dialog</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="ui.dialogs.html#module-ui.dialogs.tile_dialog"><code class="xref">ui.dialogs.tile_dialog</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="ui.dialogs.tile_edit.html#module-ui.dialogs.tile_edit"><code class="xref">ui.dialogs.tile_edit</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="ui.dialogs.tile_edit.html#module-ui.dialogs.tile_edit.tile_edit_command"><code class="xref">ui.dialogs.tile_edit.tile_edit_command</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="ui.dialogs.trigger_editor.html#module-ui.dialogs.trigger_editor"><code class="xref">ui.dialogs.trigger_editor</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="ui.dialogs.trigger_editor.html#module-ui.dialogs.trigger_editor.editor_dialog"><code class="xref">ui.dialogs.trigger_editor.editor_dialog</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="ui.dialogs.trigger_editor.html#module-ui.dialogs.trigger_editor.editor_stack"><code class="xref">ui.dialogs.trigger_editor.editor_stack</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="ui.dialogs.trigger_editor.html#module-ui.dialogs.trigger_editor.graph_view"><code class="xref">ui.dialogs.trigger_editor.graph_view</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="ui.dialogs.trigger_editor.html#module-ui.dialogs.trigger_editor.list_view"><code class="xref">ui.dialogs.trigger_editor.list_view</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="ui.dialogs.trigger_editor.html#module-ui.dialogs.trigger_editor.property_editor"><code class="xref">ui.dialogs.trigger_editor.property_editor</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="ui.dialogs.trigger_editor.html#module-ui.dialogs.trigger_editor.trigger_node"><code class="xref">ui.dialogs.trigger_editor.trigger_node</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="ui.dialogs.html#module-ui.dialogs.trigger_editor_dialog"><code class="xref">ui.dialogs.trigger_editor_dialog</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="ui.dialogs.html#module-ui.dialogs.universal_search_dialog"><code class="xref">ui.dialogs.universal_search_dialog</code></a></td><td>
+       <em></em></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-6" style="display: none" alt="-" /></td>
+       <td>
+       <code class="xref">utils</code></td><td>
+       <em></em></td></tr>
+     <tr class="cg-6">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="utils.backup.html#module-utils.backup"><code class="xref">utils.backup</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-6">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="utils.string.slugify.html#module-utils.string.slugify"><code class="xref">utils.string.slugify</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
+     <tr class="cap" id="cap-v"><td></td><td>
+       <strong>v</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-7" style="display: none" alt="-" /></td>
+       <td>
+       <a href="versioning.html#module-versioning"><code class="xref">versioning</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-7">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="versioning.migrations.html#module-versioning.migrations"><code class="xref">versioning.migrations</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-7">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="versioning.migrations.html#module-versioning.migrations.user_profile"><code class="xref">versioning.migrations.user_profile</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-7">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="versioning.html#module-versioning.update_registry"><code class="xref">versioning.update_registry</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-7">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="versioning.html#module-versioning.updater"><code class="xref">versioning.updater</code></a></td><td>
+       <em></em></td></tr>
+   </table>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Fabio Rempel.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
