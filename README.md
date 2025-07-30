@@ -116,6 +116,10 @@ python tiles_gui.py
 
 ---
 
+## 📘 Documentation
+
+Full documentation is available [here](docs/_build/html/index.html).
+
 ## 📜 License
 
 MIT License © 2025
