@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['casting_5ftime_0',['casting_time',['../classclasses_1_1_spell.html#a23e022243f0eb33e1ea6ac72b4e56fba',1,'classes::Spell']]],
+  ['challenge_5frating_1',['challenge_rating',['../classclasses_1_1_enemy.html#a45e7dc87e42a065e9ea4856485dbf087',1,'classes::Enemy']]],
+  ['char_5fclass_2',['char_class',['../classclasses_1_1_character.html#aa59ef4cd6b7a39aa93a3c4b0ed582872',1,'classes::Character']]],
+  ['char_5fclass_5ffeatures_3',['char_class_features',['../classclasses_1_1_character.html#a6a73a8aea8a549136323fc9cc52c8acd',1,'classes::Character']]],
+  ['char_5fclass_5finput_4',['char_class_input',['../classgui__test_1_1_character_creation_window.html#a5703d3d3bab5e9b0b1a467a54b798b17',1,'gui_test::CharacterCreationWindow']]],
+  ['character_5',['character',['../classclasses_1_1_player.html#ae85349cac75051c3d668efa0bf6b5159',1,'classes::Player']]],
+  ['class_5finput_6',['class_input',['../classcreation__gui_1_1_character_g_u_i.html#a62670f3cdeefc54e328d26d118015d3b',1,'creation_gui::CharacterGUI']]],
+  ['combat_5fround_7',['combat_round',['../classclasses_1_1_combat_system.html#a901d149b11a563a91af06b2a1b92787b',1,'classes::CombatSystem']]],
+  ['components_8',['components',['../classclasses_1_1_spell.html#a066b0b1c8d2031036f87a6e28ff83bbf',1,'classes::Spell']]],
+  ['condition_5fimmunities_9',['condition_immunities',['../classclasses_1_1_enemy.html#a5fe90c7982aebd79eccf16e8998af6fa',1,'classes::Enemy']]],
+  ['conditions_10',['conditions',['../classclasses_1_1_character.html#ae7e294c652012719fe6ba410715f9722',1,'classes.Character.conditions'],['../classclasses_1_1_enemy.html#a641283223c0129ef15b4a193503ca0cc',1,'classes.Enemy.conditions']]],
+  ['conditions_5finput_11',['conditions_input',['../classgui__test_1_1_character_creation_window.html#af78e71271cb468c723b52a851e16fc97',1,'gui_test::CharacterCreationWindow']]],
+  ['create_5fcharacter_12',['create_character',['../classcreation__gui_1_1_character_g_u_i.html#a7cef2000e30641324b2259816a70d676',1,'creation_gui::CharacterGUI']]],
+  ['currency_13',['currency',['../classclasses_1_1_character.html#ab5e35ea3f177e9fd9e3c5219a1c3edf6',1,'classes::Character']]],
+  ['currency_5finput_14',['currency_input',['../classgui__test_1_1_character_creation_window.html#af2ce8e1b057eeef5dbbfd6aecb556672',1,'gui_test::CharacterCreationWindow']]],
+  ['current_5fcombat_15',['current_combat',['../classworld__watcher_1_1_world_watcher.html#a346155ac8da0885be47b7969ecaa521a',1,'world_watcher::WorldWatcher']]],
+  ['current_5fturn_16',['current_turn',['../classclasses_1_1_turn_system.html#ae36509f0d70263ef2b414d2350f6b963',1,'classes::TurnSystem']]]
+];

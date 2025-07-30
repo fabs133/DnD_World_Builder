@@ -1,0 +1,114 @@
+\doxysection{classes.\+World\+Tile\+Manager Class Reference}
+\hypertarget{classclasses_1_1_world_tile_manager}{}\label{classclasses_1_1_world_tile_manager}\index{classes.WorldTileManager@{classes.WorldTileManager}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classclasses_1_1_world_tile_manager_a562a07fcc524c555207709948834fa64}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, \mbox{\hyperlink{classclasses_1_1_world_tile_manager_ae14a112be21d33e2713c7ce8d8a73da4}{width}}, \mbox{\hyperlink{classclasses_1_1_world_tile_manager_ac10e118f1a3ce462bff087004c9f49d1}{height}}, \mbox{\hyperlink{classclasses_1_1_world_tile_manager_a1c7e50495e0ec0781f1d717f51bee39b}{tile\+\_\+type}})
+\item 
+\mbox{\hyperlink{classclasses_1_1_world_tile_manager_a1119c750e8c16f0459c0c785136c3da9}{generate\+\_\+tiles}} (self)
+\item 
+\mbox{\hyperlink{classclasses_1_1_world_tile_manager_aa69392f381ff8a2acb15553f713431db}{get\+\_\+adjacent\+\_\+tiles}} (self, x, y)
+\item 
+\mbox{\hyperlink{classclasses_1_1_world_tile_manager_a8f6d3eba8071c418b6196ab9dcf03b5a}{is\+\_\+valid\+\_\+tile}} (self, x, y)
+\item 
+\mbox{\hyperlink{classclasses_1_1_world_tile_manager_a947c8ffd16d09952038f038c188833da}{move\+\_\+entity}} (self, entity, new\+\_\+x, new\+\_\+y)
+\item 
+\mbox{\hyperlink{classclasses_1_1_world_tile_manager_a939a5f7af3a9e92767e3760c3269baa3}{display\+\_\+world}} (self)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classclasses_1_1_world_tile_manager_ae14a112be21d33e2713c7ce8d8a73da4}{width}} = width
+\item 
+\mbox{\hyperlink{classclasses_1_1_world_tile_manager_ac10e118f1a3ce462bff087004c9f49d1}{height}} = height
+\item 
+str \mbox{\hyperlink{classclasses_1_1_world_tile_manager_a1c7e50495e0ec0781f1d717f51bee39b}{tile\+\_\+type}} = tile\+\_\+type
+\item 
+\mbox{\hyperlink{classclasses_1_1_world_tile_manager_a3824ee38ecfec8cfde7f0ee6ee11566b}{tiles}} = self.\+generate\+\_\+tiles()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classclasses_1_1_world_tile_manager_a562a07fcc524c555207709948834fa64}\index{classes.WorldTileManager@{classes.WorldTileManager}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!classes.WorldTileManager@{classes.WorldTileManager}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_world_tile_manager_a562a07fcc524c555207709948834fa64} 
+classes.\+World\+Tile\+Manager.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{width}{, }\item[{}]{height}{, }\item[{}]{tile\+\_\+type}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Handles tile generation and movement on the grid.
+\end{DoxyVerb}
+ 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classclasses_1_1_world_tile_manager_a939a5f7af3a9e92767e3760c3269baa3}\index{classes.WorldTileManager@{classes.WorldTileManager}!display\_world@{display\_world}}
+\index{display\_world@{display\_world}!classes.WorldTileManager@{classes.WorldTileManager}}
+\doxysubsubsection{\texorpdfstring{display\_world()}{display\_world()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_world_tile_manager_a939a5f7af3a9e92767e3760c3269baa3} 
+classes.\+World\+Tile\+Manager.\+display\+\_\+world (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Simple debug display of the world grid.
+\end{DoxyVerb}
+ \Hypertarget{classclasses_1_1_world_tile_manager_a1119c750e8c16f0459c0c785136c3da9}\index{classes.WorldTileManager@{classes.WorldTileManager}!generate\_tiles@{generate\_tiles}}
+\index{generate\_tiles@{generate\_tiles}!classes.WorldTileManager@{classes.WorldTileManager}}
+\doxysubsubsection{\texorpdfstring{generate\_tiles()}{generate\_tiles()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_world_tile_manager_a1119c750e8c16f0459c0c785136c3da9} 
+classes.\+World\+Tile\+Manager.\+generate\+\_\+tiles (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Generate a grid of tiles (square or hex based on tile_type).
+\end{DoxyVerb}
+ \Hypertarget{classclasses_1_1_world_tile_manager_aa69392f381ff8a2acb15553f713431db}\index{classes.WorldTileManager@{classes.WorldTileManager}!get\_adjacent\_tiles@{get\_adjacent\_tiles}}
+\index{get\_adjacent\_tiles@{get\_adjacent\_tiles}!classes.WorldTileManager@{classes.WorldTileManager}}
+\doxysubsubsection{\texorpdfstring{get\_adjacent\_tiles()}{get\_adjacent\_tiles()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_world_tile_manager_aa69392f381ff8a2acb15553f713431db} 
+classes.\+World\+Tile\+Manager.\+get\+\_\+adjacent\+\_\+tiles (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{x}{, }\item[{}]{y}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Get adjacent tiles based on the tile_type (square or hex).
+\end{DoxyVerb}
+ \Hypertarget{classclasses_1_1_world_tile_manager_a8f6d3eba8071c418b6196ab9dcf03b5a}\index{classes.WorldTileManager@{classes.WorldTileManager}!is\_valid\_tile@{is\_valid\_tile}}
+\index{is\_valid\_tile@{is\_valid\_tile}!classes.WorldTileManager@{classes.WorldTileManager}}
+\doxysubsubsection{\texorpdfstring{is\_valid\_tile()}{is\_valid\_tile()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_world_tile_manager_a8f6d3eba8071c418b6196ab9dcf03b5a} 
+classes.\+World\+Tile\+Manager.\+is\+\_\+valid\+\_\+tile (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{x}{, }\item[{}]{y}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Function to check if a tile is within the grid boundaries.
+\end{DoxyVerb}
+ \Hypertarget{classclasses_1_1_world_tile_manager_a947c8ffd16d09952038f038c188833da}\index{classes.WorldTileManager@{classes.WorldTileManager}!move\_entity@{move\_entity}}
+\index{move\_entity@{move\_entity}!classes.WorldTileManager@{classes.WorldTileManager}}
+\doxysubsubsection{\texorpdfstring{move\_entity()}{move\_entity()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_world_tile_manager_a947c8ffd16d09952038f038c188833da} 
+classes.\+World\+Tile\+Manager.\+move\+\_\+entity (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{entity}{, }\item[{}]{new\+\_\+x}{, }\item[{}]{new\+\_\+y}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Move an entity on the tile grid if the tile is valid.
+\end{DoxyVerb}
+ 
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classclasses_1_1_world_tile_manager_ac10e118f1a3ce462bff087004c9f49d1}\index{classes.WorldTileManager@{classes.WorldTileManager}!height@{height}}
+\index{height@{height}!classes.WorldTileManager@{classes.WorldTileManager}}
+\doxysubsubsection{\texorpdfstring{height}{height}}
+{\footnotesize\ttfamily \label{classclasses_1_1_world_tile_manager_ac10e118f1a3ce462bff087004c9f49d1} 
+classes.\+World\+Tile\+Manager.\+height = height}
+
+\Hypertarget{classclasses_1_1_world_tile_manager_a1c7e50495e0ec0781f1d717f51bee39b}\index{classes.WorldTileManager@{classes.WorldTileManager}!tile\_type@{tile\_type}}
+\index{tile\_type@{tile\_type}!classes.WorldTileManager@{classes.WorldTileManager}}
+\doxysubsubsection{\texorpdfstring{tile\_type}{tile\_type}}
+{\footnotesize\ttfamily \label{classclasses_1_1_world_tile_manager_a1c7e50495e0ec0781f1d717f51bee39b} 
+str classes.\+World\+Tile\+Manager.\+tile\+\_\+type = tile\+\_\+type}
+
+\Hypertarget{classclasses_1_1_world_tile_manager_a3824ee38ecfec8cfde7f0ee6ee11566b}\index{classes.WorldTileManager@{classes.WorldTileManager}!tiles@{tiles}}
+\index{tiles@{tiles}!classes.WorldTileManager@{classes.WorldTileManager}}
+\doxysubsubsection{\texorpdfstring{tiles}{tiles}}
+{\footnotesize\ttfamily \label{classclasses_1_1_world_tile_manager_a3824ee38ecfec8cfde7f0ee6ee11566b} 
+classes.\+World\+Tile\+Manager.\+tiles = self.\+generate\+\_\+tiles()}
+
+\Hypertarget{classclasses_1_1_world_tile_manager_ae14a112be21d33e2713c7ce8d8a73da4}\index{classes.WorldTileManager@{classes.WorldTileManager}!width@{width}}
+\index{width@{width}!classes.WorldTileManager@{classes.WorldTileManager}}
+\doxysubsubsection{\texorpdfstring{width}{width}}
+{\footnotesize\ttfamily \label{classclasses_1_1_world_tile_manager_ae14a112be21d33e2713c7ce8d8a73da4} 
+classes.\+World\+Tile\+Manager.\+width = width}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classes_8py}{classes.\+py}}\end{DoxyCompactItemize}
