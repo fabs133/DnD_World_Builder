@@ -1,0 +1,155 @@
+\doxysection{world\+\_\+watcher.\+World\+Watcher Class Reference}
+\hypertarget{classworld__watcher_1_1_world_watcher}{}\label{classworld__watcher_1_1_world_watcher}\index{world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classworld__watcher_1_1_world_watcher_a034d893602aa1d18aaa19e0e5a119a49}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, \mbox{\hyperlink{classworld__watcher_1_1_world_watcher_a573f7dac406b4e2d57e20f2c90521383}{players}}, \mbox{\hyperlink{classworld__watcher_1_1_world_watcher_ae6c5755cafab22695a6930397189536d}{enemies}}, \mbox{\hyperlink{classworld__watcher_1_1_world_watcher_a8db2ffa87020e1f5b118ab9113956ecc}{npcs}}, \mbox{\hyperlink{classworld__watcher_1_1_world_watcher_afde3c5956ddb817bccdc1dc957f3e729}{traps}}, \mbox{\hyperlink{classworld__watcher_1_1_world_watcher_ae00d652010c99761e0e007315c4bebdf}{environment}}, \mbox{\hyperlink{classworld__watcher_1_1_world_watcher_a0056e562e44767c36e8c428cac8be3f7}{db\+\_\+conn}})
+\item 
+\mbox{\hyperlink{classworld__watcher_1_1_world_watcher_a1b8e7d659cbe6073b3749f05e90ce439}{game\+\_\+loop}} (self)
+\item 
+\mbox{\hyperlink{classworld__watcher_1_1_world_watcher_abb4f99c40f8e6a7f43d547893afc9e2e}{handle\+\_\+world\+\_\+events}} (self)
+\item 
+\mbox{\hyperlink{classworld__watcher_1_1_world_watcher_abe5480a1f94a2722c616ef20755bdd67}{trigger\+\_\+combat}} (self, player, enemy)
+\item 
+\mbox{\hyperlink{classworld__watcher_1_1_world_watcher_a98fae3c777eb5f366b31849f498eb944}{end\+\_\+combat}} (self)
+\item 
+\mbox{\hyperlink{classworld__watcher_1_1_world_watcher_a19ee792815c96d6f31cb7fbd8a0200e5}{spawn\+\_\+new\+\_\+enemies\+\_\+if\+\_\+needed}} (self)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classworld__watcher_1_1_world_watcher_a573f7dac406b4e2d57e20f2c90521383}{players}} = players
+\item 
+\mbox{\hyperlink{classworld__watcher_1_1_world_watcher_ae6c5755cafab22695a6930397189536d}{enemies}} = enemies
+\item 
+\mbox{\hyperlink{classworld__watcher_1_1_world_watcher_a8db2ffa87020e1f5b118ab9113956ecc}{npcs}} = npcs
+\item 
+\mbox{\hyperlink{classworld__watcher_1_1_world_watcher_afde3c5956ddb817bccdc1dc957f3e729}{traps}} = traps
+\item 
+\mbox{\hyperlink{classworld__watcher_1_1_world_watcher_ae00d652010c99761e0e007315c4bebdf}{environment}} = environment
+\item 
+\mbox{\hyperlink{classworld__watcher_1_1_world_watcher_a0056e562e44767c36e8c428cac8be3f7}{db\+\_\+conn}} = db\+\_\+conn
+\item 
+\mbox{\hyperlink{classworld__watcher_1_1_world_watcher_a79be570f8a648dd11fdbff4baa98ec78}{turn\+\_\+system}} = \mbox{\hyperlink{classclasses_1_1_turn_system}{Turn\+System}}(all\+\_\+entities)
+\item 
+bool \mbox{\hyperlink{classworld__watcher_1_1_world_watcher_ad7e6acdc22bcd5a551f8420c7f674c1d}{is\+\_\+in\+\_\+combat}} = False
+\item 
+\mbox{\hyperlink{classworld__watcher_1_1_world_watcher_a346155ac8da0885be47b7969ecaa521a}{current\+\_\+combat}} = None
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classworld__watcher_1_1_world_watcher_a034d893602aa1d18aaa19e0e5a119a49}\index{world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily \label{classworld__watcher_1_1_world_watcher_a034d893602aa1d18aaa19e0e5a119a49} 
+world\+\_\+watcher.\+World\+Watcher.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{players}{, }\item[{}]{enemies}{, }\item[{}]{npcs}{, }\item[{}]{traps}{, }\item[{}]{environment}{, }\item[{}]{db\+\_\+conn}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Initialize the WorldWatcher with the main game components.
+\end{DoxyVerb}
+ 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classworld__watcher_1_1_world_watcher_a98fae3c777eb5f366b31849f498eb944}\index{world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}!end\_combat@{end\_combat}}
+\index{end\_combat@{end\_combat}!world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}}
+\doxysubsubsection{\texorpdfstring{end\_combat()}{end\_combat()}}
+{\footnotesize\ttfamily \label{classworld__watcher_1_1_world_watcher_a98fae3c777eb5f366b31849f498eb944} 
+world\+\_\+watcher.\+World\+Watcher.\+end\+\_\+combat (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}End the combat and return to the regular turn system.
+\end{DoxyVerb}
+ \Hypertarget{classworld__watcher_1_1_world_watcher_a1b8e7d659cbe6073b3749f05e90ce439}\index{world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}!game\_loop@{game\_loop}}
+\index{game\_loop@{game\_loop}!world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}}
+\doxysubsubsection{\texorpdfstring{game\_loop()}{game\_loop()}}
+{\footnotesize\ttfamily \label{classworld__watcher_1_1_world_watcher_a1b8e7d659cbe6073b3749f05e90ce439} 
+world\+\_\+watcher.\+World\+Watcher.\+game\+\_\+loop (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Main game loop that controls the game flow.
+\end{DoxyVerb}
+ \Hypertarget{classworld__watcher_1_1_world_watcher_abb4f99c40f8e6a7f43d547893afc9e2e}\index{world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}!handle\_world\_events@{handle\_world\_events}}
+\index{handle\_world\_events@{handle\_world\_events}!world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}}
+\doxysubsubsection{\texorpdfstring{handle\_world\_events()}{handle\_world\_events()}}
+{\footnotesize\ttfamily \label{classworld__watcher_1_1_world_watcher_abb4f99c40f8e6a7f43d547893afc9e2e} 
+world\+\_\+watcher.\+World\+Watcher.\+handle\+\_\+world\+\_\+events (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}This handles non-combat events like world changes, random encounters, etc.
+\end{DoxyVerb}
+ \Hypertarget{classworld__watcher_1_1_world_watcher_a19ee792815c96d6f31cb7fbd8a0200e5}\index{world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}!spawn\_new\_enemies\_if\_needed@{spawn\_new\_enemies\_if\_needed}}
+\index{spawn\_new\_enemies\_if\_needed@{spawn\_new\_enemies\_if\_needed}!world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}}
+\doxysubsubsection{\texorpdfstring{spawn\_new\_enemies\_if\_needed()}{spawn\_new\_enemies\_if\_needed()}}
+{\footnotesize\ttfamily \label{classworld__watcher_1_1_world_watcher_a19ee792815c96d6f31cb7fbd8a0200e5} 
+world\+\_\+watcher.\+World\+Watcher.\+spawn\+\_\+new\+\_\+enemies\+\_\+if\+\_\+needed (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Dynamically spawn new enemies if certain conditions are met (optional).
+\end{DoxyVerb}
+ \Hypertarget{classworld__watcher_1_1_world_watcher_abe5480a1f94a2722c616ef20755bdd67}\index{world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}!trigger\_combat@{trigger\_combat}}
+\index{trigger\_combat@{trigger\_combat}!world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}}
+\doxysubsubsection{\texorpdfstring{trigger\_combat()}{trigger\_combat()}}
+{\footnotesize\ttfamily \label{classworld__watcher_1_1_world_watcher_abe5480a1f94a2722c616ef20755bdd67} 
+world\+\_\+watcher.\+World\+Watcher.\+trigger\+\_\+combat (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{player}{, }\item[{}]{enemy}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Trigger a combat between a player and an enemy.
+This will pause the TurnSystem and switch to the CombatSystem.
+\end{DoxyVerb}
+ 
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classworld__watcher_1_1_world_watcher_a346155ac8da0885be47b7969ecaa521a}\index{world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}!current\_combat@{current\_combat}}
+\index{current\_combat@{current\_combat}!world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}}
+\doxysubsubsection{\texorpdfstring{current\_combat}{current\_combat}}
+{\footnotesize\ttfamily \label{classworld__watcher_1_1_world_watcher_a346155ac8da0885be47b7969ecaa521a} 
+world\+\_\+watcher.\+World\+Watcher.\+current\+\_\+combat = None}
+
+\Hypertarget{classworld__watcher_1_1_world_watcher_a0056e562e44767c36e8c428cac8be3f7}\index{world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}!db\_conn@{db\_conn}}
+\index{db\_conn@{db\_conn}!world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}}
+\doxysubsubsection{\texorpdfstring{db\_conn}{db\_conn}}
+{\footnotesize\ttfamily \label{classworld__watcher_1_1_world_watcher_a0056e562e44767c36e8c428cac8be3f7} 
+world\+\_\+watcher.\+World\+Watcher.\+db\+\_\+conn = db\+\_\+conn}
+
+\Hypertarget{classworld__watcher_1_1_world_watcher_ae6c5755cafab22695a6930397189536d}\index{world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}!enemies@{enemies}}
+\index{enemies@{enemies}!world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}}
+\doxysubsubsection{\texorpdfstring{enemies}{enemies}}
+{\footnotesize\ttfamily \label{classworld__watcher_1_1_world_watcher_ae6c5755cafab22695a6930397189536d} 
+world\+\_\+watcher.\+World\+Watcher.\+enemies = enemies}
+
+\Hypertarget{classworld__watcher_1_1_world_watcher_ae00d652010c99761e0e007315c4bebdf}\index{world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}!environment@{environment}}
+\index{environment@{environment}!world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}}
+\doxysubsubsection{\texorpdfstring{environment}{environment}}
+{\footnotesize\ttfamily \label{classworld__watcher_1_1_world_watcher_ae00d652010c99761e0e007315c4bebdf} 
+world\+\_\+watcher.\+World\+Watcher.\+environment = environment}
+
+\Hypertarget{classworld__watcher_1_1_world_watcher_ad7e6acdc22bcd5a551f8420c7f674c1d}\index{world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}!is\_in\_combat@{is\_in\_combat}}
+\index{is\_in\_combat@{is\_in\_combat}!world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}}
+\doxysubsubsection{\texorpdfstring{is\_in\_combat}{is\_in\_combat}}
+{\footnotesize\ttfamily \label{classworld__watcher_1_1_world_watcher_ad7e6acdc22bcd5a551f8420c7f674c1d} 
+bool world\+\_\+watcher.\+World\+Watcher.\+is\+\_\+in\+\_\+combat = False}
+
+\Hypertarget{classworld__watcher_1_1_world_watcher_a8db2ffa87020e1f5b118ab9113956ecc}\index{world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}!npcs@{npcs}}
+\index{npcs@{npcs}!world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}}
+\doxysubsubsection{\texorpdfstring{npcs}{npcs}}
+{\footnotesize\ttfamily \label{classworld__watcher_1_1_world_watcher_a8db2ffa87020e1f5b118ab9113956ecc} 
+world\+\_\+watcher.\+World\+Watcher.\+npcs = npcs}
+
+\Hypertarget{classworld__watcher_1_1_world_watcher_a573f7dac406b4e2d57e20f2c90521383}\index{world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}!players@{players}}
+\index{players@{players}!world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}}
+\doxysubsubsection{\texorpdfstring{players}{players}}
+{\footnotesize\ttfamily \label{classworld__watcher_1_1_world_watcher_a573f7dac406b4e2d57e20f2c90521383} 
+world\+\_\+watcher.\+World\+Watcher.\+players = players}
+
+\Hypertarget{classworld__watcher_1_1_world_watcher_afde3c5956ddb817bccdc1dc957f3e729}\index{world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}!traps@{traps}}
+\index{traps@{traps}!world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}}
+\doxysubsubsection{\texorpdfstring{traps}{traps}}
+{\footnotesize\ttfamily \label{classworld__watcher_1_1_world_watcher_afde3c5956ddb817bccdc1dc957f3e729} 
+world\+\_\+watcher.\+World\+Watcher.\+traps = traps}
+
+\Hypertarget{classworld__watcher_1_1_world_watcher_a79be570f8a648dd11fdbff4baa98ec78}\index{world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}!turn\_system@{turn\_system}}
+\index{turn\_system@{turn\_system}!world\_watcher.WorldWatcher@{world\_watcher.WorldWatcher}}
+\doxysubsubsection{\texorpdfstring{turn\_system}{turn\_system}}
+{\footnotesize\ttfamily \label{classworld__watcher_1_1_world_watcher_a79be570f8a648dd11fdbff4baa98ec78} 
+world\+\_\+watcher.\+World\+Watcher.\+turn\+\_\+system = \mbox{\hyperlink{classclasses_1_1_turn_system}{Turn\+System}}(all\+\_\+entities)}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{world__watcher_8py}{world\+\_\+watcher.\+py}}\end{DoxyCompactItemize}

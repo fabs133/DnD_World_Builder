@@ -1,0 +1,96 @@
+\doxysection{classes.\+World Class Reference}
+\hypertarget{classclasses_1_1_world}{}\label{classclasses_1_1_world}\index{classes.World@{classes.World}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classclasses_1_1_world_abf56a5f24ec54689ce2e8e593c7991a2}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, width, height, tile\+\_\+type, description, map\+\_\+data, time\+\_\+of\+\_\+day, weather\+\_\+conditions)
+\item 
+\mbox{\hyperlink{classclasses_1_1_world_a317f1f473245d3c2d344275de8d50c10}{move\+\_\+entity}} (self, entity, new\+\_\+x, new\+\_\+y)
+\item 
+\mbox{\hyperlink{classclasses_1_1_world_a287d737ba1a8565c6b40cb3632c86b50}{get\+\_\+adjacent\+\_\+tiles}} (self, x, y)
+\item 
+\mbox{\hyperlink{classclasses_1_1_world_a35e215ab635122f5a63aa5ee23095e42}{describe\+\_\+world}} (self)
+\item 
+\mbox{\hyperlink{classclasses_1_1_world_a793b8e67bd546bad14a101886c217621}{update\+\_\+weather}} (self, new\+\_\+weather)
+\item 
+\mbox{\hyperlink{classclasses_1_1_world_a1a9daa59656dc16dc1bae712ed644e76}{update\+\_\+time\+\_\+of\+\_\+day}} (self, new\+\_\+time)
+\item 
+\mbox{\hyperlink{classclasses_1_1_world_aac6ba2d382303eeccee21e8d79f436ba}{save\+\_\+to\+\_\+db}} (self, db\+\_\+conn)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classclasses_1_1_world_a64cf7d9ca2b9b961892fee93258a0243}{tile\+\_\+manager}} = \mbox{\hyperlink{classclasses_1_1_world_tile_manager}{World\+Tile\+Manager}}(width, height, tile\+\_\+type)
+\item 
+\mbox{\hyperlink{classclasses_1_1_world_a4a29b3a16f515f722e1cb8c04b70ac4a}{lore}} = \mbox{\hyperlink{classclasses_1_1_world_lore}{World\+Lore}}(description, map\+\_\+data, time\+\_\+of\+\_\+day, weather\+\_\+conditions)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classclasses_1_1_world_abf56a5f24ec54689ce2e8e593c7991a2}\index{classes.World@{classes.World}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!classes.World@{classes.World}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_world_abf56a5f24ec54689ce2e8e593c7991a2} 
+classes.\+World.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{width}{, }\item[{}]{height}{, }\item[{}]{tile\+\_\+type}{, }\item[{}]{description}{, }\item[{}]{map\+\_\+data}{, }\item[{}]{time\+\_\+of\+\_\+day}{, }\item[{}]{weather\+\_\+conditions}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}The World class combines tile management with world lore.
+\end{DoxyVerb}
+ 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classclasses_1_1_world_a35e215ab635122f5a63aa5ee23095e42}\index{classes.World@{classes.World}!describe\_world@{describe\_world}}
+\index{describe\_world@{describe\_world}!classes.World@{classes.World}}
+\doxysubsubsection{\texorpdfstring{describe\_world()}{describe\_world()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_world_a35e215ab635122f5a63aa5ee23095e42} 
+classes.\+World.\+describe\+\_\+world (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classclasses_1_1_world_a287d737ba1a8565c6b40cb3632c86b50}\index{classes.World@{classes.World}!get\_adjacent\_tiles@{get\_adjacent\_tiles}}
+\index{get\_adjacent\_tiles@{get\_adjacent\_tiles}!classes.World@{classes.World}}
+\doxysubsubsection{\texorpdfstring{get\_adjacent\_tiles()}{get\_adjacent\_tiles()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_world_a287d737ba1a8565c6b40cb3632c86b50} 
+classes.\+World.\+get\+\_\+adjacent\+\_\+tiles (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{x}{, }\item[{}]{y}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classclasses_1_1_world_a317f1f473245d3c2d344275de8d50c10}\index{classes.World@{classes.World}!move\_entity@{move\_entity}}
+\index{move\_entity@{move\_entity}!classes.World@{classes.World}}
+\doxysubsubsection{\texorpdfstring{move\_entity()}{move\_entity()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_world_a317f1f473245d3c2d344275de8d50c10} 
+classes.\+World.\+move\+\_\+entity (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{entity}{, }\item[{}]{new\+\_\+x}{, }\item[{}]{new\+\_\+y}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classclasses_1_1_world_aac6ba2d382303eeccee21e8d79f436ba}\index{classes.World@{classes.World}!save\_to\_db@{save\_to\_db}}
+\index{save\_to\_db@{save\_to\_db}!classes.World@{classes.World}}
+\doxysubsubsection{\texorpdfstring{save\_to\_db()}{save\_to\_db()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_world_aac6ba2d382303eeccee21e8d79f436ba} 
+classes.\+World.\+save\+\_\+to\+\_\+db (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{db\+\_\+conn}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classclasses_1_1_world_a1a9daa59656dc16dc1bae712ed644e76}\index{classes.World@{classes.World}!update\_time\_of\_day@{update\_time\_of\_day}}
+\index{update\_time\_of\_day@{update\_time\_of\_day}!classes.World@{classes.World}}
+\doxysubsubsection{\texorpdfstring{update\_time\_of\_day()}{update\_time\_of\_day()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_world_a1a9daa59656dc16dc1bae712ed644e76} 
+classes.\+World.\+update\+\_\+time\+\_\+of\+\_\+day (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{new\+\_\+time}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classclasses_1_1_world_a793b8e67bd546bad14a101886c217621}\index{classes.World@{classes.World}!update\_weather@{update\_weather}}
+\index{update\_weather@{update\_weather}!classes.World@{classes.World}}
+\doxysubsubsection{\texorpdfstring{update\_weather()}{update\_weather()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_world_a793b8e67bd546bad14a101886c217621} 
+classes.\+World.\+update\+\_\+weather (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{new\+\_\+weather}{}\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classclasses_1_1_world_a4a29b3a16f515f722e1cb8c04b70ac4a}\index{classes.World@{classes.World}!lore@{lore}}
+\index{lore@{lore}!classes.World@{classes.World}}
+\doxysubsubsection{\texorpdfstring{lore}{lore}}
+{\footnotesize\ttfamily \label{classclasses_1_1_world_a4a29b3a16f515f722e1cb8c04b70ac4a} 
+classes.\+World.\+lore = \mbox{\hyperlink{classclasses_1_1_world_lore}{World\+Lore}}(description, map\+\_\+data, time\+\_\+of\+\_\+day, weather\+\_\+conditions)}
+
+\Hypertarget{classclasses_1_1_world_a64cf7d9ca2b9b961892fee93258a0243}\index{classes.World@{classes.World}!tile\_manager@{tile\_manager}}
+\index{tile\_manager@{tile\_manager}!classes.World@{classes.World}}
+\doxysubsubsection{\texorpdfstring{tile\_manager}{tile\_manager}}
+{\footnotesize\ttfamily \label{classclasses_1_1_world_a64cf7d9ca2b9b961892fee93258a0243} 
+classes.\+World.\+tile\+\_\+manager = \mbox{\hyperlink{classclasses_1_1_world_tile_manager}{World\+Tile\+Manager}}(width, height, tile\+\_\+type)}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classes_8py}{classes.\+py}}\end{DoxyCompactItemize}

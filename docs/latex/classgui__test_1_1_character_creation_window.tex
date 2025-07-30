@@ -1,0 +1,407 @@
+\doxysection{gui\+\_\+test.\+Character\+Creation\+Window Class Reference}
+\hypertarget{classgui__test_1_1_character_creation_window}{}\label{classgui__test_1_1_character_creation_window}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+Inheritance diagram for gui\+\_\+test.\+Character\+Creation\+Window\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classgui__test_1_1_character_creation_window}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a01da6e243504891c7f12836feeca00c9}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self)
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a61c3d30f375ccb789a6885085492efc6}{init\+UI}} (self)
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a348a501819341f92b010c83e43a05677}{collect\+\_\+data}} (self)
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a033a0519b13e4f2131ce61badf8c1e37}{get\+\_\+file\+\_\+name}} (self)
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a9b94a722b6a0c2adedd493bdb6228ddf}{export\+\_\+data}} (self)
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_ad8d9f4a14c63d6cad676daca7f464826}{calculate\+\_\+spell\+\_\+slots}} (\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a9cb94b379ccd34fcbccd8f35f14a315f}{fullcaster\+\_\+levels}}, \mbox{\hyperlink{classgui__test_1_1_character_creation_window_a4c443b0829f2549b3396c4de33527505}{halfcaster\+\_\+levels}}, \mbox{\hyperlink{classgui__test_1_1_character_creation_window_a0cea7f9be1ffbf47aa10a5d24874fa6d}{semicaster\+\_\+levels}}, \mbox{\hyperlink{classgui__test_1_1_character_creation_window_a391963bfcabbfbadb35b60a287a65193}{warlock\+\_\+level}})
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_ab756599a78c373623ba2705a5e8b43a1}{update\+\_\+spells}} (self)
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a7a4c6b87d8491491b0a4db72f0a898fc}{load\+\_\+languages}} (self)
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_afefeb96bdd7b51d11f891aed0c72f88e}{load\+\_\+races}} (self)
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a1f5eb0888551be6baeb5ee2016638778}{load\+\_\+speed}} (self)
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a89cda337f56a512d1388de06acc8c4a1}{load\+\_\+classes}} (self)
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_acd0f4c2577b873c2157653fae68a6aad}{update\+\_\+subclasses}} (self)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a25b0de147e8a3010aa455e446256c9ee}{api\+\_\+handler}} = \mbox{\hyperlink{classdb__api__handler_1_1_a_p_i_handler}{APIHandler}}(\textquotesingle{}http\+://localhost\+:3000/api/\textquotesingle{})
+\item 
+list \mbox{\hyperlink{classgui__test_1_1_character_creation_window_a495d46bb83bd02be5a5e816df9b0efd6}{speed\+\_\+values}} = \mbox{[}$\,$\mbox{]}
+\item 
+list \mbox{\hyperlink{classgui__test_1_1_character_creation_window_a7683b874fe26f0b8232cf1436ddb3578}{races\+\_\+names}} = \mbox{[}$\,$\mbox{]}
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a16d34366a1ea856a93e9a1c3661b202a}{name\+\_\+input}} = QLine\+Edit()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_acd7bd8c1230308a3c815ae5f653486c0}{appearance\+\_\+input}} = QText\+Edit()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a814f94990d18c1619e0c8ba2d97155fd}{backstory\+\_\+input}} = QText\+Edit()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a1f8c240aab85721fd38a6e10b1f1bdf0}{personality\+\_\+input}} = QLine\+Edit()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a131cf6e0275ae7aa1b1437ea38aabb04}{languages\+\_\+input}} = QCombo\+Box()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a54cfef03a39686737d58a758340cbff5}{race\+\_\+input}} = QCombo\+Box()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a5703d3d3bab5e9b0b1a467a54b798b17}{char\+\_\+class\+\_\+input}} = QCombo\+Box()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a9f0f76a34c60fd420b40279e617f4371}{subclass\+\_\+input}} = QCombo\+Box()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a08bf6bbae0dd12b828a88f6ec7ba7ed7}{update\+\_\+subclasses}}
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a5f60700f1576c2e48d4c9cf2f7aaeb96}{load\+\_\+speed}}
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a129174b0ebfb06f84a053937477c8776}{proficiency\+\_\+bonus\+\_\+label}} = QLabel()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_aca779e45219920b8fa950a0f81741aa9}{saving\+\_\+throws\+\_\+input}} = QLine\+Edit()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a9906031391b81e43c9759c540f5e92aa}{skills\+\_\+input}} = QLine\+Edit()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a62d470037121aa811084678913042544}{stats\+\_\+input}} = QLine\+Edit()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a20bf0f4d076771df767ece8e7fead71e}{armor\+\_\+class\+\_\+input}} = QLine\+Edit()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a5f575ae703d8a72bddb3150dfe7f87e9}{speed\+\_\+label}} = QLabel()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a26bb33b6527f5809920117cf58b5bb18}{initiative\+\_\+input}} = QLine\+Edit()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_af78e71271cb468c723b52a851e16fc97}{conditions\+\_\+input}} = QLine\+Edit()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a819f881bc4696b2a0add4bc0f4bc7807}{temporary\+\_\+hp\+\_\+input}} = QLine\+Edit()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a36f2ee176d0dd26b88f00c0ed6f291a0}{inventory\+\_\+input}} = QLine\+Edit()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_af2ce8e1b057eeef5dbbfd6aecb556672}{currency\+\_\+input}} = QLine\+Edit()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a2eb0842b66198ced5bc712d48155bd1f}{passive\+\_\+perception\+\_\+label}} = QLabel()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_ac852057de74f38a27213fff8a07025d1}{spells\+\_\+input}} = QList\+Widget()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a5a3a2e24735d35fa130b553c5b7e166a}{spellslots\+\_\+input}} = QLine\+Edit()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_aacb35d6331df5991773470333a1322b6}{spellcasting\+\_\+ability\+\_\+label}} = QLabel()
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a1faef5b94728f34f802f988b4da8718b}{export\+\_\+button}} = QPush\+Button(\textquotesingle{}Export\textquotesingle{})
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a9125ce3e76d818572303e1cf83e63465}{export\+\_\+data}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+list \mbox{\hyperlink{classgui__test_1_1_character_creation_window_a9cb94b379ccd34fcbccd8f35f14a315f}{fullcaster\+\_\+levels}} = \mbox{[}3\mbox{]}
+\item 
+list \mbox{\hyperlink{classgui__test_1_1_character_creation_window_a4c443b0829f2549b3396c4de33527505}{halfcaster\+\_\+levels}} = \mbox{[}2\mbox{]}
+\item 
+list \mbox{\hyperlink{classgui__test_1_1_character_creation_window_a0cea7f9be1ffbf47aa10a5d24874fa6d}{semicaster\+\_\+levels}} = \mbox{[}1\mbox{]}
+\item 
+int \mbox{\hyperlink{classgui__test_1_1_character_creation_window_a391963bfcabbfbadb35b60a287a65193}{warlock\+\_\+level}} = 5
+\item 
+\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a4d66e5e92c5da283875e1315b4e258f8}{result}} = \mbox{\hyperlink{classgui__test_1_1_character_creation_window_ad8d9f4a14c63d6cad676daca7f464826}{calculate\+\_\+spell\+\_\+slots}}(\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a9cb94b379ccd34fcbccd8f35f14a315f}{fullcaster\+\_\+levels}}, \mbox{\hyperlink{classgui__test_1_1_character_creation_window_a4c443b0829f2549b3396c4de33527505}{halfcaster\+\_\+levels}}, \mbox{\hyperlink{classgui__test_1_1_character_creation_window_a0cea7f9be1ffbf47aa10a5d24874fa6d}{semicaster\+\_\+levels}}, \mbox{\hyperlink{classgui__test_1_1_character_creation_window_a391963bfcabbfbadb35b60a287a65193}{warlock\+\_\+level}})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classgui__test_1_1_character_creation_window_a01da6e243504891c7f12836feeca00c9}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a01da6e243504891c7f12836feeca00c9} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classgui__test_1_1_character_creation_window_ad8d9f4a14c63d6cad676daca7f464826}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!calculate\_spell\_slots@{calculate\_spell\_slots}}
+\index{calculate\_spell\_slots@{calculate\_spell\_slots}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{calculate\_spell\_slots()}{calculate\_spell\_slots()}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_ad8d9f4a14c63d6cad676daca7f464826} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+calculate\+\_\+spell\+\_\+slots (\begin{DoxyParamCaption}\item[{}]{fullcaster\+\_\+levels}{, }\item[{}]{halfcaster\+\_\+levels}{, }\item[{}]{semicaster\+\_\+levels}{, }\item[{}]{warlock\+\_\+level}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a348a501819341f92b010c83e43a05677}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!collect\_data@{collect\_data}}
+\index{collect\_data@{collect\_data}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{collect\_data()}{collect\_data()}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a348a501819341f92b010c83e43a05677} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+collect\+\_\+data (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a9b94a722b6a0c2adedd493bdb6228ddf}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!export\_data@{export\_data}}
+\index{export\_data@{export\_data}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{export\_data()}{export\_data()}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a9b94a722b6a0c2adedd493bdb6228ddf} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+export\+\_\+data (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a033a0519b13e4f2131ce61badf8c1e37}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!get\_file\_name@{get\_file\_name}}
+\index{get\_file\_name@{get\_file\_name}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{get\_file\_name()}{get\_file\_name()}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a033a0519b13e4f2131ce61badf8c1e37} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+get\+\_\+file\+\_\+name (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a61c3d30f375ccb789a6885085492efc6}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!initUI@{initUI}}
+\index{initUI@{initUI}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{initUI()}{initUI()}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a61c3d30f375ccb789a6885085492efc6} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+init\+UI (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a89cda337f56a512d1388de06acc8c4a1}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!load\_classes@{load\_classes}}
+\index{load\_classes@{load\_classes}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{load\_classes()}{load\_classes()}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a89cda337f56a512d1388de06acc8c4a1} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+load\+\_\+classes (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a7a4c6b87d8491491b0a4db72f0a898fc}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!load\_languages@{load\_languages}}
+\index{load\_languages@{load\_languages}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{load\_languages()}{load\_languages()}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a7a4c6b87d8491491b0a4db72f0a898fc} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+load\+\_\+languages (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_afefeb96bdd7b51d11f891aed0c72f88e}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!load\_races@{load\_races}}
+\index{load\_races@{load\_races}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{load\_races()}{load\_races()}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_afefeb96bdd7b51d11f891aed0c72f88e} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+load\+\_\+races (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a1f5eb0888551be6baeb5ee2016638778}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!load\_speed@{load\_speed}}
+\index{load\_speed@{load\_speed}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{load\_speed()}{load\_speed()}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a1f5eb0888551be6baeb5ee2016638778} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+load\+\_\+speed (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_ab756599a78c373623ba2705a5e8b43a1}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!update\_spells@{update\_spells}}
+\index{update\_spells@{update\_spells}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{update\_spells()}{update\_spells()}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_ab756599a78c373623ba2705a5e8b43a1} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+update\+\_\+spells (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_acd0f4c2577b873c2157653fae68a6aad}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!update\_subclasses@{update\_subclasses}}
+\index{update\_subclasses@{update\_subclasses}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{update\_subclasses()}{update\_subclasses()}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_acd0f4c2577b873c2157653fae68a6aad} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+update\+\_\+subclasses (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classgui__test_1_1_character_creation_window_a25b0de147e8a3010aa455e446256c9ee}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!api\_handler@{api\_handler}}
+\index{api\_handler@{api\_handler}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{api\_handler}{api\_handler}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a25b0de147e8a3010aa455e446256c9ee} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+api\+\_\+handler = \mbox{\hyperlink{classdb__api__handler_1_1_a_p_i_handler}{APIHandler}}(\textquotesingle{}http\+://localhost\+:3000/api/\textquotesingle{})}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_acd7bd8c1230308a3c815ae5f653486c0}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!appearance\_input@{appearance\_input}}
+\index{appearance\_input@{appearance\_input}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{appearance\_input}{appearance\_input}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_acd7bd8c1230308a3c815ae5f653486c0} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+appearance\+\_\+input = QText\+Edit()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a20bf0f4d076771df767ece8e7fead71e}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!armor\_class\_input@{armor\_class\_input}}
+\index{armor\_class\_input@{armor\_class\_input}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{armor\_class\_input}{armor\_class\_input}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a20bf0f4d076771df767ece8e7fead71e} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+armor\+\_\+class\+\_\+input = QLine\+Edit()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a814f94990d18c1619e0c8ba2d97155fd}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!backstory\_input@{backstory\_input}}
+\index{backstory\_input@{backstory\_input}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{backstory\_input}{backstory\_input}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a814f94990d18c1619e0c8ba2d97155fd} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+backstory\+\_\+input = QText\+Edit()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a5703d3d3bab5e9b0b1a467a54b798b17}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!char\_class\_input@{char\_class\_input}}
+\index{char\_class\_input@{char\_class\_input}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{char\_class\_input}{char\_class\_input}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a5703d3d3bab5e9b0b1a467a54b798b17} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+char\+\_\+class\+\_\+input = QCombo\+Box()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_af78e71271cb468c723b52a851e16fc97}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!conditions\_input@{conditions\_input}}
+\index{conditions\_input@{conditions\_input}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{conditions\_input}{conditions\_input}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_af78e71271cb468c723b52a851e16fc97} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+conditions\+\_\+input = QLine\+Edit()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_af2ce8e1b057eeef5dbbfd6aecb556672}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!currency\_input@{currency\_input}}
+\index{currency\_input@{currency\_input}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{currency\_input}{currency\_input}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_af2ce8e1b057eeef5dbbfd6aecb556672} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+currency\+\_\+input = QLine\+Edit()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a1faef5b94728f34f802f988b4da8718b}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!export\_button@{export\_button}}
+\index{export\_button@{export\_button}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{export\_button}{export\_button}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a1faef5b94728f34f802f988b4da8718b} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+export\+\_\+button = QPush\+Button(\textquotesingle{}Export\textquotesingle{})}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a9125ce3e76d818572303e1cf83e63465}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!export\_data@{export\_data}}
+\index{export\_data@{export\_data}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{export\_data}{export\_data}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a9125ce3e76d818572303e1cf83e63465} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+export\+\_\+data}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a9cb94b379ccd34fcbccd8f35f14a315f}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!fullcaster\_levels@{fullcaster\_levels}}
+\index{fullcaster\_levels@{fullcaster\_levels}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{fullcaster\_levels}{fullcaster\_levels}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a9cb94b379ccd34fcbccd8f35f14a315f} 
+list gui\+\_\+test.\+Character\+Creation\+Window.\+fullcaster\+\_\+levels = \mbox{[}3\mbox{]}\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a4c443b0829f2549b3396c4de33527505}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!halfcaster\_levels@{halfcaster\_levels}}
+\index{halfcaster\_levels@{halfcaster\_levels}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{halfcaster\_levels}{halfcaster\_levels}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a4c443b0829f2549b3396c4de33527505} 
+list gui\+\_\+test.\+Character\+Creation\+Window.\+halfcaster\+\_\+levels = \mbox{[}2\mbox{]}\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a26bb33b6527f5809920117cf58b5bb18}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!initiative\_input@{initiative\_input}}
+\index{initiative\_input@{initiative\_input}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{initiative\_input}{initiative\_input}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a26bb33b6527f5809920117cf58b5bb18} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+initiative\+\_\+input = QLine\+Edit()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a36f2ee176d0dd26b88f00c0ed6f291a0}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!inventory\_input@{inventory\_input}}
+\index{inventory\_input@{inventory\_input}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{inventory\_input}{inventory\_input}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a36f2ee176d0dd26b88f00c0ed6f291a0} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+inventory\+\_\+input = QLine\+Edit()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a131cf6e0275ae7aa1b1437ea38aabb04}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!languages\_input@{languages\_input}}
+\index{languages\_input@{languages\_input}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{languages\_input}{languages\_input}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a131cf6e0275ae7aa1b1437ea38aabb04} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+languages\+\_\+input = QCombo\+Box()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a5f60700f1576c2e48d4c9cf2f7aaeb96}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!load\_speed@{load\_speed}}
+\index{load\_speed@{load\_speed}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{load\_speed}{load\_speed}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a5f60700f1576c2e48d4c9cf2f7aaeb96} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+load\+\_\+speed}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a16d34366a1ea856a93e9a1c3661b202a}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!name\_input@{name\_input}}
+\index{name\_input@{name\_input}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{name\_input}{name\_input}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a16d34366a1ea856a93e9a1c3661b202a} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+name\+\_\+input = QLine\+Edit()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a2eb0842b66198ced5bc712d48155bd1f}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!passive\_perception\_label@{passive\_perception\_label}}
+\index{passive\_perception\_label@{passive\_perception\_label}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{passive\_perception\_label}{passive\_perception\_label}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a2eb0842b66198ced5bc712d48155bd1f} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+passive\+\_\+perception\+\_\+label = QLabel()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a1f8c240aab85721fd38a6e10b1f1bdf0}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!personality\_input@{personality\_input}}
+\index{personality\_input@{personality\_input}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{personality\_input}{personality\_input}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a1f8c240aab85721fd38a6e10b1f1bdf0} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+personality\+\_\+input = QLine\+Edit()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a129174b0ebfb06f84a053937477c8776}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!proficiency\_bonus\_label@{proficiency\_bonus\_label}}
+\index{proficiency\_bonus\_label@{proficiency\_bonus\_label}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{proficiency\_bonus\_label}{proficiency\_bonus\_label}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a129174b0ebfb06f84a053937477c8776} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+proficiency\+\_\+bonus\+\_\+label = QLabel()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a54cfef03a39686737d58a758340cbff5}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!race\_input@{race\_input}}
+\index{race\_input@{race\_input}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{race\_input}{race\_input}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a54cfef03a39686737d58a758340cbff5} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+race\+\_\+input = QCombo\+Box()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a7683b874fe26f0b8232cf1436ddb3578}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!races\_names@{races\_names}}
+\index{races\_names@{races\_names}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{races\_names}{races\_names}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a7683b874fe26f0b8232cf1436ddb3578} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+races\+\_\+names = \mbox{[}$\,$\mbox{]}}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a4d66e5e92c5da283875e1315b4e258f8}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!result@{result}}
+\index{result@{result}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{result}{result}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a4d66e5e92c5da283875e1315b4e258f8} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+result = \mbox{\hyperlink{classgui__test_1_1_character_creation_window_ad8d9f4a14c63d6cad676daca7f464826}{calculate\+\_\+spell\+\_\+slots}}(\mbox{\hyperlink{classgui__test_1_1_character_creation_window_a9cb94b379ccd34fcbccd8f35f14a315f}{fullcaster\+\_\+levels}}, \mbox{\hyperlink{classgui__test_1_1_character_creation_window_a4c443b0829f2549b3396c4de33527505}{halfcaster\+\_\+levels}}, \mbox{\hyperlink{classgui__test_1_1_character_creation_window_a0cea7f9be1ffbf47aa10a5d24874fa6d}{semicaster\+\_\+levels}}, \mbox{\hyperlink{classgui__test_1_1_character_creation_window_a391963bfcabbfbadb35b60a287a65193}{warlock\+\_\+level}})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_aca779e45219920b8fa950a0f81741aa9}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!saving\_throws\_input@{saving\_throws\_input}}
+\index{saving\_throws\_input@{saving\_throws\_input}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{saving\_throws\_input}{saving\_throws\_input}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_aca779e45219920b8fa950a0f81741aa9} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+saving\+\_\+throws\+\_\+input = QLine\+Edit()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a0cea7f9be1ffbf47aa10a5d24874fa6d}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!semicaster\_levels@{semicaster\_levels}}
+\index{semicaster\_levels@{semicaster\_levels}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{semicaster\_levels}{semicaster\_levels}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a0cea7f9be1ffbf47aa10a5d24874fa6d} 
+list gui\+\_\+test.\+Character\+Creation\+Window.\+semicaster\+\_\+levels = \mbox{[}1\mbox{]}\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a9906031391b81e43c9759c540f5e92aa}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!skills\_input@{skills\_input}}
+\index{skills\_input@{skills\_input}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{skills\_input}{skills\_input}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a9906031391b81e43c9759c540f5e92aa} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+skills\+\_\+input = QLine\+Edit()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a5f575ae703d8a72bddb3150dfe7f87e9}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!speed\_label@{speed\_label}}
+\index{speed\_label@{speed\_label}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{speed\_label}{speed\_label}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a5f575ae703d8a72bddb3150dfe7f87e9} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+speed\+\_\+label = QLabel()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a495d46bb83bd02be5a5e816df9b0efd6}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!speed\_values@{speed\_values}}
+\index{speed\_values@{speed\_values}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{speed\_values}{speed\_values}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a495d46bb83bd02be5a5e816df9b0efd6} 
+list gui\+\_\+test.\+Character\+Creation\+Window.\+speed\+\_\+values = \mbox{[}$\,$\mbox{]}}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_aacb35d6331df5991773470333a1322b6}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!spellcasting\_ability\_label@{spellcasting\_ability\_label}}
+\index{spellcasting\_ability\_label@{spellcasting\_ability\_label}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{spellcasting\_ability\_label}{spellcasting\_ability\_label}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_aacb35d6331df5991773470333a1322b6} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+spellcasting\+\_\+ability\+\_\+label = QLabel()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_ac852057de74f38a27213fff8a07025d1}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!spells\_input@{spells\_input}}
+\index{spells\_input@{spells\_input}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{spells\_input}{spells\_input}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_ac852057de74f38a27213fff8a07025d1} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+spells\+\_\+input = QList\+Widget()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a5a3a2e24735d35fa130b553c5b7e166a}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!spellslots\_input@{spellslots\_input}}
+\index{spellslots\_input@{spellslots\_input}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{spellslots\_input}{spellslots\_input}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a5a3a2e24735d35fa130b553c5b7e166a} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+spellslots\+\_\+input = QLine\+Edit()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a62d470037121aa811084678913042544}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!stats\_input@{stats\_input}}
+\index{stats\_input@{stats\_input}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{stats\_input}{stats\_input}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a62d470037121aa811084678913042544} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+stats\+\_\+input = QLine\+Edit()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a9f0f76a34c60fd420b40279e617f4371}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!subclass\_input@{subclass\_input}}
+\index{subclass\_input@{subclass\_input}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{subclass\_input}{subclass\_input}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a9f0f76a34c60fd420b40279e617f4371} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+subclass\+\_\+input = QCombo\+Box()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a819f881bc4696b2a0add4bc0f4bc7807}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!temporary\_hp\_input@{temporary\_hp\_input}}
+\index{temporary\_hp\_input@{temporary\_hp\_input}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{temporary\_hp\_input}{temporary\_hp\_input}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a819f881bc4696b2a0add4bc0f4bc7807} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+temporary\+\_\+hp\+\_\+input = QLine\+Edit()}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a08bf6bbae0dd12b828a88f6ec7ba7ed7}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!update\_subclasses@{update\_subclasses}}
+\index{update\_subclasses@{update\_subclasses}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{update\_subclasses}{update\_subclasses}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a08bf6bbae0dd12b828a88f6ec7ba7ed7} 
+gui\+\_\+test.\+Character\+Creation\+Window.\+update\+\_\+subclasses}
+
+\Hypertarget{classgui__test_1_1_character_creation_window_a391963bfcabbfbadb35b60a287a65193}\index{gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}!warlock\_level@{warlock\_level}}
+\index{warlock\_level@{warlock\_level}!gui\_test.CharacterCreationWindow@{gui\_test.CharacterCreationWindow}}
+\doxysubsubsection{\texorpdfstring{warlock\_level}{warlock\_level}}
+{\footnotesize\ttfamily \label{classgui__test_1_1_character_creation_window_a391963bfcabbfbadb35b60a287a65193} 
+int gui\+\_\+test.\+Character\+Creation\+Window.\+warlock\+\_\+level = 5\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{gui__test_8py}{gui\+\_\+test.\+py}}\end{DoxyCompactItemize}
