@@ -1,4 +1,6 @@
-# 🧙 DnD Project – Grid-Based Encounter & Scenario Designer
+# DnD_World_Builder
+
+# 🧙 DnD World Builder: A Tactical Map Editor & Scenario Logic Engine for 5e
 
 A PyQt-powered tactical map editor and scenario manager for **Dungeons & Dragons 5e**. Design encounters, place entities, and create intricate event-driven logic using a flexible grid system and a visual trigger scripting engine.
 
