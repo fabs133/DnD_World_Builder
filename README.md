@@ -1,3 +1,5 @@
+# DnD_World_Builder
+
 # 🧙 DnD Project – Grid-Based Encounter & Scenario Designer
 
 A PyQt-powered tactical map editor and scenario manager for **Dungeons & Dragons 5e**. Design encounters, place entities, and create intricate event-driven logic using a flexible grid system and a visual trigger scripting engine.
