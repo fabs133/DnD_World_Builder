@@ -24,7 +24,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pytest
-
-    - name: Run tests
+        sudo apt-get update
+        sudo apt-get install -y xvfb
+    - name: Run tests with Xvfb
       run: |
-        pytest
+        xvfb-run --auto-servernum -- pytest
