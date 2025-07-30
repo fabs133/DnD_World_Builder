@@ -118,7 +118,7 @@ python tiles_gui.py
 
 ## 📘 Documentation
 
-Full documentation is available [here](docs/html/index.html).
+Full documentation is available [here](https://fabs133.github.io/DnD_World_Builder).
 
 ## 📜 License
 
