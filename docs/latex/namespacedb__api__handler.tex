@@ -1,0 +1,67 @@
+\doxysection{db\+\_\+api\+\_\+handler Namespace Reference}
+\hypertarget{namespacedb__api__handler}{}\label{namespacedb__api__handler}\index{db\_api\_handler@{db\_api\_handler}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classdb__api__handler_1_1_a_p_i_handler}{APIHandler}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacedb__api__handler_a60216337b21211ca92dd266e41f393f6}{api\+\_\+handler}} = \mbox{\hyperlink{classdb__api__handler_1_1_a_p_i_handler}{APIHandler}}(\textquotesingle{}http\+://localhost\+:3000\textquotesingle{})
+\item 
+dict \mbox{\hyperlink{namespacedb__api__handler_ab48078cf30dea97f29060658bd239aaf}{endpoints}}
+\item 
+\mbox{\hyperlink{namespacedb__api__handler_ac2615db40c1f25bef1d8dd654fe28ef1}{response}} = api\+\_\+handler.\+get(endpoint)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespacedb__api__handler_a60216337b21211ca92dd266e41f393f6}\index{db\_api\_handler@{db\_api\_handler}!api\_handler@{api\_handler}}
+\index{api\_handler@{api\_handler}!db\_api\_handler@{db\_api\_handler}}
+\doxysubsubsection{\texorpdfstring{api\_handler}{api\_handler}}
+{\footnotesize\ttfamily \label{namespacedb__api__handler_a60216337b21211ca92dd266e41f393f6} 
+db\+\_\+api\+\_\+handler.\+api\+\_\+handler = \mbox{\hyperlink{classdb__api__handler_1_1_a_p_i_handler}{APIHandler}}(\textquotesingle{}http\+://localhost\+:3000\textquotesingle{})}
+
+\Hypertarget{namespacedb__api__handler_ab48078cf30dea97f29060658bd239aaf}\index{db\_api\_handler@{db\_api\_handler}!endpoints@{endpoints}}
+\index{endpoints@{endpoints}!db\_api\_handler@{db\_api\_handler}}
+\doxysubsubsection{\texorpdfstring{endpoints}{endpoints}}
+{\footnotesize\ttfamily \label{namespacedb__api__handler_ab48078cf30dea97f29060658bd239aaf} 
+dict db\+\_\+api\+\_\+handler.\+endpoints}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ \{}
+\DoxyCodeLine{00002\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}ability-\/scores"{}}:\ \textcolor{stringliteral}{"{}/api/ability-\/scores"{}},}
+\DoxyCodeLine{00003\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}alignments"{}}:\ \textcolor{stringliteral}{"{}/api/alignments"{}},}
+\DoxyCodeLine{00004\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}backgrounds"{}}:\ \textcolor{stringliteral}{"{}/api/backgrounds"{}},}
+\DoxyCodeLine{00005\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}classes"{}}:\ \textcolor{stringliteral}{"{}/api/classes"{}},}
+\DoxyCodeLine{00006\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}conditions"{}}:\ \textcolor{stringliteral}{"{}/api/conditions"{}},}
+\DoxyCodeLine{00007\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}damage-\/types"{}}:\ \textcolor{stringliteral}{"{}/api/damage-\/types"{}},}
+\DoxyCodeLine{00008\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}equipment"{}}:\ \textcolor{stringliteral}{"{}/api/equipment"{}},}
+\DoxyCodeLine{00009\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}equipment-\/categories"{}}:\ \textcolor{stringliteral}{"{}/api/equipment-\/categories"{}},}
+\DoxyCodeLine{00010\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}feats"{}}:\ \textcolor{stringliteral}{"{}/api/feats"{}},}
+\DoxyCodeLine{00011\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}features"{}}:\ \textcolor{stringliteral}{"{}/api/features"{}},}
+\DoxyCodeLine{00012\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}languages"{}}:\ \textcolor{stringliteral}{"{}/api/languages"{}},}
+\DoxyCodeLine{00013\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}magic-\/items"{}}:\ \textcolor{stringliteral}{"{}/api/magic-\/items"{}},}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}magic-\/schools"{}}:\ \textcolor{stringliteral}{"{}/api/magic-\/schools"{}},}
+\DoxyCodeLine{00015\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}monsters"{}}:\ \textcolor{stringliteral}{"{}/api/monsters"{}},}
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}proficiencies"{}}:\ \textcolor{stringliteral}{"{}/api/proficiencies"{}},}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}races"{}}:\ \textcolor{stringliteral}{"{}/api/races"{}},}
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}rule-\/sections"{}}:\ \textcolor{stringliteral}{"{}/api/rule-\/sections"{}},}
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}rules"{}}:\ \textcolor{stringliteral}{"{}/api/rules"{}},}
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}skills"{}}:\ \textcolor{stringliteral}{"{}/api/skills"{}},}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}spells"{}}:\ \textcolor{stringliteral}{"{}/api/spells"{}},}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}subclasses"{}}:\ \textcolor{stringliteral}{"{}/api/subclasses"{}},}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}subraces"{}}:\ \textcolor{stringliteral}{"{}/api/subraces"{}},}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}traits"{}}:\ \textcolor{stringliteral}{"{}/api/traits"{}},}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}weapon-\/properties"{}}:\ \textcolor{stringliteral}{"{}/api/weapon-\/properties"{}}}
+\DoxyCodeLine{00026\ \ \ \ \ \}}
+
+\end{DoxyCode}
+\Hypertarget{namespacedb__api__handler_ac2615db40c1f25bef1d8dd654fe28ef1}\index{db\_api\_handler@{db\_api\_handler}!response@{response}}
+\index{response@{response}!db\_api\_handler@{db\_api\_handler}}
+\doxysubsubsection{\texorpdfstring{response}{response}}
+{\footnotesize\ttfamily \label{namespacedb__api__handler_ac2615db40c1f25bef1d8dd654fe28ef1} 
+db\+\_\+api\+\_\+handler.\+response = api\+\_\+handler.\+get(endpoint)}
+

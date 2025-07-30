@@ -1,0 +1,136 @@
+\doxysection{classes.\+Player Class Reference}
+\hypertarget{classclasses_1_1_player}{}\label{classclasses_1_1_player}\index{classes.Player@{classes.Player}}
+Inheritance diagram for classes.\+Player\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classclasses_1_1_player}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classclasses_1_1_player_af957e3bb0f46f155909fee767c8cb564}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, \mbox{\hyperlink{classclasses_1_1_player_ae85349cac75051c3d668efa0bf6b5159}{character}}, \mbox{\hyperlink{classclasses_1_1_player_a1be45d8a313a696c1f53dcf0028683d0}{db\+\_\+conn}}, \mbox{\hyperlink{classclasses_1_1_player_adf2b2ce6e5a98b187698b4c5de76c5e7}{player\+\_\+id}})
+\item 
+\mbox{\hyperlink{classclasses_1_1_player_adec00d2895b9dbe2ef1bbfb2b9f3b084}{take\+\_\+turn}} (self)
+\item 
+\mbox{\hyperlink{classclasses_1_1_player_abac8cc9fb2e5d25a6ac7017c79b87f13}{move}} (self, direction)
+\item 
+\mbox{\hyperlink{classclasses_1_1_player_a584d86f0582ebfb1ce758f9c68fb4473}{attack}} (self, target)
+\item 
+\mbox{\hyperlink{classclasses_1_1_player_ab9530632533d57e2c4571d9824374e9d}{cast\+\_\+spell}} (self, spell, target)
+\item 
+\mbox{\hyperlink{classclasses_1_1_player_a93aba2ac5223e4e2c062e64713adebbd}{investigate}} (self, location)
+\item 
+\mbox{\hyperlink{classclasses_1_1_player_a5e37fdb5dbbf1ee1f692ba7a089c2736}{interact}} (self, object)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classclasses_1_1_game_entity}{classes.\+Game\+Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classclasses_1_1_game_entity_ab9a4a94a34d32b54667fe4bde729d230}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, \mbox{\hyperlink{classclasses_1_1_game_entity_a14afc4939db8fee4c170db34a44f5f74}{name}}, \mbox{\hyperlink{classclasses_1_1_game_entity_aea1aa6cc7ccbb50a9f7e3b62810bf489}{entity\+\_\+type}})
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classclasses_1_1_player_ae85349cac75051c3d668efa0bf6b5159}{character}} = character
+\item 
+\mbox{\hyperlink{classclasses_1_1_player_a1be45d8a313a696c1f53dcf0028683d0}{db\+\_\+conn}} = db\+\_\+conn
+\item 
+\mbox{\hyperlink{classclasses_1_1_player_adf2b2ce6e5a98b187698b4c5de76c5e7}{player\+\_\+id}} = player\+\_\+id
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{classclasses_1_1_game_entity}{classes.\+Game\+Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classclasses_1_1_game_entity_a14afc4939db8fee4c170db34a44f5f74}{name}} = name
+\item 
+\mbox{\hyperlink{classclasses_1_1_game_entity_aea1aa6cc7ccbb50a9f7e3b62810bf489}{entity\+\_\+type}} = entity\+\_\+type
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classclasses_1_1_player_af957e3bb0f46f155909fee767c8cb564}\index{classes.Player@{classes.Player}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!classes.Player@{classes.Player}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_player_af957e3bb0f46f155909fee767c8cb564} 
+classes.\+Player.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{character}{, }\item[{}]{db\+\_\+conn}{, }\item[{}]{player\+\_\+id}{}\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classclasses_1_1_player_a584d86f0582ebfb1ce758f9c68fb4473}\index{classes.Player@{classes.Player}!attack@{attack}}
+\index{attack@{attack}!classes.Player@{classes.Player}}
+\doxysubsubsection{\texorpdfstring{attack()}{attack()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_player_a584d86f0582ebfb1ce758f9c68fb4473} 
+classes.\+Player.\+attack (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{target}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Attack another character or enemy.
+\end{DoxyVerb}
+ \Hypertarget{classclasses_1_1_player_ab9530632533d57e2c4571d9824374e9d}\index{classes.Player@{classes.Player}!cast\_spell@{cast\_spell}}
+\index{cast\_spell@{cast\_spell}!classes.Player@{classes.Player}}
+\doxysubsubsection{\texorpdfstring{cast\_spell()}{cast\_spell()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_player_ab9530632533d57e2c4571d9824374e9d} 
+classes.\+Player.\+cast\+\_\+spell (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{spell}{, }\item[{}]{target}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Cast a spell from the player's available spells.
+\end{DoxyVerb}
+ \Hypertarget{classclasses_1_1_player_a5e37fdb5dbbf1ee1f692ba7a089c2736}\index{classes.Player@{classes.Player}!interact@{interact}}
+\index{interact@{interact}!classes.Player@{classes.Player}}
+\doxysubsubsection{\texorpdfstring{interact()}{interact()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_player_a5e37fdb5dbbf1ee1f692ba7a089c2736} 
+classes.\+Player.\+interact (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{object}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Interact with an object in the game world (e.g., open a door, pick up an item).
+\end{DoxyVerb}
+ \Hypertarget{classclasses_1_1_player_a93aba2ac5223e4e2c062e64713adebbd}\index{classes.Player@{classes.Player}!investigate@{investigate}}
+\index{investigate@{investigate}!classes.Player@{classes.Player}}
+\doxysubsubsection{\texorpdfstring{investigate()}{investigate()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_player_a93aba2ac5223e4e2c062e64713adebbd} 
+classes.\+Player.\+investigate (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{location}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Investigate the environment (e.g., searching for clues, hidden doors, etc.)
+\end{DoxyVerb}
+ \Hypertarget{classclasses_1_1_player_abac8cc9fb2e5d25a6ac7017c79b87f13}\index{classes.Player@{classes.Player}!move@{move}}
+\index{move@{move}!classes.Player@{classes.Player}}
+\doxysubsubsection{\texorpdfstring{move()}{move()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_player_abac8cc9fb2e5d25a6ac7017c79b87f13} 
+classes.\+Player.\+move (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{direction}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Move the player in a given direction. 
+This could update the player's position in the world.
+\end{DoxyVerb}
+ \Hypertarget{classclasses_1_1_player_adec00d2895b9dbe2ef1bbfb2b9f3b084}\index{classes.Player@{classes.Player}!take\_turn@{take\_turn}}
+\index{take\_turn@{take\_turn}!classes.Player@{classes.Player}}
+\doxysubsubsection{\texorpdfstring{take\_turn()}{take\_turn()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_player_adec00d2895b9dbe2ef1bbfb2b9f3b084} 
+classes.\+Player.\+take\+\_\+turn (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Handle player actions during their turn\end{DoxyVerb}
+ 
+
+Reimplemented from \mbox{\hyperlink{classclasses_1_1_game_entity_a809ca3f264b2801fd9ad143590332269}{classes.\+Game\+Entity}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classclasses_1_1_player_ae85349cac75051c3d668efa0bf6b5159}\index{classes.Player@{classes.Player}!character@{character}}
+\index{character@{character}!classes.Player@{classes.Player}}
+\doxysubsubsection{\texorpdfstring{character}{character}}
+{\footnotesize\ttfamily \label{classclasses_1_1_player_ae85349cac75051c3d668efa0bf6b5159} 
+classes.\+Player.\+character = character}
+
+\Hypertarget{classclasses_1_1_player_a1be45d8a313a696c1f53dcf0028683d0}\index{classes.Player@{classes.Player}!db\_conn@{db\_conn}}
+\index{db\_conn@{db\_conn}!classes.Player@{classes.Player}}
+\doxysubsubsection{\texorpdfstring{db\_conn}{db\_conn}}
+{\footnotesize\ttfamily \label{classclasses_1_1_player_a1be45d8a313a696c1f53dcf0028683d0} 
+classes.\+Player.\+db\+\_\+conn = db\+\_\+conn}
+
+\Hypertarget{classclasses_1_1_player_adf2b2ce6e5a98b187698b4c5de76c5e7}\index{classes.Player@{classes.Player}!player\_id@{player\_id}}
+\index{player\_id@{player\_id}!classes.Player@{classes.Player}}
+\doxysubsubsection{\texorpdfstring{player\_id}{player\_id}}
+{\footnotesize\ttfamily \label{classclasses_1_1_player_adf2b2ce6e5a98b187698b4c5de76c5e7} 
+classes.\+Player.\+player\+\_\+id = player\+\_\+id}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classes_8py}{classes.\+py}}\end{DoxyCompactItemize}

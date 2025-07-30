@@ -1,0 +1,182 @@
+\doxysection{classes.\+Spell Class Reference}
+\hypertarget{classclasses_1_1_spell}{}\label{classclasses_1_1_spell}\index{classes.Spell@{classes.Spell}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classclasses_1_1_spell_adc182d1da3a8d25c8001df2851893824}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, \mbox{\hyperlink{classclasses_1_1_spell_a81eea0956d67e7b1dc0baf41f7cbad8d}{name}}, \mbox{\hyperlink{classclasses_1_1_spell_a32050e7012283d6ed850cd02eeb6c691}{level}}, \mbox{\hyperlink{classclasses_1_1_spell_aadc7534531c14661a1f4af8a7c11c680}{school}}, \mbox{\hyperlink{classclasses_1_1_spell_a23e022243f0eb33e1ea6ac72b4e56fba}{casting\+\_\+time}}, \mbox{\hyperlink{classclasses_1_1_spell_a389056d597cb3a3e5d2e0137dd184a72}{range}}, \mbox{\hyperlink{classclasses_1_1_spell_a066b0b1c8d2031036f87a6e28ff83bbf}{components}}, \mbox{\hyperlink{classclasses_1_1_spell_a5b46cc124195e13b4afc89cb9703724a}{duration}}, \mbox{\hyperlink{classclasses_1_1_spell_a71845e331abd33a084a5aff59bce74bd}{description}}, \mbox{\hyperlink{classclasses_1_1_spell_ab17f5ed35e2a09efa902b464f330ea01}{damage}}=None, \mbox{\hyperlink{classclasses_1_1_spell_a7ba1e2c2d0e705e43398086142684168}{healing}}=None, \mbox{\hyperlink{classclasses_1_1_spell_a7e29359334fab3333062db4f0c5b5f16}{effect}}=None)
+\item 
+\mbox{\hyperlink{classclasses_1_1_spell_a967fb43f615f442c26bf9eab3eb775c3}{cast}} (self, caster, target)
+\item 
+\mbox{\hyperlink{classclasses_1_1_spell_a4f117926fc6d3d3f04c36335221947c0}{calculate\+\_\+damage}} (self)
+\item 
+\mbox{\hyperlink{classclasses_1_1_spell_a729a5a41635f40c8315a528b8cd51c0d}{calculate\+\_\+healing}} (self)
+\item 
+\mbox{\hyperlink{classclasses_1_1_spell_af1c68d6aa9ffba37dfab707020a1b8e5}{apply\+\_\+effect}} (self, target)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classclasses_1_1_spell_a81eea0956d67e7b1dc0baf41f7cbad8d}{name}} = name
+\item 
+\mbox{\hyperlink{classclasses_1_1_spell_a32050e7012283d6ed850cd02eeb6c691}{level}} = level
+\item 
+\mbox{\hyperlink{classclasses_1_1_spell_aadc7534531c14661a1f4af8a7c11c680}{school}} = school
+\item 
+\mbox{\hyperlink{classclasses_1_1_spell_a23e022243f0eb33e1ea6ac72b4e56fba}{casting\+\_\+time}} = casting\+\_\+time
+\item 
+\mbox{\hyperlink{classclasses_1_1_spell_a389056d597cb3a3e5d2e0137dd184a72}{range}} = range
+\item 
+\mbox{\hyperlink{classclasses_1_1_spell_a066b0b1c8d2031036f87a6e28ff83bbf}{components}} = components
+\item 
+\mbox{\hyperlink{classclasses_1_1_spell_a5b46cc124195e13b4afc89cb9703724a}{duration}} = duration
+\item 
+\mbox{\hyperlink{classclasses_1_1_spell_a71845e331abd33a084a5aff59bce74bd}{description}} = description
+\item 
+\mbox{\hyperlink{classclasses_1_1_spell_ab17f5ed35e2a09efa902b464f330ea01}{damage}} = damage
+\item 
+\mbox{\hyperlink{classclasses_1_1_spell_a7ba1e2c2d0e705e43398086142684168}{healing}} = healing
+\item 
+\mbox{\hyperlink{classclasses_1_1_spell_a7e29359334fab3333062db4f0c5b5f16}{effect}} = effect
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}Class representing a spell.
+\end{DoxyVerb}
+ 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classclasses_1_1_spell_adc182d1da3a8d25c8001df2851893824}\index{classes.Spell@{classes.Spell}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!classes.Spell@{classes.Spell}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_spell_adc182d1da3a8d25c8001df2851893824} 
+classes.\+Spell.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{name}{, }\item[{}]{level}{, }\item[{}]{school}{, }\item[{}]{casting\+\_\+time}{, }\item[{}]{range}{, }\item[{}]{components}{, }\item[{}]{duration}{, }\item[{}]{description}{, }\item[{}]{damage}{ = {\ttfamily None}, }\item[{}]{healing}{ = {\ttfamily None}, }\item[{}]{effect}{ = {\ttfamily None}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Initialize a spell.
+
+:param name: Name of the spell
+:param level: Spell level
+:param school: School of magic (e.g., "Evocation", "Illusion")
+:param casting_time: Casting time (e.g., "1 action", "1 minute")
+:param range: Range of the spell (e.g., "60 feet", "Self")
+:param components: Components required (e.g., ["V", "S", "M"])
+:param duration: Duration of the spell (e.g., "Instantaneous", "1 hour")
+:param description: Description of the spell's effects
+:param damage: Optional: Dictionary: { "type": "fire", "amount": "2d6" }
+:param healing: Optional: Dictionary: { "amount": "2d8" }
+:param effect: Optional: Dictionary: { "type": "buff", "details": "Grants advantage on attack rolls" }
+\end{DoxyVerb}
+ 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classclasses_1_1_spell_af1c68d6aa9ffba37dfab707020a1b8e5}\index{classes.Spell@{classes.Spell}!apply\_effect@{apply\_effect}}
+\index{apply\_effect@{apply\_effect}!classes.Spell@{classes.Spell}}
+\doxysubsubsection{\texorpdfstring{apply\_effect()}{apply\_effect()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_spell_af1c68d6aa9ffba37dfab707020a1b8e5} 
+classes.\+Spell.\+apply\+\_\+effect (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{target}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Apply the effect of the spell to the target.
+
+:param target: The target of the spell
+\end{DoxyVerb}
+ \Hypertarget{classclasses_1_1_spell_a4f117926fc6d3d3f04c36335221947c0}\index{classes.Spell@{classes.Spell}!calculate\_damage@{calculate\_damage}}
+\index{calculate\_damage@{calculate\_damage}!classes.Spell@{classes.Spell}}
+\doxysubsubsection{\texorpdfstring{calculate\_damage()}{calculate\_damage()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_spell_a4f117926fc6d3d3f04c36335221947c0} 
+classes.\+Spell.\+calculate\+\_\+damage (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Calculate the damage of the spell.
+\end{DoxyVerb}
+ \Hypertarget{classclasses_1_1_spell_a729a5a41635f40c8315a528b8cd51c0d}\index{classes.Spell@{classes.Spell}!calculate\_healing@{calculate\_healing}}
+\index{calculate\_healing@{calculate\_healing}!classes.Spell@{classes.Spell}}
+\doxysubsubsection{\texorpdfstring{calculate\_healing()}{calculate\_healing()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_spell_a729a5a41635f40c8315a528b8cd51c0d} 
+classes.\+Spell.\+calculate\+\_\+healing (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Calculate the healing of the spell.
+\end{DoxyVerb}
+ \Hypertarget{classclasses_1_1_spell_a967fb43f615f442c26bf9eab3eb775c3}\index{classes.Spell@{classes.Spell}!cast@{cast}}
+\index{cast@{cast}!classes.Spell@{classes.Spell}}
+\doxysubsubsection{\texorpdfstring{cast()}{cast()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_spell_a967fb43f615f442c26bf9eab3eb775c3} 
+classes.\+Spell.\+cast (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{caster}{, }\item[{}]{target}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Cast the spell from the caster to the target.
+
+:param caster: The entity casting the spell
+:param target: The target of the spell
+\end{DoxyVerb}
+ 
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classclasses_1_1_spell_a23e022243f0eb33e1ea6ac72b4e56fba}\index{classes.Spell@{classes.Spell}!casting\_time@{casting\_time}}
+\index{casting\_time@{casting\_time}!classes.Spell@{classes.Spell}}
+\doxysubsubsection{\texorpdfstring{casting\_time}{casting\_time}}
+{\footnotesize\ttfamily \label{classclasses_1_1_spell_a23e022243f0eb33e1ea6ac72b4e56fba} 
+classes.\+Spell.\+casting\+\_\+time = casting\+\_\+time}
+
+\Hypertarget{classclasses_1_1_spell_a066b0b1c8d2031036f87a6e28ff83bbf}\index{classes.Spell@{classes.Spell}!components@{components}}
+\index{components@{components}!classes.Spell@{classes.Spell}}
+\doxysubsubsection{\texorpdfstring{components}{components}}
+{\footnotesize\ttfamily \label{classclasses_1_1_spell_a066b0b1c8d2031036f87a6e28ff83bbf} 
+classes.\+Spell.\+components = components}
+
+\Hypertarget{classclasses_1_1_spell_ab17f5ed35e2a09efa902b464f330ea01}\index{classes.Spell@{classes.Spell}!damage@{damage}}
+\index{damage@{damage}!classes.Spell@{classes.Spell}}
+\doxysubsubsection{\texorpdfstring{damage}{damage}}
+{\footnotesize\ttfamily \label{classclasses_1_1_spell_ab17f5ed35e2a09efa902b464f330ea01} 
+classes.\+Spell.\+damage = damage}
+
+\Hypertarget{classclasses_1_1_spell_a71845e331abd33a084a5aff59bce74bd}\index{classes.Spell@{classes.Spell}!description@{description}}
+\index{description@{description}!classes.Spell@{classes.Spell}}
+\doxysubsubsection{\texorpdfstring{description}{description}}
+{\footnotesize\ttfamily \label{classclasses_1_1_spell_a71845e331abd33a084a5aff59bce74bd} 
+classes.\+Spell.\+description = description}
+
+\Hypertarget{classclasses_1_1_spell_a5b46cc124195e13b4afc89cb9703724a}\index{classes.Spell@{classes.Spell}!duration@{duration}}
+\index{duration@{duration}!classes.Spell@{classes.Spell}}
+\doxysubsubsection{\texorpdfstring{duration}{duration}}
+{\footnotesize\ttfamily \label{classclasses_1_1_spell_a5b46cc124195e13b4afc89cb9703724a} 
+classes.\+Spell.\+duration = duration}
+
+\Hypertarget{classclasses_1_1_spell_a7e29359334fab3333062db4f0c5b5f16}\index{classes.Spell@{classes.Spell}!effect@{effect}}
+\index{effect@{effect}!classes.Spell@{classes.Spell}}
+\doxysubsubsection{\texorpdfstring{effect}{effect}}
+{\footnotesize\ttfamily \label{classclasses_1_1_spell_a7e29359334fab3333062db4f0c5b5f16} 
+classes.\+Spell.\+effect = effect}
+
+\Hypertarget{classclasses_1_1_spell_a7ba1e2c2d0e705e43398086142684168}\index{classes.Spell@{classes.Spell}!healing@{healing}}
+\index{healing@{healing}!classes.Spell@{classes.Spell}}
+\doxysubsubsection{\texorpdfstring{healing}{healing}}
+{\footnotesize\ttfamily \label{classclasses_1_1_spell_a7ba1e2c2d0e705e43398086142684168} 
+classes.\+Spell.\+healing = healing}
+
+\Hypertarget{classclasses_1_1_spell_a32050e7012283d6ed850cd02eeb6c691}\index{classes.Spell@{classes.Spell}!level@{level}}
+\index{level@{level}!classes.Spell@{classes.Spell}}
+\doxysubsubsection{\texorpdfstring{level}{level}}
+{\footnotesize\ttfamily \label{classclasses_1_1_spell_a32050e7012283d6ed850cd02eeb6c691} 
+classes.\+Spell.\+level = level}
+
+\Hypertarget{classclasses_1_1_spell_a81eea0956d67e7b1dc0baf41f7cbad8d}\index{classes.Spell@{classes.Spell}!name@{name}}
+\index{name@{name}!classes.Spell@{classes.Spell}}
+\doxysubsubsection{\texorpdfstring{name}{name}}
+{\footnotesize\ttfamily \label{classclasses_1_1_spell_a81eea0956d67e7b1dc0baf41f7cbad8d} 
+classes.\+Spell.\+name = name}
+
+\Hypertarget{classclasses_1_1_spell_a389056d597cb3a3e5d2e0137dd184a72}\index{classes.Spell@{classes.Spell}!range@{range}}
+\index{range@{range}!classes.Spell@{classes.Spell}}
+\doxysubsubsection{\texorpdfstring{range}{range}}
+{\footnotesize\ttfamily \label{classclasses_1_1_spell_a389056d597cb3a3e5d2e0137dd184a72} 
+classes.\+Spell.\+range = range}
+
+\Hypertarget{classclasses_1_1_spell_aadc7534531c14661a1f4af8a7c11c680}\index{classes.Spell@{classes.Spell}!school@{school}}
+\index{school@{school}!classes.Spell@{classes.Spell}}
+\doxysubsubsection{\texorpdfstring{school}{school}}
+{\footnotesize\ttfamily \label{classclasses_1_1_spell_aadc7534531c14661a1f4af8a7c11c680} 
+classes.\+Spell.\+school = school}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classes_8py}{classes.\+py}}\end{DoxyCompactItemize}

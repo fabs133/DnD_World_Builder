@@ -1,0 +1,117 @@
+\doxysection{classes.\+Turn\+System Class Reference}
+\hypertarget{classclasses_1_1_turn_system}{}\label{classclasses_1_1_turn_system}\index{classes.TurnSystem@{classes.TurnSystem}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classclasses_1_1_turn_system_a106162e55f8570431e534e50c3943603}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, \mbox{\hyperlink{classclasses_1_1_turn_system_aa1751b5602b06e5dcf41a9103d4e6bc5}{entities}})
+\item 
+\mbox{\hyperlink{classclasses_1_1_turn_system_a0e5d0d4864879e52d42ae36f70b101ea}{start\+\_\+round}} (self)
+\item 
+\mbox{\hyperlink{classclasses_1_1_turn_system_a9179ef0e92420c38d668c1a132e8272e}{next\+\_\+turn}} (self)
+\item 
+\mbox{\hyperlink{classclasses_1_1_turn_system_a4104fc8242844b3e0e93c358fff86976}{execute\+\_\+turn}} (self)
+\item 
+\mbox{\hyperlink{classclasses_1_1_turn_system_aed2c90b3d1d0acfb4b5dd73097a3ca57}{end\+\_\+turn}} (self)
+\item 
+\mbox{\hyperlink{classclasses_1_1_turn_system_afd5556eb20f785b4c56c4a8f30575ead}{check\+\_\+for\+\_\+combat}} (self, player)
+\item 
+\mbox{\hyperlink{classclasses_1_1_turn_system_a325c64786b5041a81ccae44813f624ac}{detect\+\_\+encounter}} (self, player, enemy)
+\item 
+\mbox{\hyperlink{classclasses_1_1_turn_system_ab338a8c8876bdae0663dce2a82b7c3c9}{switch\+\_\+to\+\_\+combat}} (self, player, enemy)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classclasses_1_1_turn_system_aa1751b5602b06e5dcf41a9103d4e6bc5}{entities}} = entities
+\item 
+int \mbox{\hyperlink{classclasses_1_1_turn_system_ae36509f0d70263ef2b414d2350f6b963}{current\+\_\+turn}} = 0
+\item 
+int \mbox{\hyperlink{classclasses_1_1_turn_system_ade4107e9779d822cdf3264a22d328173}{round\+\_\+number}} = 1
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classclasses_1_1_turn_system_a106162e55f8570431e534e50c3943603}\index{classes.TurnSystem@{classes.TurnSystem}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!classes.TurnSystem@{classes.TurnSystem}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_turn_system_a106162e55f8570431e534e50c3943603} 
+classes.\+Turn\+System.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{entities}{}\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classclasses_1_1_turn_system_afd5556eb20f785b4c56c4a8f30575ead}\index{classes.TurnSystem@{classes.TurnSystem}!check\_for\_combat@{check\_for\_combat}}
+\index{check\_for\_combat@{check\_for\_combat}!classes.TurnSystem@{classes.TurnSystem}}
+\doxysubsubsection{\texorpdfstring{check\_for\_combat()}{check\_for\_combat()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_turn_system_afd5556eb20f785b4c56c4a8f30575ead} 
+classes.\+Turn\+System.\+check\+\_\+for\+\_\+combat (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{player}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Check if the player encounters an enemy, and switch to combat mode\end{DoxyVerb}
+ \Hypertarget{classclasses_1_1_turn_system_a325c64786b5041a81ccae44813f624ac}\index{classes.TurnSystem@{classes.TurnSystem}!detect\_encounter@{detect\_encounter}}
+\index{detect\_encounter@{detect\_encounter}!classes.TurnSystem@{classes.TurnSystem}}
+\doxysubsubsection{\texorpdfstring{detect\_encounter()}{detect\_encounter()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_turn_system_a325c64786b5041a81ccae44813f624ac} 
+classes.\+Turn\+System.\+detect\+\_\+encounter (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{player}{, }\item[{}]{enemy}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Detect if the player has encountered an enemy (e.g., proximity)\end{DoxyVerb}
+ \Hypertarget{classclasses_1_1_turn_system_aed2c90b3d1d0acfb4b5dd73097a3ca57}\index{classes.TurnSystem@{classes.TurnSystem}!end\_turn@{end\_turn}}
+\index{end\_turn@{end\_turn}!classes.TurnSystem@{classes.TurnSystem}}
+\doxysubsubsection{\texorpdfstring{end\_turn()}{end\_turn()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_turn_system_aed2c90b3d1d0acfb4b5dd73097a3ca57} 
+classes.\+Turn\+System.\+end\+\_\+turn (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}End the current entity's turn and move to the next one\end{DoxyVerb}
+ \Hypertarget{classclasses_1_1_turn_system_a4104fc8242844b3e0e93c358fff86976}\index{classes.TurnSystem@{classes.TurnSystem}!execute\_turn@{execute\_turn}}
+\index{execute\_turn@{execute\_turn}!classes.TurnSystem@{classes.TurnSystem}}
+\doxysubsubsection{\texorpdfstring{execute\_turn()}{execute\_turn()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_turn_system_a4104fc8242844b3e0e93c358fff86976} 
+classes.\+Turn\+System.\+execute\+\_\+turn (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Execute the current entity's turn\end{DoxyVerb}
+ \Hypertarget{classclasses_1_1_turn_system_a9179ef0e92420c38d668c1a132e8272e}\index{classes.TurnSystem@{classes.TurnSystem}!next\_turn@{next\_turn}}
+\index{next\_turn@{next\_turn}!classes.TurnSystem@{classes.TurnSystem}}
+\doxysubsubsection{\texorpdfstring{next\_turn()}{next\_turn()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_turn_system_a9179ef0e92420c38d668c1a132e8272e} 
+classes.\+Turn\+System.\+next\+\_\+turn (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Move to the next entity's turn\end{DoxyVerb}
+ \Hypertarget{classclasses_1_1_turn_system_a0e5d0d4864879e52d42ae36f70b101ea}\index{classes.TurnSystem@{classes.TurnSystem}!start\_round@{start\_round}}
+\index{start\_round@{start\_round}!classes.TurnSystem@{classes.TurnSystem}}
+\doxysubsubsection{\texorpdfstring{start\_round()}{start\_round()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_turn_system_a0e5d0d4864879e52d42ae36f70b101ea} 
+classes.\+Turn\+System.\+start\+\_\+round (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Starts a new round and resets turn order if needed\end{DoxyVerb}
+ \Hypertarget{classclasses_1_1_turn_system_ab338a8c8876bdae0663dce2a82b7c3c9}\index{classes.TurnSystem@{classes.TurnSystem}!switch\_to\_combat@{switch\_to\_combat}}
+\index{switch\_to\_combat@{switch\_to\_combat}!classes.TurnSystem@{classes.TurnSystem}}
+\doxysubsubsection{\texorpdfstring{switch\_to\_combat()}{switch\_to\_combat()}}
+{\footnotesize\ttfamily \label{classclasses_1_1_turn_system_ab338a8c8876bdae0663dce2a82b7c3c9} 
+classes.\+Turn\+System.\+switch\+\_\+to\+\_\+combat (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{player}{, }\item[{}]{enemy}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Switch to CombatSystem when a player encounters an enemy\end{DoxyVerb}
+ 
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classclasses_1_1_turn_system_ae36509f0d70263ef2b414d2350f6b963}\index{classes.TurnSystem@{classes.TurnSystem}!current\_turn@{current\_turn}}
+\index{current\_turn@{current\_turn}!classes.TurnSystem@{classes.TurnSystem}}
+\doxysubsubsection{\texorpdfstring{current\_turn}{current\_turn}}
+{\footnotesize\ttfamily \label{classclasses_1_1_turn_system_ae36509f0d70263ef2b414d2350f6b963} 
+int classes.\+Turn\+System.\+current\+\_\+turn = 0}
+
+\Hypertarget{classclasses_1_1_turn_system_aa1751b5602b06e5dcf41a9103d4e6bc5}\index{classes.TurnSystem@{classes.TurnSystem}!entities@{entities}}
+\index{entities@{entities}!classes.TurnSystem@{classes.TurnSystem}}
+\doxysubsubsection{\texorpdfstring{entities}{entities}}
+{\footnotesize\ttfamily \label{classclasses_1_1_turn_system_aa1751b5602b06e5dcf41a9103d4e6bc5} 
+classes.\+Turn\+System.\+entities = entities}
+
+\Hypertarget{classclasses_1_1_turn_system_ade4107e9779d822cdf3264a22d328173}\index{classes.TurnSystem@{classes.TurnSystem}!round\_number@{round\_number}}
+\index{round\_number@{round\_number}!classes.TurnSystem@{classes.TurnSystem}}
+\doxysubsubsection{\texorpdfstring{round\_number}{round\_number}}
+{\footnotesize\ttfamily \label{classclasses_1_1_turn_system_ade4107e9779d822cdf3264a22d328173} 
+int classes.\+Turn\+System.\+round\+\_\+number = 1}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classes_8py}{classes.\+py}}\end{DoxyCompactItemize}
