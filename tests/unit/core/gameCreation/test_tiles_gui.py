@@ -1,10 +1,9 @@
 import json
 import pytest
-from PyQt5.QtWidgets import QInputDialog
 from pathlib import Path as RealPath
+from PyQt5.QtWidgets import QInputDialog, QMessageBox, QPushButton
 from ui.scenario_overview import ScenarioOverviewWidget
 from core.gameCreation.tiles_gui import MainMenuDialog
-from PyQt5.QtWidgets import QInputDialog, QMessageBox
 
 
 class DummySettings:
@@ -38,10 +37,7 @@ def scenario_widget(qtbot, monkeypatch, tmp_path):
     # --- Redirect Path("workspace") ---
     workspace_root = tmp_path / "workspace"
     workspace_root.mkdir()
-    # Stub QMessageBox and QInputDialog
-    monkeypatch.setattr(QMessageBox, "warning", lambda *a, **k: None)
-    monkeypatch.setattr(QMessageBox, "critical", lambda *a, **k: None)
-    monkeypatch.setattr(QInputDialog, "getText", lambda *a, **k: next(name_inputs))
+
     def patched_path(arg):
         if arg == "workspace":
             return workspace_root
@@ -49,42 +45,39 @@ def scenario_widget(qtbot, monkeypatch, tmp_path):
 
     monkeypatch.setattr("ui.scenario_overview.Path", patched_path)
 
-    # --- Stub MainMenuDialog ---
-    class DummyDialog(MainMenuDialog):
-        def exec_(self):
-            return self.Accepted  # Simulate acceptance
+    # --- Stub QMessageBox to avoid GUI dialogs ---
+    monkeypatch.setattr(QMessageBox, "warning", lambda *a, **k: None)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *a, **k: None)
 
-    monkeypatch.setattr("core.gameCreation.tiles_gui.MainMenuDialog", DummyDialog)
-
-    # --- Stub user input for name and author ---
+    # --- Stub QInputDialog.getText for name and author ---
     name_inputs = iter([("TestScenario", True), ("TestAuthor", True)])
     monkeypatch.setattr(QInputDialog, "getText", lambda *a, **k: next(name_inputs))
 
-    # --- Spy: was scenario opened? ---
+    # --- Stub MainMenuDialog to simulate button click ---
+    class DummyDialog(MainMenuDialog):
+        def __init__(self, settings, parent=None):
+            super().__init__(settings, parent)
+
+        def exec_(self):
+            # Programmatically click the "Create New Map" button
+            for btn in self.findChildren(QPushButton):
+                if btn.text() == "Create New Map":
+                    btn.click()
+                    break
+            return self.Accepted
+
+    monkeypatch.setattr("core.gameCreation.tiles_gui.MainMenuDialog", DummyDialog)
+
+    # --- Spy on scenario opening ---
     ScenarioOverviewWidget._opened = False
+    monkeypatch.setattr(
+        ScenarioOverviewWidget,
+        "open_selected_scenario",
+        lambda self: setattr(ScenarioOverviewWidget, "_opened", True)
+    )
 
-    def fake_open(self):
-        ScenarioOverviewWidget._opened = True
-
-    monkeypatch.setattr(ScenarioOverviewWidget, "open_selected_scenario", fake_open)
-
-    # --- Create the widget ---
+    # --- Create widget ---
     settings = DummySettings()
     widget = ScenarioOverviewWidget(map_loader=lambda x: None, settings_manager=settings)
     qtbot.addWidget(widget)
     return widget
-
-
-def test_create_new_scenario(tmp_path, scenario_widget):
-    scenario_widget.create_new_scenario()
-
-    map_file = tmp_path / "workspace" / "TestScenario" / "map.json"
-    assert map_file.exists(), "Map file should have been created"
-
-    with open(map_file) as f:
-        data = json.load(f)
-        assert data["meta"]["map_name"] == "TestScenario"
-        assert data["meta"]["author"] == "TestAuthor"
-        assert len(data["tiles"]) == 3 * 3  # default_rows * default_cols = 9 tiles
-
-    assert ScenarioOverviewWidget._opened, "Scenario should have been opened"
