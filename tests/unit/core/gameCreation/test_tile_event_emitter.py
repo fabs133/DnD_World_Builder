@@ -1,14 +1,23 @@
+import sys
 import pytest
 from PyQt5.QtCore import QObject
+from PyQt5.QtWidgets import QApplication
 from core.gameCreation.tile_event_emitter import TileEventEmitter
 
+# Ensure QApplication is present (especially for CI environments)
+app = QApplication.instance()
+if app is None:
+    app = QApplication(sys.argv)
+
+# ---- Test 1 ----
 
 def test_tile_event_emitter_is_qobject():
     emitter = TileEventEmitter()
     assert isinstance(emitter, QObject)
 
+# ---- Test 2 ----
 
-def test_signals_emitted_and_receive_payload(qtbot):
+def test_signals_emitted_and_receive_payload():
     emitter = TileEventEmitter()
     received = []
 
@@ -30,20 +39,20 @@ def test_signals_emitted_and_receive_payload(qtbot):
         ('left', 'tile')
     ]
 
+# ---- Test 3 ----
+# Replaces qtbot.waitSignal() with direct signal assertion
+
 @pytest.mark.parametrize("signal_name,payload", [
     ("right_clicked", None),
     ("hover_entered", 'payload'),
     ("hover_left", 3.14)
 ])
-def test_signal_can_emit_various_types(qtbot, signal_name, payload):
+def test_signal_can_emit_various_types(signal_name, payload):
     emitter = TileEventEmitter()
+    captured = []
 
-    # Dynamically get the Qt signal
     sig = getattr(emitter, signal_name)
+    sig.connect(lambda value: captured.append(value))
+    sig.emit(payload)
 
-    # Use qtbot.waitSignal to process the emission
-    with qtbot.waitSignal(sig, timeout=500) as blocker:
-        sig.emit(payload)
-
-    # Verify the signal args
-    assert blocker.args == [payload]
+    assert captured == [payload]
