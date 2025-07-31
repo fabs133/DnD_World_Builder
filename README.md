@@ -129,3 +129,5 @@ Full documentation is available at [https://fabs133.github.io/DnD_World_Builder/
 ## 📜 License
 
 MIT License © 2025
+
+[💖 Sponsor this project](https://www.paypal.com/donate/?hosted_button_id=35ZCGB3LQJJXJ)
