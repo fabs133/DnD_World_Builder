@@ -1,0 +1,31 @@
+name: Discussion
+description: Start a constructive conversation, feedback or idea share
+labels: ["discussion"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing—it’s helpful to have context!
+  - type: input
+    id: title
+    attributes:
+      label: **Subject / question**
+      description: Summarize what you're discussing
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: **Details**
+      description: Explain your idea, propose questions, or invite feedback.
+      required: true
+  - type: input
+    id: context
+    attributes:
+      label: **Context**
+      description: Relevant files, repo sections, links to README, etc.
+  - type: dropdown
+    id: type
+    attributes:
+      label: **Category**
+      description: Choose type of discussion
+      options: ["Architecture decision", "Design feedback", "General conversation"]
