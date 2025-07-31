@@ -2,6 +2,8 @@
 
 # 🧙 DnD World Builder: A Tactical Map Editor & Scenario Logic Engine for 5e
 
+[![CI](https://github.com/fabs133/DnD_World_Builder/actions/workflows/ci.yml/badge.svg)](https://github.com/fabs133/DnD_World_Builder/actions)
+
 A PyQt-powered tactical map editor and scenario manager for **Dungeons & Dragons 5e**. Design encounters, place entities, and create intricate event-driven logic using a flexible grid system and a visual trigger scripting engine.
 
 ---
