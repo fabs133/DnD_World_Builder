@@ -19,7 +19,7 @@ class GameEntity:
     :type inventory: list, optional
     """
 
-    def __init__(self, name, entity_type, stats=None, inventory=None):
+    def __init__(self, name, entity_type, stats=None, inventory=None, image_path=None):
         """
         Initialize a GameEntity instance.
 
@@ -31,6 +31,8 @@ class GameEntity:
         :type stats: dict, optional
         :param inventory: The inventory list for the entity.
         :type inventory: list, optional
+        :param image_path: Relative path to a portrait image for the entity.
+        :type image_path: str, optional
         """
         self.vision_range = None
         self.name = name
@@ -38,6 +40,7 @@ class GameEntity:
         self.stats = stats or {}
         self.inventory = inventory or []
         self.triggers = []
+        self.image_path = image_path
 
     def register_trigger(self, trigger):
         """
@@ -63,13 +66,16 @@ class GameEntity:
         :return: Dictionary representation of the entity.
         :rtype: dict
         """
-        return {
+        data = {
             "name": self.name,
             "entity_type": self.entity_type,
             "stats": self.stats,
             "inventory": self.inventory,
             "triggers": [t.to_dict() for t in self.triggers],
         }
+        if self.image_path:
+            data["image_path"] = self.image_path
+        return data
 
     def handle_event(self, event_type, data):
         """
@@ -98,7 +104,8 @@ class GameEntity:
             name=data["name"],
             entity_type=data["entity_type"],
             stats=data.get("stats", {}),
-            inventory=data.get("inventory", [])
+            inventory=data.get("inventory", []),
+            image_path=data.get("image_path"),
         )
         for tdata in data.get("triggers", []):
             trigger = Trigger.from_dict(tdata)

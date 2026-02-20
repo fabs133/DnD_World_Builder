@@ -1,6 +1,6 @@
 import math
 from PyQt5.QtWidgets import QGraphicsPolygonItem
-from PyQt5.QtGui import QBrush, QPen, QColor, QPolygonF
+from PyQt5.QtGui import QBrush, QPen, QColor, QPolygonF, QPixmap, QPainterPath
 from PyQt5.QtCore import Qt, QPointF
 from models.tiles.base_tile_item import BaseTileItem
 from models.tiles.tile_data import TileData
@@ -48,6 +48,8 @@ class HexTileItem(QGraphicsPolygonItem, BaseTileItem):
         self.setBrush(QBrush(QColor(200, 200, 200)))
         self.setPen(QPen(Qt.black))
         self.setAcceptHoverEvents(True)
+        self._bg_pixmap = None
+        self._load_background_image()
 
     def create_hexagon(self):
         """
@@ -179,3 +181,52 @@ class HexTileItem(QGraphicsPolygonItem, BaseTileItem):
         """
         color = QColor(self.tile_data.overlay_color or "#CCCCCC")
         self.setBrush(QBrush(color))
+
+    def _load_background_image(self):
+        """
+        Load the background image from tile_data if set.
+        """
+        bg = getattr(self.tile_data, "background_image", None)
+        if bg:
+            pixmap = QPixmap(bg)
+            if not pixmap.isNull():
+                self._bg_pixmap = pixmap
+                return
+        self._bg_pixmap = None
+
+    def reload_background_image(self):
+        """
+        Reload the background image (call after changing tile_data.background_image).
+        """
+        self._load_background_image()
+        self.update()
+
+    def paint(self, painter, option, widget=None):
+        """
+        Paint the tile, rendering a background image clipped to the hex shape if set.
+
+        :param painter: The QPainter to draw with.
+        :param option: Style options.
+        :param widget: The widget being painted on.
+        """
+        if self._bg_pixmap:
+            painter.save()
+            path = QPainterPath()
+            path.addPolygon(self.polygon())
+            path.closeSubpath()
+            painter.setClipPath(path)
+
+            bounding = self.boundingRect()
+            painter.drawPixmap(
+                bounding.toRect(),
+                self._bg_pixmap.scaled(
+                    int(bounding.width()), int(bounding.height()),
+                    Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation
+                ),
+            )
+            painter.restore()
+
+            painter.setPen(self.pen())
+            painter.drawPolygon(self.polygon())
+        else:
+            super().paint(painter, option, widget)

@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import QGraphicsRectItem
-from PyQt5.QtCore import QRectF
-from PyQt5.QtGui import QBrush, QColor, QPen
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QRectF, Qt
+from PyQt5.QtGui import QBrush, QColor, QPen, QPixmap
 from models.tiles.base_tile_item import BaseTileItem
 from ui.commands.tile_edit_command import TileEditCommand
 
@@ -36,6 +35,8 @@ class SquareTileItem(QGraphicsRectItem, BaseTileItem):
         self.setBrush(QBrush(QColor(200, 200, 200)))
         self.setPen(QPen(Qt.black))
         self.setAcceptHoverEvents(True)
+        self._bg_pixmap = None
+        self._load_background_image()
 
     def hoverEnterEvent(self, event):
         """
@@ -143,3 +144,44 @@ class SquareTileItem(QGraphicsRectItem, BaseTileItem):
         """
         color = QColor(self.tile_data.overlay_color or "#CCCCCC")
         self.setBrush(QBrush(color))
+
+    def _load_background_image(self):
+        """
+        Load the background image from tile_data if set.
+        """
+        bg = getattr(self.tile_data, "background_image", None)
+        if bg:
+            pixmap = QPixmap(bg)
+            if not pixmap.isNull():
+                self._bg_pixmap = pixmap
+                return
+        self._bg_pixmap = None
+
+    def reload_background_image(self):
+        """
+        Reload the background image (call after changing tile_data.background_image).
+        """
+        self._load_background_image()
+        self.update()
+
+    def paint(self, painter, option, widget=None):
+        """
+        Paint the tile, rendering a background image if one is set.
+
+        :param painter: The QPainter to draw with.
+        :param option: Style options.
+        :param widget: The widget being painted on.
+        """
+        if self._bg_pixmap:
+            rect = self.rect()
+            painter.drawPixmap(
+                rect.toRect(),
+                self._bg_pixmap.scaled(
+                    int(rect.width()), int(rect.height()),
+                    Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation
+                ),
+            )
+            painter.setPen(self.pen())
+            painter.drawRect(rect)
+        else:
+            super().paint(painter, option, widget)

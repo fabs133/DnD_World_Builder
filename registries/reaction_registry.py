@@ -1,4 +1,5 @@
 from models.flow.reaction.reactions_list import ApplyDamage, AlertGamemaster
+from models.flow.reaction.play_sound import PlaySound
 
 class ReactionRegistry:
     """
@@ -70,3 +71,4 @@ class ReactionRegistry:
 reaction_registry = ReactionRegistry()
 reaction_registry.register("ApplyDamage", ApplyDamage)
 reaction_registry.register("AlertGamemaster", AlertGamemaster)
+reaction_registry.register("PlaySound", PlaySound)

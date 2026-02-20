@@ -44,6 +44,10 @@ class EntityEditorDialog(QDialog):
         edit_trigger_btn.clicked.connect(self.edit_triggers_for_selected)
         layout.addWidget(edit_trigger_btn)
 
+        stat_block_btn = QPushButton("View Stat Block")
+        stat_block_btn.clicked.connect(self.view_stat_block)
+        layout.addWidget(stat_block_btn)
+
         self.setLayout(layout)
 
     def add_entity(self):
@@ -76,6 +80,17 @@ class EntityEditorDialog(QDialog):
             if entity:
                 self.tile_data.add_entity(entity)
                 self.entity_list.addItem(f"{entity.name} ({entity.entity_type})")
+
+    def view_stat_block(self):
+        """
+        Open the StatBlockDialog for the currently selected entity.
+        """
+        idx = self.entity_list.currentRow()
+        if idx >= 0:
+            entity = self.tile_data.entities[idx]
+            from .stat_block_dialog import StatBlockDialog
+            dlg = StatBlockDialog(entity, parent=self)
+            dlg.exec_()
 
     def edit_triggers_for_selected(self):
         """

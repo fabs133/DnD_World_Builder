@@ -1,29 +1,24 @@
-from PyQt5.QtWidgets import QDialog, QFormLayout, QLineEdit, QTextEdit, QComboBox, QPushButton
+from PyQt5.QtWidgets import (
+    QDialog, QFormLayout, QLineEdit, QTextEdit, QComboBox, QPushButton,
+    QLabel, QFileDialog, QHBoxLayout,
+)
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt
 from models.entities.game_entity import GameEntity
+
 
 class EntityPreviewDialog(QDialog):
     """
     A dialog window for previewing and editing a GameEntity's properties.
 
-    Allows the user to view and modify the entity's name, type, stats, and abilities.
-    The dialog provides editable fields for each property and returns an updated
-    GameEntity instance upon confirmation.
+    Allows the user to view and modify the entity's name, type, stats, abilities,
+    and portrait image. The dialog provides editable fields for each property and
+    returns an updated GameEntity instance upon confirmation.
 
     :param entity: The entity to preview and edit.
     :type entity: GameEntity
     :param parent: The parent widget of the dialog (default is None).
     :type parent: QWidget, optional
-
-    :ivar entity: The entity being previewed and edited.
-    :vartype entity: GameEntity
-    :ivar name_input: Input field for the entity's name.
-    :vartype name_input: QLineEdit
-    :ivar type_input: Dropdown for selecting the entity's type.
-    :vartype type_input: QComboBox
-    :ivar stat_inputs: Dictionary mapping stat names to their corresponding QLineEdit fields.
-    :vartype stat_inputs: dict
-    :ivar abilities_box: Text box for editing the entity's abilities/inventory.
-    :vartype abilities_box: QTextEdit
     """
     def __init__(self, entity: GameEntity, parent=None):
         """
@@ -37,9 +32,30 @@ class EntityPreviewDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle("Preview and Edit Entity")
         self.entity = entity
+        self._image_path = getattr(entity, "image_path", None)
 
         layout = QFormLayout()
         self.setLayout(layout)
+
+        # Portrait image preview
+        self.image_label = QLabel()
+        self.image_label.setFixedSize(128, 128)
+        self.image_label.setAlignment(Qt.AlignCenter)
+        self.image_label.setStyleSheet("border: 1px solid #ccc; background: #f5f5f5;")
+        self._update_image_preview()
+
+        image_btn = QPushButton("Choose Image...")
+        image_btn.clicked.connect(self._pick_image)
+        clear_image_btn = QPushButton("Clear")
+        clear_image_btn.clicked.connect(self._clear_image)
+
+        image_row = QHBoxLayout()
+        image_row.addWidget(self.image_label)
+        image_btn_col = QHBoxLayout()
+        image_btn_col.addWidget(image_btn)
+        image_btn_col.addWidget(clear_image_btn)
+        image_row.addLayout(image_btn_col)
+        layout.addRow("Portrait:", image_row)
 
         # Editable name and type
         self.name_input = QLineEdit(entity.name)
@@ -66,6 +82,32 @@ class EntityPreviewDialog(QDialog):
         confirm_btn.clicked.connect(self.accept)
         layout.addRow(confirm_btn)
 
+    def _pick_image(self):
+        """Open a file dialog to select a portrait image."""
+        path, _ = QFileDialog.getOpenFileName(
+            self, "Select Portrait Image", "",
+            "Images (*.png *.jpg *.jpeg *.bmp *.gif *.webp)"
+        )
+        if path:
+            self._image_path = path
+            self._update_image_preview()
+
+    def _clear_image(self):
+        """Clear the portrait image."""
+        self._image_path = None
+        self._update_image_preview()
+
+    def _update_image_preview(self):
+        """Update the portrait preview label."""
+        if self._image_path:
+            pixmap = QPixmap(self._image_path)
+            if not pixmap.isNull():
+                self.image_label.setPixmap(
+                    pixmap.scaled(128, 128, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                )
+                return
+        self.image_label.setText("No image")
+
     def get_entity(self) -> GameEntity:
         """
         Retrieve an updated GameEntity instance based on the current dialog inputs.
@@ -78,12 +120,14 @@ class EntityPreviewDialog(QDialog):
             for key, field in self.stat_inputs.items()
         }
         updated_inventory = self.abilities_box.toPlainText().splitlines()
-        return GameEntity(
+        entity = GameEntity(
             name=self.name_input.text(),
             entity_type=self.type_input.currentText(),
             stats=updated_stats,
             inventory=updated_inventory,
+            image_path=self._image_path,
         )
+        return entity
 
     def _safe_cast(self, value):
         """

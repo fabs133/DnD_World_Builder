@@ -1,10 +1,13 @@
-from PyQt5.QtWidgets import QDialog, QFormLayout, QLabel, QLineEdit, QComboBox, QVBoxLayout, QPushButton, QTextEdit, QCheckBox
+from PyQt5.QtWidgets import (
+    QDialog, QFormLayout, QLabel, QLineEdit, QComboBox, QVBoxLayout,
+    QPushButton, QTextEdit, QCheckBox, QColorDialog, QHBoxLayout,
+    QFileDialog,
+)
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QColor, QPixmap
 from models.tiles.tile_data import TileTag, TerrainType, TileData
-from .entity_editor_dialog import EntityEditorDialog  # Assuming this is the correct import path for EntityEditorDialog
-from .trigger_editor.editor_dialog import TriggerEditorDialog  # import this near the top
-from PyQt5.QtWidgets import QColorDialog
-from PyQt5.QtGui import QColor
+from .entity_editor_dialog import EntityEditorDialog
+from .trigger_editor.editor_dialog import TriggerEditorDialog
 from .tile_edit.tile_edit_command import TileEditCommand
 
 class TileDialog(QDialog):
@@ -128,6 +131,50 @@ class TileDialog(QDialog):
         self.entity_preview.setReadOnly(True)
         layout.addRow("Entities (read-only):", self.entity_preview)
 
+        # --- BACKGROUND IMAGE ---
+        self._background_image_path = tile_data.background_image
+        self.bg_image_label = QLabel()
+        self.bg_image_label.setFixedSize(100, 100)
+        self.bg_image_label.setAlignment(Qt.AlignCenter)
+        self.bg_image_label.setStyleSheet("border: 1px solid #ccc; background: #f5f5f5;")
+        self._update_bg_image_preview()
+
+        bg_btn = QPushButton("Choose Image...")
+        bg_btn.clicked.connect(self._pick_background_image)
+        bg_clear_btn = QPushButton("Clear")
+        bg_clear_btn.clicked.connect(self._clear_background_image)
+
+        bg_row = QHBoxLayout()
+        bg_row.addWidget(self.bg_image_label)
+        bg_btns = QHBoxLayout()
+        bg_btns.addWidget(bg_btn)
+        bg_btns.addWidget(bg_clear_btn)
+        bg_row.addLayout(bg_btns)
+        layout.addRow("Background Image:", bg_row)
+
+        # --- AMBIENT AUDIO ---
+        self._ambient_audio_path = tile_data.ambient_audio
+        self.audio_path_label = QLineEdit(tile_data.ambient_audio or "")
+        self.audio_path_label.setReadOnly(True)
+
+        audio_btn = QPushButton("Choose Audio...")
+        audio_btn.clicked.connect(self._pick_ambient_audio)
+        audio_clear_btn = QPushButton("Clear")
+        audio_clear_btn.clicked.connect(self._clear_ambient_audio)
+
+        audio_play_btn = QPushButton("Play")
+        audio_play_btn.clicked.connect(self._play_ambient_audio)
+        audio_stop_btn = QPushButton("Stop")
+        audio_stop_btn.clicked.connect(self._stop_ambient_audio)
+
+        audio_row = QHBoxLayout()
+        audio_row.addWidget(self.audio_path_label)
+        audio_row.addWidget(audio_btn)
+        audio_row.addWidget(audio_clear_btn)
+        audio_row.addWidget(audio_play_btn)
+        audio_row.addWidget(audio_stop_btn)
+        layout.addRow("Ambient Audio:", audio_row)
+
         # --- LAST UPDATED ---
         self.last_updated_label = QLabel(tile_data.last_updated or "None")
         layout.addRow("Last Updated:", self.last_updated_label)
@@ -168,6 +215,8 @@ class TileDialog(QDialog):
         td.user_label = self.label_input.text()
         td.note = self.note_input.toPlainText()
         td.overlay_color = self.overlay_input.text()
+        td.background_image = self._background_image_path
+        td.ambient_audio = self._ambient_audio_path
 
         from datetime import datetime
         td.last_updated = datetime.now().isoformat()
@@ -203,6 +252,62 @@ class TileDialog(QDialog):
         tile_item = getattr(self.tile_data, "tile_item", None)
         if tile_item:
             tile_item.set_overlay_color(hex_color)
+
+    # --- Background Image ---
+
+    def _pick_background_image(self):
+        """Open a file dialog to select a background image for the tile."""
+        path, _ = QFileDialog.getOpenFileName(
+            self, "Select Background Image", "",
+            "Images (*.png *.jpg *.jpeg *.bmp *.gif *.webp)"
+        )
+        if path:
+            self._background_image_path = path
+            self._update_bg_image_preview()
+
+    def _clear_background_image(self):
+        """Clear the tile's background image."""
+        self._background_image_path = None
+        self._update_bg_image_preview()
+
+    def _update_bg_image_preview(self):
+        """Update the background image preview label."""
+        if self._background_image_path:
+            pixmap = QPixmap(self._background_image_path)
+            if not pixmap.isNull():
+                self.bg_image_label.setPixmap(
+                    pixmap.scaled(100, 100, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                )
+                return
+        self.bg_image_label.setText("No image")
+
+    # --- Ambient Audio ---
+
+    def _pick_ambient_audio(self):
+        """Open a file dialog to select an ambient audio file for the tile."""
+        path, _ = QFileDialog.getOpenFileName(
+            self, "Select Ambient Audio", "",
+            "Audio (*.mp3 *.wav *.ogg *.flac *.m4a)"
+        )
+        if path:
+            self._ambient_audio_path = path
+            self.audio_path_label.setText(path)
+
+    def _clear_ambient_audio(self):
+        """Clear the tile's ambient audio."""
+        self._ambient_audio_path = None
+        self.audio_path_label.setText("")
+
+    def _play_ambient_audio(self):
+        """Play the tile's ambient audio file."""
+        if self._ambient_audio_path:
+            from core.audio_player import AudioPlayer
+            AudioPlayer.instance().play(self._ambient_audio_path)
+
+    def _stop_ambient_audio(self):
+        """Stop any currently playing audio."""
+        from core.audio_player import AudioPlayer
+        AudioPlayer.instance().stop()
 
     def edit_triggers(self):
         """
