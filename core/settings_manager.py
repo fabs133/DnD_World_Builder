@@ -15,6 +15,8 @@ DEFAULT_SETTINGS = {
     "theme": "dark_teal.xml",
     "last_profile_used": None,
     "recent_files": [],
+    "auto_save_enabled": True,
+    "auto_save_interval_seconds": 300,
 }
 """
 Default settings for the application.

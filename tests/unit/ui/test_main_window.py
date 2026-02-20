@@ -18,6 +18,7 @@ def dummy_settings(tmp_path):
     class S:
         config_version = 1
         def __getitem__(self, key): return None
+        def get(self, key, default=None): return default
     return S()
 
 @pytest.fixture

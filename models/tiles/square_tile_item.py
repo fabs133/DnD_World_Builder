@@ -74,23 +74,14 @@ class SquareTileItem(QGraphicsRectItem, BaseTileItem):
         :param event: The mouse event.
         :type event: QGraphicsSceneMouseEvent
         """
-        if event.button() == Qt.LeftButton and self.editor_window.paint_mode_active:
-            preset = self.editor_window.active_tile_preset
-            if preset:
-                logic = (self.editor_window.paint_mode_type != "visual")
-                # instead of apply_to directly, push an undoable command
-                cmd = TileEditCommand(self.tile_data, preset, logic,
-                    description=f"Paint tile {self.tile_data.position}")
-                self.editor_window.undo_stack.push(cmd)
         if event.button() == Qt.LeftButton:
             if self.editor_window and self.editor_window.paint_mode_active:
                 preset = self.editor_window.active_tile_preset
                 if preset:
-                    if self.editor_window.paint_mode_type == "visual":
-                        preset.apply_to(self.tile_data, logic=False)
-                    else:
-                        preset.apply_to(self.tile_data, logic=True)
-                    self.set_overlay_color(self.tile_data.overlay_color)
+                    logic = (self.editor_window.paint_mode_type != "visual")
+                    cmd = TileEditCommand(self.tile_data, preset, logic,
+                        description=f"Paint tile {self.tile_data.position}")
+                    self.editor_window.undo_stack.push(cmd)
 
         elif event.button() == Qt.RightButton:
             if self.editor_window and self.editor_window.paint_mode_active:

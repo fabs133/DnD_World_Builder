@@ -75,18 +75,15 @@ def test_left_click_paint_mode_pushes_command_and_applies(monkeypatch, qapp):
     class DummyCommand:
         def __init__(self, tile_data, preset, logic, description):
             recorded['args'] = (tile_data, preset, logic, description)
+        def redo(self):
+            pass
         def __repr__(self):
             return "<DummyCommand>"
     monkeypatch.setattr(sti_mod, "TileEditCommand", DummyCommand)
 
-    # Prepare a dummy preset that sets overlay_color when apply_to is called
+    # Prepare a dummy preset
     class DummyPreset:
-        def __init__(self):
-            self.applied = []
-        def apply_to(self, tile_data, logic=False):
-            # set overlay_color based on logic flag
-            tile_data.overlay_color = "#FF0000" if logic else "#00FF00"
-            self.applied.append((tile_data, logic))
+        pass
 
     preset = DummyPreset()
 
@@ -102,7 +99,7 @@ def test_left_click_paint_mode_pushes_command_and_applies(monkeypatch, qapp):
     # Editor window stub
     class ED:
         paint_mode_active = True
-        paint_mode_type = "visual"   # visual => logic=False in apply_to
+        paint_mode_type = "visual"   # visual => logic=False
         active_tile_preset = preset
         undo_stack = undo
 
@@ -122,11 +119,6 @@ def test_left_click_paint_mode_pushes_command_and_applies(monkeypatch, qapp):
     # 2) UndoStack.push called with our DummyCommand instance
     assert len(undo.pushed) == 1
     assert isinstance(undo.pushed[0], DummyCommand)
-
-    # 3) apply_to was called, and overlay_color updated
-    assert preset.applied == [(td, False)]
-    # 4) Brush matches the new overlay_color
-    assert item.brush().color() == QColor("#00FF00")
 
 def test_left_click_no_paint_mode_does_nothing(monkeypatch, qapp):
     td = DummyTileData(position=(5,5), overlay_color=None)

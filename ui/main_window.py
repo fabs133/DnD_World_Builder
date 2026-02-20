@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import (
-    QMainWindow, QGraphicsView, QGraphicsScene, QVBoxLayout, QPushButton, QWidget,
+    QMainWindow, QGraphicsScene, QVBoxLayout, QPushButton, QWidget,
     QMenuBar, QAction, QFileDialog
 )
-from PyQt5.QtCore import Qt, QPointF
+from PyQt5.QtCore import Qt, QPointF, QTimer
 import json
 import math
 from models.tiles.tile_data import TileData
@@ -13,6 +13,7 @@ from datetime import datetime
 from core.backup_manager import BackupManager
 from core.logger import app_logger
 from pathlib import Path
+from ui.map_view import MapView
 
 
 def hex_tile_center(row, col, hex_size):
@@ -64,7 +65,12 @@ class MainWindow(QMainWindow):
         self.selected_tile = None
         self.backup_manager = BackupManager()
         self.undo_stack = QUndoStack(self)
-        
+        self.current_map_path = None
+
+        self._auto_save_timer = QTimer(self)
+        self._auto_save_timer.timeout.connect(self._auto_save)
+        self._init_auto_save()
+
         self.init_ui()
         self.init_menu()
 
@@ -76,7 +82,7 @@ class MainWindow(QMainWindow):
         """
         Initialize the main UI components.
         """
-        self.view = QGraphicsView()
+        self.view = MapView()
         self.scene = QGraphicsScene(self)
         self.view.setScene(self.scene)
 
@@ -116,6 +122,13 @@ class MainWindow(QMainWindow):
         redo_action = self.undo_stack.createRedoAction(self, "&Redo")
         redo_action.setShortcut("Ctrl+Y")
         edit_menu.addAction(redo_action)
+
+        view_menu = menubar.addMenu("View")
+
+        reset_zoom_action = QAction("Reset &Zoom", self)
+        reset_zoom_action.setShortcut("Ctrl+0")
+        reset_zoom_action.triggered.connect(self.view.reset_zoom)
+        view_menu.addAction(reset_zoom_action)
 
     def init_grid(self, rows, cols):
         """
@@ -192,6 +205,7 @@ class MainWindow(QMainWindow):
         """
         path, _ = QFileDialog.getSaveFileName(self, "Save Map", "", "JSON Files (*.json)")
         if path:
+            self.current_map_path = path
             self.save_map_to_file(path)
 
     def save_map_to_file(self, filename="map.json"):
@@ -325,6 +339,7 @@ class MainWindow(QMainWindow):
         """
         from models.tiles.tile_data import TileData
 
+        self.current_map_path = filename
         self.scene.clear()
 
         try:
@@ -371,6 +386,27 @@ class MainWindow(QMainWindow):
             self.scene.addItem(tile)
 
         app_logger.info(f"[Loaded] {len(tiles)} tiles loaded from {filename}")
+
+    def _init_auto_save(self):
+        """
+        Initialize the auto-save timer based on settings.
+        """
+        enabled = self.settings.get("auto_save_enabled", True)
+        interval = self.settings.get("auto_save_interval_seconds", 300)
+        if enabled and interval > 0:
+            self._auto_save_timer.start(interval * 1000)
+            app_logger.debug(f"[AutoSave] Enabled with {interval}s interval")
+        else:
+            self._auto_save_timer.stop()
+            app_logger.debug("[AutoSave] Disabled")
+
+    def _auto_save(self):
+        """
+        Auto-save the current map if a file path is known.
+        """
+        if self.current_map_path:
+            self.save_map_to_file(self.current_map_path)
+            app_logger.info(f"[AutoSave] Saved to {self.current_map_path}")
 
     def create_button(self, text, callback, checkable=False, enabled=True):
         """

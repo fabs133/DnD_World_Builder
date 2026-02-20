@@ -5,6 +5,7 @@ from PyQt5.QtGui import QBrush, QPen, QColor, QPolygonF, QPixmap, QPainterPath
 from PyQt5.QtCore import Qt, QPointF
 from models.tiles.base_tile_item import BaseTileItem
 from models.tiles.tile_data import TileData
+from ui.commands.tile_edit_command import TileEditCommand
 
 class HexTileItem(QGraphicsPolygonItem, BaseTileItem):
     """
@@ -115,11 +116,10 @@ class HexTileItem(QGraphicsPolygonItem, BaseTileItem):
             if self.editor_window and self.editor_window.paint_mode_active:
                 preset = self.editor_window.active_tile_preset
                 if preset:
-                    if self.editor_window.paint_mode_type == "visual":
-                        preset.apply_to(self.tile_data, logic=False)
-                    else:
-                        preset.apply_to(self.tile_data, logic=True)
-                    self.set_overlay_color(self.tile_data.overlay_color)
+                    logic = (self.editor_window.paint_mode_type != "visual")
+                    cmd = TileEditCommand(self.tile_data, preset, logic,
+                        description=f"Paint tile {self.tile_data.position}")
+                    self.editor_window.undo_stack.push(cmd)
 
         elif event.button() == Qt.RightButton:
             if self.editor_window and self.editor_window.paint_mode_active:
