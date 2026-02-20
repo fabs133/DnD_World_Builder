@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import random
 import re
+from core.logger import app_logger
 
 class Action(ABC):
     """
@@ -77,7 +78,7 @@ class Action(ABC):
 
         rolls = [random.randint(1, dice_sides) for _ in range(num_dice)]
         total = sum(rolls) + modifier
-        print(f"Rolling {expression}: {rolls} + {modifier} = {total}")
+        app_logger.debug(f"Rolling {expression}: {rolls} + {modifier} = {total}")
         return total
 
     @staticmethod
@@ -109,7 +110,7 @@ class Action(ABC):
             "duration": duration
         })
 
-        print(f"{target.name} gains effect: {effect_type} ({details}) for {duration} rounds.")
+        app_logger.info(f"{target.name} gains effect: {effect_type} ({details}) for {duration} rounds.")
 
 roll = Action.roll
 apply_effect = Action.apply_effect

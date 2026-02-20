@@ -1,6 +1,8 @@
+import logging
 import pytest
 
 from models.flow.action.action_validator import ActionValidator
+from core.logger import app_logger
 
 class NoValidateAction:
     pass
@@ -30,11 +32,11 @@ def test_validate_returns_boolean(result):
     assert ActionValidator.validate(action) is result
     assert ActionValidator.validate(action, game_state={"foo": "bar"}) is result
 
-def test_validate_catches_exception_and_returns_false(capsys):
+def test_validate_catches_exception_and_returns_false(caplog):
     action = ExceptionAction()
-    outcome = ActionValidator.validate(action)
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        outcome = ActionValidator.validate(action)
     assert outcome is False
 
-    # Should print the rejection message
-    captured = capsys.readouterr()
-    assert "[Validator] Action rejected: invalid action" in captured.out
+    # Should log the rejection message
+    assert "[Validator] Action rejected: invalid action" in caplog.text

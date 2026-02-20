@@ -1,5 +1,6 @@
 from registries.condition_registry import ConditionRegistry
 from registries.reaction_registry import ReactionRegistry
+from core.logger import app_logger
 
 class TriggerRegistry:
     """
@@ -133,13 +134,12 @@ class TriggerRegistry:
 
     def debug_print(self):
         """
-        Print debug information about all registered triggers.
+        Log debug information about all registered triggers.
         """
-        print("TriggerRegistry:")
+        app_logger.debug("TriggerRegistry:")
         for t in self._triggers:
             src = self.get_source(t)
-            # Show the event_type so tests can see "E1"
-            print(f"  {t.event_type} (from: {src})")
+            app_logger.debug(f"  {t.event_type} (from: {src})")
     
     def get_triggers_by_source(self, source_name):
         """

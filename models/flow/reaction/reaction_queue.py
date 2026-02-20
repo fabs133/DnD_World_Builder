@@ -1,3 +1,5 @@
+from core.logger import app_logger
+
 class ReactionQueue:
     """
     A queue to manage and resolve reaction objects.
@@ -18,7 +20,7 @@ class ReactionQueue:
             An object with at least a `resolve()` method.
         """
         cls._queue.append(reaction)
-        print(f"[ReactionQueue] Added reaction: {reaction}")
+        app_logger.debug(f"[ReactionQueue] Added reaction: {reaction}")
 
     @classmethod
     def blocked(cls):
@@ -40,11 +42,11 @@ class ReactionQueue:
         Each reaction's `resolve()` method is called. If an exception occurs,
         it is caught and printed, and resolution continues with the next reaction.
         """
-        print("[ReactionQueue] Resolving reactions...")
+        app_logger.info("[ReactionQueue] Resolving reactions...")
         while cls._queue:
             reaction = cls._queue.pop(0)
             try:
                 reaction.resolve()
             except Exception as e:
-                print(f"[ReactionQueue] Error resolving {reaction}: {e}")
-        print("[ReactionQueue] All reactions resolved.")
+                app_logger.error(f"[ReactionQueue] Error resolving {reaction}: {e}")
+        app_logger.info("[ReactionQueue] All reactions resolved.")

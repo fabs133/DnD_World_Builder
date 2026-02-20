@@ -1,15 +1,10 @@
-import sys
-import os
-
-# Ensure the parent directory of 'core' is in the Python path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from PyQt5.QtWidgets import (
     QApplication, QDialog, QVBoxLayout, QLabel, QPushButton,
     QLineEdit, QComboBox, QFormLayout, QFileDialog, QSpinBox, QWidget,
     QHBoxLayout, QTextEdit, QCheckBox, QListWidget
 )
 from core.settings_manager import SettingsManager
-from core.logger import AppLogger
+from core.logger import AppLogger, app_logger
 from ui.dialogs.trigger_editor_dialog import TriggerEditorDialog
 
 
@@ -29,7 +24,7 @@ class MainMenuDialog(QDialog):
         grid_type = self.settings.get("grid_type", "hex")
         grid_size = self.settings.get("grid_size", 30)
 
-        print(f"[MainMenuDialog] Using grid type: {grid_type}, size: {grid_size}")
+        app_logger.debug(f"[MainMenuDialog] Using grid type: {grid_type}, size: {grid_size}")
 
         layout = QVBoxLayout()
         layout.addWidget(QLabel("Create New Map"))

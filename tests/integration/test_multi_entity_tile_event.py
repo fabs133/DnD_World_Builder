@@ -1,3 +1,4 @@
+import logging
 import pytest
 
 from models.world.world import World
@@ -7,7 +8,7 @@ from core.gameCreation.trigger import Trigger
 from models.flow.condition.condition_list import AlwaysTrue
 from models.flow.reaction.reactions_list import AlertGamemaster
 
-def test_multiple_entities_on_same_tile_all_react(capsys):
+def test_multiple_entities_on_same_tile_all_react(caplog):
     # 1) Create a tiny 2×1 world
     world = World(
         world_version=1,
@@ -36,9 +37,9 @@ def test_multiple_entities_on_same_tile_all_react(capsys):
     world.place_entity(guard2, 0, 0)
 
     # 4) Fire the ON_ENTER event at (0,0)
-    EventBus.emit('ON_ENTER', {'position': (0, 0), 'world': world})
+    with caplog.at_level(logging.DEBUG):
+        EventBus.emit('ON_ENTER', {'position': (0, 0), 'world': world})
 
-    # 5) Both guards should have printed their alerts
-    out = capsys.readouterr().out
-    assert '[GM ALERT] Guard A alert!' in out
-    assert '[GM ALERT] Guard B alert!' in out
+    # 5) Both guards should have logged their alerts
+    assert '[GM ALERT] Guard A alert!' in caplog.text
+    assert '[GM ALERT] Guard B alert!' in caplog.text

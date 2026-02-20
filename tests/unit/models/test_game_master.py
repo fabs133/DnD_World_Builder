@@ -1,5 +1,7 @@
+import logging
 import pytest
 from core.gameCreation.event_bus import EventBus
+from core.logger import app_logger
 from models.game_master import Gamemaster
 
 class DummyEntity:
@@ -27,17 +29,18 @@ def test_add_entity_and_stat_blocks():
     assert e in gm.game_entities
     assert gm.stat_blocks["Hero"] == e.stats
 
-def test_encounter_and_event_prints(capsys):
+def test_encounter_and_event_prints(caplog):
     gm = Gamemaster()
 
     e = DummyEntity("Orc")
-    gm.encounter(e)
-    out1 = capsys.readouterr().out.strip()
-    assert out1 == "Encounter with Orc!"
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        gm.encounter(e)
+    assert "Encounter with Orc!" in caplog.text
 
-    gm.event("A surprise")
-    out2 = capsys.readouterr().out.strip()
-    assert out2 == "Event: A surprise"
+    caplog.clear()
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        gm.event("A surprise")
+    assert "Event: A surprise" in caplog.text
 
 def test_add_item_and_obstacle():
     gm = Gamemaster()
@@ -48,11 +51,11 @@ def test_add_item_and_obstacle():
     gm.add_obstacle("Rock")
     assert gm.temp_obstacles == ["Rock"]
 
-def test_loop_back_prints(capsys):
+def test_loop_back_prints(caplog):
     gm = Gamemaster()
-    gm.loop_back()
-    out = capsys.readouterr().out.strip()
-    assert "Oh, you thought you could get away" in out
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        gm.loop_back()
+    assert "Oh, you thought you could get away" in caplog.text
 
 def test_register_scene_trigger_subscribes(clear_subscriptions):
     gm = Gamemaster()

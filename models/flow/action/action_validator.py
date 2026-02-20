@@ -1,3 +1,4 @@
+from core.logger import app_logger
 
 class ActionValidator:
     @staticmethod
@@ -17,5 +18,5 @@ class ActionValidator:
         try:
             return action.validate(game_state)
         except Exception as e:
-            print(f"[Validator] Action rejected: {e}")
+            app_logger.warning(f"[Validator] Action rejected: {e}")
             return False

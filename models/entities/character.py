@@ -1,134 +1,67 @@
+from dataclasses import dataclass, field
+from typing import List, Dict, Optional, Any
 from models.entities.game_entity import GameEntity
 from models.spell import Spell
 import json
 
 
+@dataclass
 class Character(GameEntity):
     """
-    Class representing a character.
+    Dataclass representing a player character.
+
+    Inherits base entity behavior from GameEntity and adds
+    all D&D 5e character sheet fields.
     """
 
-    def __init__(
-        self,
-        name,
-        appearance,
-        backstory,
-        personality,
-        languages,
-        spellslots,
-        spellcasting_ability,
-        char_class,
-        char_class_features,
-        species,
-        species_traits,
-        subclass,
-        feats,
-        background,
-        level,
-        xp,
-        armor_class,
-        death_saves,
-        hp,
-        stats,
-        inventory,
-        training_proficiencies,
-        spells,
-        proficiency_bonus,
-        hit_dice,
-        saving_throws,
-        skills,
-        temporary_hp,
-        inspiration,
-        passive_perception,
-        conditions,
-        currency,
-        exhaustion_level,
-        armor,
-        weapons,
-        speed,
-        initiative,
-        resistances,
-        immunities,
-        vulnerabilities,
-    ):
-        """
-        Initialize a character.
+    name: str = ""
+    appearance: str = ""
+    backstory: str = ""
+    personality: str = ""
+    languages: List[str] = field(default_factory=list)
+    spellslots: Dict[str, Any] = field(default_factory=dict)
+    spellcasting_ability: Dict[str, Any] = field(default_factory=dict)
+    char_class: str = ""
+    char_class_features: Dict[str, Any] = field(default_factory=dict)
+    species: str = ""
+    species_traits: Dict[str, Any] = field(default_factory=dict)
+    subclass: str = ""
+    feats: List[str] = field(default_factory=list)
+    background: str = ""
+    level: int = 1
+    xp: int = 0
+    armor_class: int = 10
+    death_saves: Dict[str, Any] = field(default_factory=dict)
+    hp: int = 0
+    stats: Dict[str, Any] = field(default_factory=dict)
+    inventory: List[str] = field(default_factory=list)
+    training_proficiencies: Dict[str, Any] = field(default_factory=dict)
+    spells: List[Dict[str, Any]] = field(default_factory=list)
+    proficiency_bonus: int = 2
+    hit_dice: Dict[str, Any] = field(default_factory=dict)
+    saving_throws: Dict[str, Any] = field(default_factory=dict)
+    skills: Dict[str, Any] = field(default_factory=dict)
+    temporary_hp: int = 0
+    inspiration: bool = False
+    passive_perception: int = 10
+    conditions: List[str] = field(default_factory=list)
+    currency: Dict[str, Any] = field(default_factory=dict)
+    exhaustion_level: int = 0
+    armor: List[str] = field(default_factory=list)
+    weapons: List[str] = field(default_factory=list)
+    speed: int = 30
+    initiative: int = 0
+    resistances: List[str] = field(default_factory=list)
+    immunities: List[str] = field(default_factory=list)
+    vulnerabilities: List[str] = field(default_factory=list)
 
-        :param str name: Name of the character
-        :param str appearance: Appearance of the character
-        :param str backstory: Backstory of the character
-        :param str personality: Personality of the character
-        :param list languages: List of languages known by the character
-        :param dict spellslots: Dictionary of spell slots
-        :param dict spellcasting_ability: Dictionary of spellcasting ability
-        :param str char_class: Class of the character
-        :param dict char_class_features: Dictionary of class features
-        :param str species: Species of the character
-        :param dict species_traits: Dictionary of species traits
-        :param str subclass: Subclass of the character
-        :param list feats: List of feats
-        :param str background: Background of the character
-        :param int level: Level of the character
-        :param int xp: Experience points of the character
-        :param int armor_class: Armor class of the character
-        :param dict death_saves: Dictionary of death saves
-        :param int hp: Hit points of the character
-        :param dict stats: Dictionary of stats
-        :param list inventory: List of items in the inventory
-        :param dict training_proficiencies: Dictionary of training proficiencies
-        :param list spells: List of spells
-        :param int proficiency_bonus: Proficiency bonus of the character
-        :param dict hit_dice: Dictionary of hit dice
-        :param dict saving_throws: Dictionary of saving throws
-        :param dict skills: Dictionary of skills
-        :param int temporary_hp: Temporary hit points of the character
-        :param bool inspiration: Boolean indicating if the character has inspiration
-        :param int passive_perception: Passive perception of the character
-        :param list conditions: List of conditions affecting the character
-        :param dict currency: Dictionary of currency
-        :param int exhaustion_level: Exhaustion level of the character
-        :param list armor: List of armor
-        :param list weapons: List of weapons
-        :param int speed: Speed of the character
-        :param int initiative: Initiative of the character
-        :param list resistances: List of resistances
-        :param list immunities: List of immunities
-        :param list vulnerabilities: List of vulnerabilities
-        """
-        super().__init__(name, "player")
-        self.name = name
-        self.appearance = appearance
-        self.backstory = backstory
-        self.personality = personality
-        self.languages = languages
-        self.spellslots = spellslots
-        self.spellcasting_ability = spellcasting_ability
-        self.char_class = char_class
-        self.char_class_features = char_class_features
-        self.species = species
-        self.species_traits = species_traits
-        self.subclass = subclass
-        self.feats = feats
-        self.background = background
-        self.level = level
-        self.xp = xp
-        self.proficiency_bonus = proficiency_bonus
-        self.hit_dice = hit_dice
-        self.armor_class = armor_class
-        self.saving_throws = saving_throws
-        self.skills = skills
-        self.death_saves = death_saves
-        self.hp = hp
-        self.temporary_hp = temporary_hp
-        self.stats = stats
-        self.inventory = inventory
-        self.training_proficiencies = training_proficiencies
-        self.spells = spells
-        self.inspiration = inspiration
-        self.passive_perception = passive_perception
-        self.conditions = conditions
-        self.currency = currency
-        self.spell_details = {spell['name']: spell for spell in spells}  # Store detailed spell information
+    def __post_init__(self):
+        """Initialize the GameEntity base class and derived fields."""
+        super().__init__(self.name, "player", stats=self.stats, inventory=self.inventory)
+        self.spell_details = {
+            spell['name']: spell for spell in self.spells
+            if isinstance(spell, dict) and 'name' in spell
+        }
 
     def take_damage(self, damage):
         """
@@ -144,7 +77,7 @@ class Character(GameEntity):
 
         :param int amount: Amount of healing to apply
         """
-        self.hp = min(self.hp + amount, self.stats['max_hp'])
+        self.hp = min(self.hp + amount, self.stats.get('max_hp', self.hp + amount))
 
     def cast_spell(self, spell_name, target):
         """
@@ -168,8 +101,7 @@ class Character(GameEntity):
                 healing=spell_data.get('healing'),
                 effect=spell_data.get('effect')
             )
-            # The spell object will be automatically cleaned up by Python's garbage collector
-            del spell  # Destroy the spell object after casting
+            spell.cast(self, target)
 
     def save_to_db(self, db_conn):
         """
@@ -182,10 +114,9 @@ class Character(GameEntity):
         :type db_conn: sqlite3.Connection
         """
         cursor = db_conn.cursor()
-        # Serialize JSON fields
         stats_json = json.dumps(self.stats)
-        inv_json   = json.dumps(self.inventory)
-        spells_json= json.dumps(self.spells)
+        inv_json = json.dumps(self.inventory)
+        spells_json = json.dumps(self.spells)
 
         cursor.execute(
             'INSERT INTO characters (name, "class", level, hp, stats, inventory, spells)'

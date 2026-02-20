@@ -11,6 +11,7 @@ from models.tiles.hex_tile_item import HexTileItem
 from PyQt5.QtWidgets import QUndoStack
 from datetime import datetime
 from core.backup_manager import BackupManager
+from core.logger import app_logger
 from pathlib import Path
 
 
@@ -220,7 +221,7 @@ class MainWindow(QMainWindow):
         with open(map_path, "w", encoding="utf-8") as f:
             json.dump(full_map_data, f, indent=2)
 
-        print(f"[💾 Saved] Map written to {map_path}")
+        app_logger.info(f"[Saved] Map written to {map_path}")
 
         # Only backup if this was overwriting a file
         if should_backup:
@@ -274,7 +275,7 @@ class MainWindow(QMainWindow):
         bundle_path.rename(final_path)
         temp_map_path.unlink()
 
-        print(f"[📦 Scenario Exported] {final_path}")
+        app_logger.info(f"[Exported] Scenario exported to {final_path}")
 
         # Backup if user overwrote an existing scenario
         if should_backup:
@@ -313,7 +314,7 @@ class MainWindow(QMainWindow):
                 tile_data.tile_item = tile
                 self.scene.addItem(tile)
 
-        print(f"[🧱 Grid Initialized] Default map with {rows} rows x {cols} cols created.")
+        app_logger.info(f"[Grid Initialized] Default map with {rows} rows x {cols} cols created.")
 
 
     def load_map_from_file(self, filename):
@@ -330,11 +331,11 @@ class MainWindow(QMainWindow):
             with open(filename, "r", encoding="utf-8") as f:
                 raw_data = json.load(f)
         except Exception as e:
-            print(f"[❌ Load Error] Could not read file: {e}")
+            app_logger.error(f"[Load Error] Could not read file: {e}")
             return
 
         version = raw_data.get("version", "unknown")
-        print(f"[📂 Loading Map] Version: {version}, Meta: {raw_data.get('meta', {})}")
+        app_logger.info(f"[Loading Map] Version: {version}, Meta: {raw_data.get('meta', {})}")
 
         meta = raw_data.get("meta", {})
         self.grid_type = meta.get("grid_type", "square")
@@ -344,7 +345,7 @@ class MainWindow(QMainWindow):
             rows = meta.get("rows", 25)
             cols = meta.get("cols", 25)
             self.init_grid(rows, cols)
-            print(f"[🧱 Grid Initialized] Empty map loaded with {rows} rows x {cols} cols")
+            app_logger.info(f"[Grid Initialized] Empty map loaded with {rows} rows x {cols} cols")
             return
 
         for td_data in tiles:
@@ -369,7 +370,7 @@ class MainWindow(QMainWindow):
             tile_data.tile_item = tile
             self.scene.addItem(tile)
 
-        print(f"[✅ Map Loaded] {len(tiles)} tiles loaded from {filename}")
+        app_logger.info(f"[Loaded] {len(tiles)} tiles loaded from {filename}")
 
     def create_button(self, text, callback, checkable=False, enabled=True):
         """

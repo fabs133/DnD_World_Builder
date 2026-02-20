@@ -21,6 +21,7 @@ def tile_setup(qtbot, mocker):
     tile_data = mocker.Mock()
     tile_data.overlay_color = '#AAAAAA'
     tile_data.position = (5, 5)
+    tile_data.background_image = None
 
     # Create the SquareTileItem and wrap in a QGraphicsScene/View
     tile = SquareTileItem(0, 0, 50, tile_data=tile_data, editor_window=mock_editor)

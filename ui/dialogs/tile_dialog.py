@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QPixmap
 from models.tiles.tile_data import TileTag, TerrainType, TileData
+from core.logger import app_logger
 from .entity_editor_dialog import EntityEditorDialog
 from .trigger_editor.editor_dialog import TriggerEditorDialog
 from .tile_edit.tile_edit_command import TileEditCommand
@@ -87,7 +88,7 @@ class TileDialog(QDialog):
         layout.addRow("Position:", QLabel(str(tile_data.position)))
 
         # --- TERRAIN ---
-        print(f"Debug print: {tile_data.terrain}")
+        app_logger.debug(f"Tile terrain: {tile_data.terrain}")
         self.terrain_input = QComboBox()
         self.terrain_input.addItems([t.name for t in TerrainType])
         self.terrain_input.setCurrentText(tile_data.terrain.name)
@@ -104,7 +105,7 @@ class TileDialog(QDialog):
         layout.addRow(QLabel("Tags:"), tag_box)
 
         inherited_attributes = [attr for attr in dir(tile_data) if not attr.startswith('__') and not callable(getattr(tile_data, attr))]
-        print(f"Inherited attributes: {inherited_attributes}")
+        app_logger.debug(f"Inherited attributes: {inherited_attributes}")
 
         # --- LABEL ---
         self.label_input = QLineEdit(tile_data.user_label or "")

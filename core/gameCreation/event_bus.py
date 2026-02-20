@@ -1,10 +1,25 @@
 from core.logger import app_logger
 
+
 class EventBus:
     """
-    A simple event bus for subscribing to and emitting events within the game.
+    Singleton event bus for subscribing to and emitting events within the game.
+
+    Uses a proper singleton pattern where subscriber state lives on the
+    single instance rather than at the class level. The public API remains
+    classmethod-based for convenience.
     """
-    _subscribers = {}
+    _instance = None
+
+    def __init__(self):
+        self._subscribers = {}
+
+    @classmethod
+    def _get_instance(cls):
+        """Return (and lazily create) the singleton instance."""
+        if cls._instance is None:
+            cls._instance = cls()
+        return cls._instance
 
     @classmethod
     def subscribe(cls, event_type, callback):
@@ -16,10 +31,11 @@ class EventBus:
         :param callback: The function to call when the event is emitted.
         :type callback: callable
         """
-        if event_type not in cls._subscribers:
-            cls._subscribers[event_type] = []
-        if callback not in cls._subscribers[event_type]:
-            cls._subscribers[event_type].append(callback)
+        inst = cls._get_instance()
+        if event_type not in inst._subscribers:
+            inst._subscribers[event_type] = []
+        if callback not in inst._subscribers[event_type]:
+            inst._subscribers[event_type].append(callback)
 
     @classmethod
     def unsubscribe(cls, event_type, callback):
@@ -31,9 +47,10 @@ class EventBus:
         :param callback: The function to remove from the subscriber list.
         :type callback: callable
         """
-        if event_type in cls._subscribers:
+        inst = cls._get_instance()
+        if event_type in inst._subscribers:
             try:
-                cls._subscribers[event_type].remove(callback)
+                inst._subscribers[event_type].remove(callback)
             except ValueError:
                 pass
 
@@ -50,6 +67,7 @@ class EventBus:
         :param data: The event data, must be a dict. Should contain 'position' and 'world' for spatial events.
         :type data: dict
         """
+        inst = cls._get_instance()
         pos   = data.get("position")
         world = data.get("world")
 
@@ -69,7 +87,7 @@ class EventBus:
                         ent.handle_event(event_type, data)
         else:
             # global broadcast
-            for cb in cls._subscribers.get(event_type, []):
+            for cb in inst._subscribers.get(event_type, []):
                 cb(data)
 
     @classmethod
@@ -79,5 +97,6 @@ class EventBus:
 
         Emits a warning via the application logger.
         """
+        inst = cls._get_instance()
         app_logger.warning("EventBus reset — all subscribers cleared.")
-        cls._subscribers.clear()
+        inst._subscribers.clear()

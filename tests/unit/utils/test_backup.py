@@ -1,7 +1,9 @@
+import logging
 import os
 import shutil
 import filecmp
 import pytest
+from core.logger import app_logger
 from utils.backup import create_backup
 
 def test_backup_nonexistent_path(tmp_path):
@@ -10,13 +12,14 @@ def test_backup_nonexistent_path(tmp_path):
         create_backup(str(missing))
     assert str(missing) in str(exc.value)
 
-def test_backup_creates_file_and_returns_path(tmp_path, capsys):
+def test_backup_creates_file_and_returns_path(tmp_path, caplog):
     # create a dummy file
     orig = tmp_path / "data.txt"
     orig.write_text("hello world", encoding="utf-8")
 
     # call create_backup
-    backup_path = create_backup(str(orig))
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        backup_path = create_backup(str(orig))
     # it should return the .bak path
     assert backup_path == f"{orig}.bak"
 
@@ -27,9 +30,8 @@ def test_backup_creates_file_and_returns_path(tmp_path, capsys):
     # contents should match
     assert filecmp.cmp(orig, bak, shallow=False)
 
-    # print message was emitted
-    captured = capsys.readouterr()
-    assert f"Backup created: {bak}" in captured.out
+    # log message was emitted
+    assert f"Backup created: {bak}" in caplog.text
 
 def test_backup_overwrites_existing_backup(tmp_path):
     # create original and an existing .bak

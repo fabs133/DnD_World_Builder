@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QGraphicsItemGroup, QGraphicsRectItem, QGraphicsTextItem
 from PyQt5.QtGui import QBrush, QPen, QColor
 from PyQt5.QtCore import QRectF, Qt, QPointF
+from core.logger import app_logger
 
 class TriggerNodeItem(QGraphicsItemGroup):
     """
@@ -64,7 +65,7 @@ class TriggerNodeItem(QGraphicsItemGroup):
         :return: The output anchor point (right middle of the node).
         :rtype: QPointF
         """
-        print(f"[DEBUG - TriggerNodeItem] Output anchor position: ({self.width}, {self.height / 2})")
+        app_logger.debug(f"TriggerNodeItem output anchor position: ({self.width}, {self.height / 2})")
         return self.mapToScene(QPointF(self.width, self.height / 2))
 
     def get_input_anchor(self) -> QPointF:
@@ -75,8 +76,8 @@ class TriggerNodeItem(QGraphicsItemGroup):
         :rtype: QPointF
         """
         point = self.mapToScene(QPointF(0, self.height / 2))
-        print(f"[DEBUG - TriggerNodeItem] Input anchor position: (0, {self.height / 2})")
-        print(f"[DEBUG - TriggerNodeItem] Input anchor (scene): {point}, local pos: {self.pos()}")
+        app_logger.debug(f"TriggerNodeItem input anchor position: (0, {self.height / 2})")
+        app_logger.debug(f"TriggerNodeItem input anchor (scene): {point}, local pos: {self.pos()}")
         return point
 
     def update_label(self):

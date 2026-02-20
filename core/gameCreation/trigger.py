@@ -1,6 +1,6 @@
 # core/gameCreation/trigger.py
-import traceback
 import warnings
+from core.logger import app_logger
 from models.flow.skill_check import SkillCheck
 from models.flow.reaction.reactions_list import ApplyDamage
 from registries.trigger_registry import global_trigger_registry
@@ -54,15 +54,13 @@ class Trigger:
     @label.setter
     def label(self, value):
         """
-        Sets the label for this trigger and prints a stack trace if changed.
+        Sets the label for this trigger.
 
         :param value: The new label.
         :type value: str
         """
         if value != self._label:
-            print(f"\n[⚠️ TRIGGER LABEL CHANGED] {self._label} ➜ {value}")
-            print("[Trace] Trigger label modified here:")
-            traceback.print_stack(limit=5)
+            app_logger.info(f"[Trigger] Label changed: {self._label} -> {value}")
         self._label = value
 
     def check_and_react(self, event_data):
@@ -81,7 +79,7 @@ class Trigger:
         # 2) Cooldown check (only if we have both a cooldown *and* a turn count)
         if self.cooldown and ct is not None and self._last_fired_turn is not None:
             if (ct - self._last_fired_turn) < self.cooldown:
-                print(f"[Trigger] {self.label} is on cooldown — skipped.")
+                app_logger.debug(f"[Trigger] {self.label} is on cooldown — skipped.")
                 return
 
         # 3) Figure out success for SkillCheck vs. plain callables
@@ -95,11 +93,11 @@ class Trigger:
             success = bool(self.condition(event_data))
 
         if not success:
-            print(f"[Trigger] {self.label} condition not met — skipped.")
+            app_logger.debug(f"[Trigger] {self.label} condition not met — skipped.")
             return
 
         # 4) Fire!
-        print(f"[Trigger] {self.label} from {self.source or 'unknown'} activated.")
+        app_logger.info(f"[Trigger] {self.label} from {self.source or 'unknown'} activated.")
         self._react(event_data)
 
         # 5) Record for cooldown (if applicable)
@@ -108,7 +106,7 @@ class Trigger:
 
         # 6) Chain to next trigger
         if self.next_trigger:
-            print(f"[Trigger] Chaining to: {self.next_trigger.label}")
+            app_logger.info(f"[Trigger] Chaining to: {self.next_trigger.label}")
             self.next_trigger.check_and_react(event_data)
 
     def _react(self, event_data):

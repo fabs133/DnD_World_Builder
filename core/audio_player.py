@@ -1,4 +1,5 @@
 from pathlib import Path
+from core.logger import app_logger
 
 try:
     from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
@@ -44,25 +45,25 @@ class AudioPlayer:
         :type file_path: str or Path
         """
         if not self._player:
-            print(f"[AudioPlayer] Cannot play — QtMultimedia not available: {file_path}")
+            app_logger.warning(f"[AudioPlayer] Cannot play — QtMultimedia not available: {file_path}")
             return
 
         path = Path(file_path)
         if not path.exists():
-            print(f"[AudioPlayer] File not found: {file_path}")
+            app_logger.warning(f"[AudioPlayer] File not found: {file_path}")
             return
 
         url = QUrl.fromLocalFile(str(path.resolve()))
         content = QMediaContent(url)
         self._player.setMedia(content)
         self._player.play()
-        print(f"[AudioPlayer] Playing: {file_path}")
+        app_logger.info(f"[AudioPlayer] Playing: {file_path}")
 
     def stop(self):
         """Stop any currently playing audio."""
         if self._player:
             self._player.stop()
-            print("[AudioPlayer] Stopped.")
+            app_logger.debug("[AudioPlayer] Stopped.")
 
     def is_playing(self):
         """

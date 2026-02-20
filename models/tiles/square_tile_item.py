@@ -1,3 +1,4 @@
+from core.logger import app_logger
 from PyQt5.QtWidgets import QGraphicsRectItem
 from PyQt5.QtCore import QRectF, Qt
 from PyQt5.QtGui import QBrush, QColor, QPen, QPixmap
@@ -95,7 +96,7 @@ class SquareTileItem(QGraphicsRectItem, BaseTileItem):
             if self.editor_window and self.editor_window.paint_mode_active:
                 from models.tiles.tile_preset import TilePreset
                 self.editor_window.active_tile_preset = TilePreset.from_tile_data(self.tile_data)
-                print("[Paint Mode] Sampled preset from tile at", self.tile_data.position)
+                app_logger.debug(f"[Paint Mode] Sampled preset from tile at {self.tile_data.position}")
             else:
                 self.handle_right_click(event)
 

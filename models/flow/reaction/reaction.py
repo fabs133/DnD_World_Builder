@@ -1,3 +1,5 @@
+from core.logger import app_logger
+
 class Reaction:
     """
     Represents a reaction to a trigger action in the flow.
@@ -35,5 +37,5 @@ class Reaction:
         -------
         None
         """
-        print(f"{self.reactor.name} reacts to {self.trigger_action}!")
+        app_logger.info(f"{self.reactor.name} reacts to {self.trigger_action}!")
         # Example: negate the action or inflict damage

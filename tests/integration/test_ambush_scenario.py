@@ -1,4 +1,5 @@
 # tests/integration/test_ambush_scenario.py
+import logging
 import pytest
 from core.gameCreation.event_bus import EventBus
 from models.world.world import World
@@ -28,7 +29,7 @@ def ambush_world():
     return world
 
 
-def test_delayed_trap_activation_and_guard_movement(ambush_world, capsys):
+def test_delayed_trap_activation_and_guard_movement(ambush_world, caplog):
     world = ambush_world
     # Create trap that always schedules activation in 2 turns
     trap = GameEntity('Spike Trap', 'trap')
@@ -62,35 +63,37 @@ def test_delayed_trap_activation_and_guard_movement(ambush_world, capsys):
         world.turn_manager.schedule_in(1, make_move(guard), None)
 
     # Player steps on trap tile at turn 0
-    data = {'position': (0, 0), 'world': world}
-    EventBus.emit('ON_ENTER', data)
+    with caplog.at_level(logging.DEBUG):
+        data = {'position': (0, 0), 'world': world}
+        EventBus.emit('ON_ENTER', data)
 
     # After initial emit, no alerts and guards at start_pos
-    out = capsys.readouterr().out
-    assert 'alerted!' not in out
+    assert 'alerted!' not in caplog.text
     assert all(g.position[0] == 2 for g in guards)
 
     # Advance to turn 1: guards move closer
-    world.turn_manager.next_turn()
-    out = capsys.readouterr().out
+    caplog.clear()
+    with caplog.at_level(logging.DEBUG):
+        world.turn_manager.next_turn()
     # Guards should have moved to x=1
     assert all(g.position[0] == 1 for g in guards)
 
     # Advance to turn 2: trap activates and notifies guards
-    world.turn_manager.next_turn()
-    out = capsys.readouterr().out
-    assert '[GM ALERT] Guard A alerted!' in out
-    assert '[GM ALERT] Guard B alerted!' in out
+    caplog.clear()
+    with caplog.at_level(logging.DEBUG):
+        world.turn_manager.next_turn()
+    assert '[GM ALERT] Guard A alerted!' in caplog.text
+    assert '[GM ALERT] Guard B alerted!' in caplog.text
 
 
-def test_trap_disarmed_no_activation_but_guard_sees_player(ambush_world, capsys):
+def test_trap_disarmed_no_activation_but_guard_sees_player(ambush_world, caplog):
     world = ambush_world
     # Create trap that disarms on detect and otherwise schedules activation
     trap = GameEntity('Spike Trap', 'trap')
     def disarm(data): data['disarmed'] = True
     # Detection trigger disarms and still schedules activation in 2 turns
     trap.register_trigger(
-        Trigger('ON_ENTER', AlwaysTrue(), 
+        Trigger('ON_ENTER', AlwaysTrue(),
                 lambda data: [disarm(data), world.turn_manager.schedule_in(2, trap_activate_reaction, data)])
     )
     world.place_entity(trap, 0, 0)
@@ -103,15 +106,16 @@ def test_trap_disarmed_no_activation_but_guard_sees_player(ambush_world, capsys)
     world.place_entity(guard, 2, 0)
 
     # Player steps on trap and disarms it at turn 0
-    data = {'position': (0, 0), 'world': world}
-    EventBus.emit('ON_ENTER', data)
+    with caplog.at_level(logging.DEBUG):
+        data = {'position': (0, 0), 'world': world}
+        EventBus.emit('ON_ENTER', data)
 
     # Guard sees player immediately
-    out = capsys.readouterr().out
-    assert '[GM ALERT] Guard C saw player!' in out
+    assert '[GM ALERT] Guard C saw player!' in caplog.text
 
     # Advance turns beyond delay: trap activation should not fire
-    world.turn_manager.next_turn()
-    world.turn_manager.next_turn()
-    out = capsys.readouterr().out
-    assert 'alerted!' not in out  # no TRAP_ALERT fired
+    caplog.clear()
+    with caplog.at_level(logging.DEBUG):
+        world.turn_manager.next_turn()
+        world.turn_manager.next_turn()
+    assert 'alerted!' not in caplog.text  # no TRAP_ALERT fired

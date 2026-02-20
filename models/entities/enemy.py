@@ -111,7 +111,6 @@ class Enemy(GameEntity):
                 effect=spell_data.get('effect')
             )
             spell.cast(self, target)
-            del spell  # Destroy the spell object after casting
 
     def save_to_db(self, db_conn):
         """

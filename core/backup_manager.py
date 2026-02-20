@@ -1,9 +1,8 @@
 from pathlib import Path
-import datetime
+from datetime import datetime
 import shutil
+from core.logger import app_logger
 
-# Ensure datetime.now remains unchanged if mocked or altered externally
-datetime.now = datetime.datetime.now
 
 class BackupManager:
     """
@@ -35,7 +34,7 @@ class BackupManager:
         :param map_path: Path to the map file to back up.
         :type map_path: Path
         """
-        print(f"[DEBUG] Backing up map: {map_path}")
+        app_logger.debug(f"Backing up map: {map_path}")
         if not map_path.exists():
             return
 
@@ -52,7 +51,7 @@ class BackupManager:
         :param base_name: Base name of the map file (without timestamp).
         :type base_name: str
         """
-        print(f"[DEBUG] Pruning old backups for: {base_name}")
+        app_logger.debug(f"Pruning old backups for: {base_name}")
         backups = sorted(
             self.backup_dir.glob(f"{base_name}_*.json"),
             key=lambda p: p.stem,

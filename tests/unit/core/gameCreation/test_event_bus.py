@@ -33,7 +33,8 @@ def test_duplicate_subscription():
     EventBus.subscribe("DUPLICATE_TEST", handler)
     EventBus.subscribe("DUPLICATE_TEST", handler)
 
-    assert EventBus._subscribers["DUPLICATE_TEST"].count(handler) == 1
+    inst = EventBus._get_instance()
+    assert inst._subscribers["DUPLICATE_TEST"].count(handler) == 1
 
 
 def test_unsubscribe_successful():
@@ -59,4 +60,5 @@ def test_reset_clears_all():
     EventBus.subscribe("B", lambda _: None)
     EventBus.reset()
 
-    assert EventBus._subscribers == {}
+    inst = EventBus._get_instance()
+    assert inst._subscribers == {}

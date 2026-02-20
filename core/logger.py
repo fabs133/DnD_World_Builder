@@ -43,7 +43,7 @@ class AppLogger:
         # build a dedicated logger instance
         self.logger = logging.getLogger(f"DnDAppLogger_{timestamp}")
         self.logger.setLevel(level)
-        self.logger.propagate = False
+        self.logger.propagate = True
 
         # attach a FileHandler directly
         handler = logging.FileHandler(log_path, encoding="utf-8")
@@ -69,7 +69,7 @@ class AppLogger:
             try:
                 os.remove(old_log)
             except Exception as e:
-                print(f"Warning: Failed to delete old log {old_log}: {e}")
+                logging.warning(f"Failed to delete old log {old_log}: {e}")
 
     def get_logger(self):
         """

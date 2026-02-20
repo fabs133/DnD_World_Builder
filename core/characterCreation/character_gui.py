@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import (
 )
 
 from models.entities.game_entity import GameEntity
+from core.logger import app_logger
 
 CLASS_TO_SPELL_ABILITY = {
     "Bard": "CHA", "Cleric": "WIS", "Druid": "WIS", "Paladin": "CHA",
@@ -19,13 +20,8 @@ class CharacterCreationWindow(QWidget):
         if api is not None:
             self.api_handler = api
         else:
-            import sys
-            import os
-            sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-            from db_api_handler import LocalAPIHandler
-            resolved_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data_', 'rulebook_json'))
-            self.api_handler = LocalAPIHandler(resolved_path)
-            print("[DEBUG] API categories loaded:", self.api_handler.filenames.keys())
+            from core.db_api_handler import LocalAPIHandler
+            self.api_handler = LocalAPIHandler(base_path)
 
         self.speed_values = []
         self.races_names = []
@@ -244,7 +240,7 @@ class CharacterCreationWindow(QWidget):
 
             self.update_stat_modifiers()
             self.update_summary()
-            print(f"[IMPORT] Loaded character: {entity.name}")
+            app_logger.info(f"[CharacterGUI] Loaded character: {entity.name}")
 
         except Exception as e:
             QMessageBox.critical(self, "Import Error", f"Failed to import character: {e}")
@@ -299,7 +295,7 @@ class CharacterCreationWindow(QWidget):
             entity = self.to_game_entity()
             with open(f'{file_name}.entity.json', 'w') as file:
                 json.dump(entity.to_dict(), file, indent=4)
-            print(f"[EXPORT] GameEntity saved: {file_name}.entity.json")
+            app_logger.info(f"[CharacterGUI] GameEntity saved: {file_name}.entity.json")
 
 
 
@@ -401,7 +397,7 @@ class CharacterCreationWindow(QWidget):
         if file_name:
             with open(f'{file_name}.json', 'w') as file:
                 json.dump(self.collect_data(), file, indent=4)
-            print("Data exported successfully")
+            app_logger.info("[CharacterGUI] Data exported successfully")
 
     def validate_combat_inputs(self):
         ac = self.armor_class_input.value()
@@ -494,7 +490,7 @@ class CharacterCreationWindow(QWidget):
                 bonus = bonuses[0]['bonus'] if bonuses else 0
                 self.speed_label.setText(str(walk_speed + bonus))
         except Exception as e:
-            print(f"Error loading speed: {e}")
+            app_logger.error(f"[CharacterGUI] Error loading speed: {e}")
 
     def load_classes(self):
         data = self.api_handler.get('classes')
@@ -528,7 +524,7 @@ class CharacterCreationWindow(QWidget):
                 self.stats_warnings[changed_stat].setVisible(True)
             else:
                 # Show generic warning, if desired
-                print("[DEBUG] Total cost exceeds 27, but no stat specified for warning.")
+                app_logger.debug("[CharacterGUI] Total cost exceeds 27, but no stat specified for warning.")
             self.export_button.setEnabled(False)
                     # Still update summary and perception
             self.update_passive_perception()

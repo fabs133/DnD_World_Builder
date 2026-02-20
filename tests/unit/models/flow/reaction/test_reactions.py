@@ -1,5 +1,7 @@
+import logging
 import pytest
 from models.flow.reaction.reactions_list import ApplyDamage, AlertGamemaster
+from core.logger import app_logger
 
 
 class DummyTarget:
@@ -20,12 +22,12 @@ def test_apply_damage_reduces_hp():
     assert ("fire", 10) in target.damage_log
 
 
-def test_apply_damage_no_target(capfd):
+def test_apply_damage_no_target(caplog):
     reaction = ApplyDamage(damage_type="cold", amount=5)
-    reaction({})  # No target
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        reaction({})  # No target
 
-    captured = capfd.readouterr()
-    assert "missing target" in captured.out.lower()
+    assert "missing target" in caplog.text.lower()
 
 
 
@@ -38,13 +40,13 @@ def test_apply_damage_serialization_roundtrip():
     assert loaded.amount == 12
 
 
-def test_alert_gamemaster_prints_message(capsys):
+def test_alert_gamemaster_prints_message(caplog):
     msg = "A trap was triggered!"
     reaction = AlertGamemaster(message=msg)
 
-    reaction({})  # No need for real data yet
-    captured = capsys.readouterr()
-    assert msg in captured.out
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        reaction({})  # No need for real data yet
+    assert msg in caplog.text
 
 
 def test_alert_gamemaster_serialization_roundtrip():
@@ -54,9 +56,9 @@ def test_alert_gamemaster_serialization_roundtrip():
 
     assert loaded.message == "Danger ahead"
 
-def test_apply_damage_target_wrong_type(capfd):
+def test_apply_damage_target_wrong_type(caplog):
     reaction = ApplyDamage("acid", 8)
-    reaction({"target": "not a GameEntity"})
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        reaction({"target": "not a GameEntity"})
 
-    captured = capfd.readouterr()
-    assert "missing target" in captured.out.lower()
+    assert "missing target" in caplog.text.lower()

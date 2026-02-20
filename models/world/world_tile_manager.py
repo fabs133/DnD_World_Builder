@@ -1,4 +1,5 @@
 from models.tiles.tile_data import TileData
+from core.logger import app_logger
 
 class WorldTileManager:
     """
@@ -38,7 +39,7 @@ class WorldTileManager:
             raise ValueError(f"Cannot place {entity.name} at invalid tile ({x},{y})")
         entity.position = (x, y)
         self.entities.setdefault((x, y), []).append(entity)
-        print(f"Placed {entity.name} at {entity.position}")
+        app_logger.info(f"Placed {entity.name} at {entity.position}")
 
     def get_entities_at(self, x, y):
         """
@@ -115,9 +116,9 @@ class WorldTileManager:
         """
         if self.is_valid_tile(new_x, new_y):
             entity.position = (new_x, new_y)
-            print(f"{entity.name} moved to tile ({new_x}, {new_y})")
+            app_logger.info(f"{entity.name} moved to tile ({new_x}, {new_y})")
         else:
-            print(f"Invalid move for {entity.name}.")
+            app_logger.warning(f"Invalid move for {entity.name}.")
 
     def display_world(self):
         """
@@ -125,4 +126,4 @@ class WorldTileManager:
         """
         for y in range(self.height):
             row = "".join("[ ]" for x in range(self.width))
-            print(row)
+            app_logger.debug(row)
