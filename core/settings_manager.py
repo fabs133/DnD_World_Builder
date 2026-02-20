@@ -11,7 +11,7 @@ DEFAULT_SETTINGS = {
     "default_rows": 25,
     "default_cols": 25,
     "grid_size": 50,
-    "theme": "light",
+    "theme": "dark_teal.xml",
     "last_profile_used": None,
     "recent_files": [],
 }

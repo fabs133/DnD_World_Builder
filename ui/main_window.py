@@ -14,6 +14,27 @@ from core.backup_manager import BackupManager
 from pathlib import Path
 
 
+def hex_tile_center(row, col, hex_size):
+    """Calculate the pixel center of a flat-top hex tile at a given grid position.
+
+    For flat-top hexagons with radius *hex_size*:
+        - horizontal spacing = 1.5 * hex_size  (3/4 of the hex width)
+        - vertical spacing   = sqrt(3) * hex_size  (full hex height)
+        - odd columns are offset down by half the vertical spacing
+
+    :param row: Row index in the grid.
+    :param col: Column index in the grid.
+    :param hex_size: Radius of each hexagon (center to vertex).
+    :return: (x, y) pixel coordinates for the hex center.
+    :rtype: tuple[float, float]
+    """
+    horiz = 1.5 * hex_size
+    vert = math.sqrt(3) * hex_size
+    x = col * horiz
+    y = row * vert + (col % 2) * (vert / 2)
+    return x, y
+
+
 class MainWindow(QMainWindow):
     """
     Main application window for the DnD Map Editor.
@@ -134,17 +155,9 @@ class MainWindow(QMainWindow):
         :param cols: Number of columns.
         :param hex_size: Size of each hex tile.
         """
-        width = 2 * hex_size
-        height = math.sqrt(3) * hex_size
-        horizontal_spacing = width * 0.75
-        vertical_spacing = height
-
         for row in range(rows):
             for col in range(cols):
-                x = col * horizontal_spacing
-                y = row * vertical_spacing
-                if col % 2 == 1:
-                    y += (vertical_spacing / 2) + 2
+                x, y = hex_tile_center(row, col, hex_size)
                 center = QPointF(x, y)
                 tile_id = f"{row}_{col}"
                 tile_data = TileData(tile_id=tile_id, position=(row, col))
@@ -290,14 +303,7 @@ class MainWindow(QMainWindow):
 
                 elif self.grid_type == "hex":
                     hex_size = 30
-                    width = 2 * hex_size
-                    height = math.sqrt(3) * hex_size
-                    horizontal_spacing = width * 0.75
-                    vertical_spacing = height
-                    x = col * horizontal_spacing
-                    y = row * vertical_spacing
-                    if col % 2 == 1:
-                        y += (vertical_spacing / 2) + 2
+                    x, y = hex_tile_center(row, col, hex_size)
                     center = QPointF(x, y)
                     tile = HexTileItem(center, hex_size, tile_data, self)
 
@@ -353,14 +359,7 @@ class MainWindow(QMainWindow):
 
             elif self.grid_type == "hex":
                 hex_size = 30
-                width = 2 * hex_size
-                height = math.sqrt(3) * hex_size
-                horizontal_spacing = width * 0.75
-                vertical_spacing = height
-                x = col * horizontal_spacing
-                y = row * vertical_spacing
-                if col % 2 == 1:
-                    y += (vertical_spacing / 2) + 2
+                x, y = hex_tile_center(row, col, hex_size)
                 center = QPointF(x, y)
                 tile = HexTileItem(center, hex_size, tile_data, self)
 
