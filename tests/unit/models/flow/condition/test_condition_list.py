@@ -1,6 +1,8 @@
+import logging
 import pytest
 
 from models.flow.condition.condition_list import AlwaysTrue, PerceptionCheck
+from core.logger import app_logger
 
 def test_always_true_behavior_and_dict():
     at = AlwaysTrue()
@@ -26,7 +28,7 @@ def test_always_true_behavior_and_dict():
     (0, "0", True),      # 0 >= 0
     (3, {}, False),      # missing or bad → default 0 < 3
 ])
-def test_perception_check_valid_and_invalid(dc, perception, expected, capsys):
+def test_perception_check_valid_and_invalid(dc, perception, expected, caplog):
     pc = PerceptionCheck(dc)
     # build event_data dict only if perception is not dict
     event_data = {}
@@ -34,11 +36,11 @@ def test_perception_check_valid_and_invalid(dc, perception, expected, capsys):
         event_data = {"perception": perception}
     else:
         event_data = {}  # simulate missing key
-    result = pc(event_data)
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        result = pc(event_data)
     if perception is None:
-        # None → int(None) raises TypeError → prints warning, returns False
-        captured = capsys.readouterr()
-        assert "Invalid perception value" in captured.out
+        # None → int(None) raises TypeError → logs warning, returns False
+        assert "Invalid perception value" in caplog.text
         assert result is False
     else:
         # for valid parsing or missing default
@@ -56,10 +58,10 @@ def test_perception_check_to_dict_and_from_dict():
     assert pc2({"perception": 15}) is True
     assert pc2({"perception": 5}) is False
 
-def test_perception_non_numeric_string(capsys):
+def test_perception_non_numeric_string(caplog):
     pc = PerceptionCheck(2)
-    # non-numeric string → ValueError → caught, prints, returns False
-    res = pc({"perception": "not-a-number"})
-    out = capsys.readouterr().out
+    # non-numeric string → ValueError → caught, logs, returns False
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        res = pc({"perception": "not-a-number"})
     assert res is False
-    assert "Invalid perception value in" in out
+    assert "Invalid perception value in" in caplog.text

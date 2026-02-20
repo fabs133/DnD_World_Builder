@@ -66,7 +66,7 @@ def window(qtbot, monkeypatch):
 # ------------------------------------------------------------
 # Tests
 # ------------------------------------------------------------
-def test_collect_data_and_export(tmp_path, window, capsys, monkeypatch):
+def test_collect_data_and_export(tmp_path, window, caplog, monkeypatch):
     window.name_input.setText("Hero")
     window.appearance_input.setPlainText("Tall")
     window.backstory_input.setPlainText("Brave knight")
@@ -102,9 +102,10 @@ def test_collect_data_and_export(tmp_path, window, capsys, monkeypatch):
     out_file = tmp_path / "hero_export"
     monkeypatch.setattr(CharacterCreationWindow, 'get_file_name', lambda self: str(out_file))
 
-    window.export_data()
-    out = capsys.readouterr().out
-    assert "Data exported successfully" in out
+    import logging
+    with caplog.at_level(logging.DEBUG):
+        window.export_data()
+    assert "Data exported successfully" in caplog.text
 
     data = json.loads((tmp_path / "hero_export.json").read_text())
     assert data["name"] == "Hero"

@@ -4,7 +4,8 @@ from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QGraphicsView, QGraphicsScene,
     QGraphicsRectItem, QGraphicsTextItem
 )
-from .trigger_node import TriggerNodeItem 
+from .trigger_node import TriggerNodeItem
+from core.logger import app_logger
 from typing import List
 
 class TriggerGraphView(QWidget):
@@ -32,7 +33,7 @@ class TriggerGraphView(QWidget):
         self.y = 0
 
         if self.context:
-            print(f"[DEBUG - TriggerGraphView] Initializing with context: {context.triggers}")
+            app_logger.debug(f"TriggerGraphView initializing with context: {context.triggers}")
             self.build_graph(self.context)
 
     def add_trigger_node(self, trigger, x, y):
@@ -45,7 +46,7 @@ class TriggerGraphView(QWidget):
         """
         node_item = TriggerNodeItem(trigger, x, y)
         self.scene.addItem(node_item)
-        print(f"[DEBUG - add_trigger_node] Trigger node for '{trigger.label}' added at ({x}, {y})")
+        app_logger.debug(f"Trigger node for '{trigger.label}' added at ({x}, {y})")
 
     def build_graph(self, context):
         """
@@ -61,13 +62,13 @@ class TriggerGraphView(QWidget):
 
         x, y = 0, 0
         spacing = 220
-        print(f"[DEBUG - build_graph] Starting graph layout...")
+        app_logger.debug("Starting graph layout...")
 
         for trigger in context.triggers:
             node_item = TriggerNodeItem(trigger, x, y)
             self.scene.addItem(node_item)
             self.node_items.append(node_item)
-            print(f"[DEBUG - build_graph] Node '{trigger.label}' placed at ({x}, {y})")
+            app_logger.debug(f"Node '{trigger.label}' placed at ({x}, {y})")
             x += spacing
 
         self.scene.setSceneRect(0, 0, x + 100, 200)
@@ -81,7 +82,7 @@ class TriggerGraphView(QWidget):
 
         :param context: The context object containing triggers.
         """
-        print("[DEBUG - manage_graph_building_and_arrows] Starting graph building and arrow drawing process.")
+        app_logger.debug("Starting graph building and arrow drawing process.")
         
         node_map = {node.trigger.label: node for node in self.node_items}
 
@@ -89,17 +90,17 @@ class TriggerGraphView(QWidget):
             src_label = trig.label
             dst_label = trig.next_trigger
 
-            print(f"[DEBUG] Trigger: {src_label} → {dst_label}")
+            app_logger.debug(f"Trigger: {src_label} -> {dst_label}")
 
             if not dst_label or dst_label == src_label:
                 if dst_label == src_label:
-                    print(f"[Warning] Skipping self-link: {src_label}")
+                    app_logger.warning(f"Skipping self-link: {src_label}")
                 continue
 
             if dst_label in node_map and src_label in node_map:
                 self.draw_arrow(node_map[src_label], node_map[dst_label])
             else:
-                print(f"[Warning] Could not find node(s) for arrow: {src_label} → {dst_label}")
+                app_logger.warning(f"Could not find node(s) for arrow: {src_label} -> {dst_label}")
 
     def draw_arrow(self, start_item, end_item):
         """
@@ -111,11 +112,11 @@ class TriggerGraphView(QWidget):
         start_point = start_item.get_output_anchor()
         end_point = end_item.get_input_anchor()
 
-        print(f"[DEBUG - draw_arrow] Start point: {start_point}")
-        print(f"[DEBUG - draw_arrow] End point: {end_point}")
+        app_logger.debug(f"draw_arrow start point: {start_point}")
+        app_logger.debug(f"draw_arrow end point: {end_point}")
 
-        print(f"[DEBUG] start_item.pos(): {start_item.pos()}, end_item.pos(): {end_item.pos()}")
-        print(f"[DEBUG] start_item.scenePos(): {start_item.scenePos()}, end_item.scenePos(): {end_item.scenePos()}")
+        app_logger.debug(f"start_item.pos(): {start_item.pos()}, end_item.pos(): {end_item.pos()}")
+        app_logger.debug(f"start_item.scenePos(): {start_item.scenePos()}, end_item.scenePos(): {end_item.scenePos()}")
 
         self.scene.addLine(
             start_point.x() - 175, start_point.y(),
@@ -129,6 +130,6 @@ class TriggerGraphView(QWidget):
 
         :param context: The new context object containing triggers.
         """
-        print(f"[DEBUG - set_context] Setting context: {context.triggers}")
+        app_logger.debug(f"Setting context: {context.triggers}")
         self.context = context
         self.build_graph(self.context)

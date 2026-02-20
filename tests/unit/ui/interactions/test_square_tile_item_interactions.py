@@ -10,6 +10,8 @@ from models.tiles.tile_preset import TilePreset
 def tile_setup(qtbot, mocker):
     # Patch TilePreset.from_tile_data before instantiation
     mocker.patch('models.tiles.tile_preset.TilePreset.from_tile_data', autospec=True)
+    # Patch TileEditCommand so it doesn't deepcopy mock objects
+    mocker.patch('models.tiles.square_tile_item.TileEditCommand', autospec=True)
 
     # Setup a mock editor window
     mock_editor = mocker.Mock()
@@ -21,6 +23,7 @@ def tile_setup(qtbot, mocker):
     tile_data = mocker.Mock()
     tile_data.overlay_color = '#AAAAAA'
     tile_data.position = (5, 5)
+    tile_data.background_image = None
 
     # Create the SquareTileItem and wrap in a QGraphicsScene/View
     tile = SquareTileItem(0, 0, 50, tile_data=tile_data, editor_window=mock_editor)
@@ -49,22 +52,30 @@ def test_hover_changes_pen(tile_setup):
 
 
 def test_left_click_applies_visual_preset(tile_setup, qtbot):
+    from models.tiles.square_tile_item import TileEditCommand
     tile, editor, data, view = tile_setup
     pos = view.mapFromScene(tile.rect().center())
     qtbot.mouseClick(view.viewport(), Qt.LeftButton, pos=pos)
 
-    editor.active_tile_preset.apply_to.assert_called_once_with(data, logic=False)
-    # Ensure overlay brush updated
-    assert tile.brush().color().name() == QColor(data.overlay_color).name()
+    # TileEditCommand should be constructed and pushed to undo_stack
+    TileEditCommand.assert_called_once_with(
+        data, editor.active_tile_preset, False,
+        description=f"Paint tile {data.position}")
+    editor.undo_stack.push.assert_called_once()
 
 
 def test_left_click_applies_logic_preset(tile_setup, qtbot):
+    from models.tiles.square_tile_item import TileEditCommand
     tile, editor, data, view = tile_setup
     editor.paint_mode_type = 'logic'
     pos = view.mapFromScene(tile.rect().center())
     qtbot.mouseClick(view.viewport(), Qt.LeftButton, pos=pos)
 
-    editor.active_tile_preset.apply_to.assert_called_once_with(data, logic=True)
+    # TileEditCommand should be constructed with logic=True
+    TileEditCommand.assert_called_once_with(
+        data, editor.active_tile_preset, True,
+        description=f"Paint tile {data.position}")
+    editor.undo_stack.push.assert_called_once()
 
 
 def test_right_click_samples_preset(tile_setup, qtbot):

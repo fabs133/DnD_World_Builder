@@ -1,7 +1,7 @@
+from core.logger import app_logger
 from PyQt5.QtWidgets import QGraphicsRectItem
-from PyQt5.QtCore import QRectF
-from PyQt5.QtGui import QBrush, QColor, QPen
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QRectF, Qt
+from PyQt5.QtGui import QBrush, QColor, QPen, QPixmap
 from models.tiles.base_tile_item import BaseTileItem
 from ui.commands.tile_edit_command import TileEditCommand
 
@@ -36,6 +36,8 @@ class SquareTileItem(QGraphicsRectItem, BaseTileItem):
         self.setBrush(QBrush(QColor(200, 200, 200)))
         self.setPen(QPen(Qt.black))
         self.setAcceptHoverEvents(True)
+        self._bg_pixmap = None
+        self._load_background_image()
 
     def hoverEnterEvent(self, event):
         """
@@ -72,29 +74,20 @@ class SquareTileItem(QGraphicsRectItem, BaseTileItem):
         :param event: The mouse event.
         :type event: QGraphicsSceneMouseEvent
         """
-        if event.button() == Qt.LeftButton and self.editor_window.paint_mode_active:
-            preset = self.editor_window.active_tile_preset
-            if preset:
-                logic = (self.editor_window.paint_mode_type != "visual")
-                # instead of apply_to directly, push an undoable command
-                cmd = TileEditCommand(self.tile_data, preset, logic,
-                    description=f"Paint tile {self.tile_data.position}")
-                self.editor_window.undo_stack.push(cmd)
         if event.button() == Qt.LeftButton:
             if self.editor_window and self.editor_window.paint_mode_active:
                 preset = self.editor_window.active_tile_preset
                 if preset:
-                    if self.editor_window.paint_mode_type == "visual":
-                        preset.apply_to(self.tile_data, logic=False)
-                    else:
-                        preset.apply_to(self.tile_data, logic=True)
-                    self.set_overlay_color(self.tile_data.overlay_color)
+                    logic = (self.editor_window.paint_mode_type != "visual")
+                    cmd = TileEditCommand(self.tile_data, preset, logic,
+                        description=f"Paint tile {self.tile_data.position}")
+                    self.editor_window.undo_stack.push(cmd)
 
         elif event.button() == Qt.RightButton:
             if self.editor_window and self.editor_window.paint_mode_active:
                 from models.tiles.tile_preset import TilePreset
                 self.editor_window.active_tile_preset = TilePreset.from_tile_data(self.tile_data)
-                print("[Paint Mode] Sampled preset from tile at", self.tile_data.position)
+                app_logger.debug(f"[Paint Mode] Sampled preset from tile at {self.tile_data.position}")
             else:
                 self.handle_right_click(event)
 
@@ -143,3 +136,44 @@ class SquareTileItem(QGraphicsRectItem, BaseTileItem):
         """
         color = QColor(self.tile_data.overlay_color or "#CCCCCC")
         self.setBrush(QBrush(color))
+
+    def _load_background_image(self):
+        """
+        Load the background image from tile_data if set.
+        """
+        bg = getattr(self.tile_data, "background_image", None)
+        if bg:
+            pixmap = QPixmap(bg)
+            if not pixmap.isNull():
+                self._bg_pixmap = pixmap
+                return
+        self._bg_pixmap = None
+
+    def reload_background_image(self):
+        """
+        Reload the background image (call after changing tile_data.background_image).
+        """
+        self._load_background_image()
+        self.update()
+
+    def paint(self, painter, option, widget=None):
+        """
+        Paint the tile, rendering a background image if one is set.
+
+        :param painter: The QPainter to draw with.
+        :param option: Style options.
+        :param widget: The widget being painted on.
+        """
+        if self._bg_pixmap:
+            rect = self.rect()
+            painter.drawPixmap(
+                rect.toRect(),
+                self._bg_pixmap.scaled(
+                    int(rect.width()), int(rect.height()),
+                    Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation
+                ),
+            )
+            painter.setPen(self.pen())
+            painter.drawRect(rect)
+        else:
+            super().paint(painter, option, widget)

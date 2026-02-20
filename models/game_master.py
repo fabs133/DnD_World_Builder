@@ -1,3 +1,4 @@
+from core.logger import app_logger
 from models.entities.game_entity import GameEntity
 from models.flow.combat_system import CombatSystem
 from models.flow.turn_system import TurnSystem
@@ -55,7 +56,7 @@ class Gamemaster:
         :param entity: The entity being encountered.
         :type entity: GameEntity
         """
-        print(f"Encounter with {entity.name}!")
+        app_logger.info(f"Encounter with {entity.name}!")
         # Interaction logic here
 
     def event(self, description):
@@ -65,7 +66,7 @@ class Gamemaster:
         :param description: Description of the event.
         :type description: str
         """
-        print(f"Event: {description}")
+        app_logger.info(f"Event: {description}")
         # Event logic here
 
     def add_item(self, item):
@@ -90,7 +91,7 @@ class Gamemaster:
         """
         Loop back with sarcastic comments to the party.
         """
-        print("Oh, you thought you could get away that easily? Think again!")
+        app_logger.info("Oh, you thought you could get away that easily? Think again!")
         # Additional sarcastic comments and logic here
 
     def register_scene_trigger(self, event_type, condition, cutscene):

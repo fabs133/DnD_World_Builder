@@ -62,6 +62,7 @@ class TileEditCommand(QUndoCommand):
         This method is called when the command is executed or redone.
         """
         self.preset.apply_to(self.tile_data, logic=self.logic)
+        self._refresh_tile_visual()
 
     def undo(self):
         """
@@ -77,4 +78,12 @@ class TileEditCommand(QUndoCommand):
         td.user_label    = self.old_state["user_label"]
         td.entities      = deepcopy(self.old_state["entities"])
         td.triggers      = deepcopy(self.old_state["triggers"])
-        # (Re‐subscribe triggers if needed—EventBus.subscribe was done on redo)
+        self._refresh_tile_visual()
+
+    def _refresh_tile_visual(self):
+        """
+        Update the tile item's visual appearance to reflect the current tile_data state.
+        """
+        tile_item = getattr(self.tile_data, 'tile_item', None)
+        if tile_item:
+            tile_item.update_overlay_color()

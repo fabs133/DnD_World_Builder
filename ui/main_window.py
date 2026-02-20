@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import (
-    QMainWindow, QGraphicsView, QGraphicsScene, QVBoxLayout, QPushButton, QWidget,
+    QMainWindow, QGraphicsScene, QVBoxLayout, QPushButton, QWidget,
     QMenuBar, QAction, QFileDialog
 )
-from PyQt5.QtCore import Qt, QPointF
+from PyQt5.QtCore import Qt, QPointF, QTimer
 import json
 import math
 from models.tiles.tile_data import TileData
@@ -11,7 +11,30 @@ from models.tiles.hex_tile_item import HexTileItem
 from PyQt5.QtWidgets import QUndoStack
 from datetime import datetime
 from core.backup_manager import BackupManager
+from core.logger import app_logger
 from pathlib import Path
+from ui.map_view import MapView
+
+
+def hex_tile_center(row, col, hex_size):
+    """Calculate the pixel center of a flat-top hex tile at a given grid position.
+
+    For flat-top hexagons with radius *hex_size*:
+        - horizontal spacing = 1.5 * hex_size  (3/4 of the hex width)
+        - vertical spacing   = sqrt(3) * hex_size  (full hex height)
+        - odd columns are offset down by half the vertical spacing
+
+    :param row: Row index in the grid.
+    :param col: Column index in the grid.
+    :param hex_size: Radius of each hexagon (center to vertex).
+    :return: (x, y) pixel coordinates for the hex center.
+    :rtype: tuple[float, float]
+    """
+    horiz = 1.5 * hex_size
+    vert = math.sqrt(3) * hex_size
+    x = col * horiz
+    y = row * vert + (col % 2) * (vert / 2)
+    return x, y
 
 
 class MainWindow(QMainWindow):
@@ -42,7 +65,12 @@ class MainWindow(QMainWindow):
         self.selected_tile = None
         self.backup_manager = BackupManager()
         self.undo_stack = QUndoStack(self)
-        
+        self.current_map_path = None
+
+        self._auto_save_timer = QTimer(self)
+        self._auto_save_timer.timeout.connect(self._auto_save)
+        self._init_auto_save()
+
         self.init_ui()
         self.init_menu()
 
@@ -54,7 +82,7 @@ class MainWindow(QMainWindow):
         """
         Initialize the main UI components.
         """
-        self.view = QGraphicsView()
+        self.view = MapView()
         self.scene = QGraphicsScene(self)
         self.view.setScene(self.scene)
 
@@ -95,6 +123,13 @@ class MainWindow(QMainWindow):
         redo_action.setShortcut("Ctrl+Y")
         edit_menu.addAction(redo_action)
 
+        view_menu = menubar.addMenu("View")
+
+        reset_zoom_action = QAction("Reset &Zoom", self)
+        reset_zoom_action.setShortcut("Ctrl+0")
+        reset_zoom_action.triggered.connect(self.view.reset_zoom)
+        view_menu.addAction(reset_zoom_action)
+
     def init_grid(self, rows, cols):
         """
         Initialize the grid with the specified number of rows and columns.
@@ -134,17 +169,9 @@ class MainWindow(QMainWindow):
         :param cols: Number of columns.
         :param hex_size: Size of each hex tile.
         """
-        width = 2 * hex_size
-        height = math.sqrt(3) * hex_size
-        horizontal_spacing = width * 0.75
-        vertical_spacing = height
-
         for row in range(rows):
             for col in range(cols):
-                x = col * horizontal_spacing
-                y = row * vertical_spacing
-                if col % 2 == 1:
-                    y += (vertical_spacing / 2) + 2
+                x, y = hex_tile_center(row, col, hex_size)
                 center = QPointF(x, y)
                 tile_id = f"{row}_{col}"
                 tile_data = TileData(tile_id=tile_id, position=(row, col))
@@ -178,6 +205,7 @@ class MainWindow(QMainWindow):
         """
         path, _ = QFileDialog.getSaveFileName(self, "Save Map", "", "JSON Files (*.json)")
         if path:
+            self.current_map_path = path
             self.save_map_to_file(path)
 
     def save_map_to_file(self, filename="map.json"):
@@ -207,7 +235,7 @@ class MainWindow(QMainWindow):
         with open(map_path, "w", encoding="utf-8") as f:
             json.dump(full_map_data, f, indent=2)
 
-        print(f"[💾 Saved] Map written to {map_path}")
+        app_logger.info(f"[Saved] Map written to {map_path}")
 
         # Only backup if this was overwriting a file
         if should_backup:
@@ -261,7 +289,7 @@ class MainWindow(QMainWindow):
         bundle_path.rename(final_path)
         temp_map_path.unlink()
 
-        print(f"[📦 Scenario Exported] {final_path}")
+        app_logger.info(f"[Exported] Scenario exported to {final_path}")
 
         # Backup if user overwrote an existing scenario
         if should_backup:
@@ -290,14 +318,7 @@ class MainWindow(QMainWindow):
 
                 elif self.grid_type == "hex":
                     hex_size = 30
-                    width = 2 * hex_size
-                    height = math.sqrt(3) * hex_size
-                    horizontal_spacing = width * 0.75
-                    vertical_spacing = height
-                    x = col * horizontal_spacing
-                    y = row * vertical_spacing
-                    if col % 2 == 1:
-                        y += (vertical_spacing / 2) + 2
+                    x, y = hex_tile_center(row, col, hex_size)
                     center = QPointF(x, y)
                     tile = HexTileItem(center, hex_size, tile_data, self)
 
@@ -307,7 +328,7 @@ class MainWindow(QMainWindow):
                 tile_data.tile_item = tile
                 self.scene.addItem(tile)
 
-        print(f"[🧱 Grid Initialized] Default map with {rows} rows x {cols} cols created.")
+        app_logger.info(f"[Grid Initialized] Default map with {rows} rows x {cols} cols created.")
 
 
     def load_map_from_file(self, filename):
@@ -318,17 +339,18 @@ class MainWindow(QMainWindow):
         """
         from models.tiles.tile_data import TileData
 
+        self.current_map_path = filename
         self.scene.clear()
 
         try:
             with open(filename, "r", encoding="utf-8") as f:
                 raw_data = json.load(f)
         except Exception as e:
-            print(f"[❌ Load Error] Could not read file: {e}")
+            app_logger.error(f"[Load Error] Could not read file: {e}")
             return
 
         version = raw_data.get("version", "unknown")
-        print(f"[📂 Loading Map] Version: {version}, Meta: {raw_data.get('meta', {})}")
+        app_logger.info(f"[Loading Map] Version: {version}, Meta: {raw_data.get('meta', {})}")
 
         meta = raw_data.get("meta", {})
         self.grid_type = meta.get("grid_type", "square")
@@ -338,7 +360,7 @@ class MainWindow(QMainWindow):
             rows = meta.get("rows", 25)
             cols = meta.get("cols", 25)
             self.init_grid(rows, cols)
-            print(f"[🧱 Grid Initialized] Empty map loaded with {rows} rows x {cols} cols")
+            app_logger.info(f"[Grid Initialized] Empty map loaded with {rows} rows x {cols} cols")
             return
 
         for td_data in tiles:
@@ -353,14 +375,7 @@ class MainWindow(QMainWindow):
 
             elif self.grid_type == "hex":
                 hex_size = 30
-                width = 2 * hex_size
-                height = math.sqrt(3) * hex_size
-                horizontal_spacing = width * 0.75
-                vertical_spacing = height
-                x = col * horizontal_spacing
-                y = row * vertical_spacing
-                if col % 2 == 1:
-                    y += (vertical_spacing / 2) + 2
+                x, y = hex_tile_center(row, col, hex_size)
                 center = QPointF(x, y)
                 tile = HexTileItem(center, hex_size, tile_data, self)
 
@@ -370,7 +385,28 @@ class MainWindow(QMainWindow):
             tile_data.tile_item = tile
             self.scene.addItem(tile)
 
-        print(f"[✅ Map Loaded] {len(tiles)} tiles loaded from {filename}")
+        app_logger.info(f"[Loaded] {len(tiles)} tiles loaded from {filename}")
+
+    def _init_auto_save(self):
+        """
+        Initialize the auto-save timer based on settings.
+        """
+        enabled = self.settings.get("auto_save_enabled", True)
+        interval = self.settings.get("auto_save_interval_seconds", 300)
+        if enabled and interval > 0:
+            self._auto_save_timer.start(interval * 1000)
+            app_logger.debug(f"[AutoSave] Enabled with {interval}s interval")
+        else:
+            self._auto_save_timer.stop()
+            app_logger.debug("[AutoSave] Disabled")
+
+    def _auto_save(self):
+        """
+        Auto-save the current map if a file path is known.
+        """
+        if self.current_map_path:
+            self.save_map_to_file(self.current_map_path)
+            app_logger.info(f"[AutoSave] Saved to {self.current_map_path}")
 
     def create_button(self, text, callback, checkable=False, enabled=True):
         """

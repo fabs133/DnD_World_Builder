@@ -89,6 +89,8 @@ class TileData:
     tags: List[TileTag] = field(default_factory=list)
     last_updated: Optional[str] = None
     triggers: List[Trigger] = field(default_factory=list)
+    background_image: Optional[str] = None
+    ambient_audio: Optional[str] = None
 
     def is_occupied(self) -> bool:
         """
@@ -163,7 +165,7 @@ class TileData:
         dict
             Dictionary representation of the TileData instance.
         """
-        return {
+        data = {
             "tile_id": self.tile_id,
             "triggers": [t.to_dict() for t in self.triggers],
             "position": self.position,
@@ -175,6 +177,11 @@ class TileData:
             "last_updated": self.last_updated,
             "entities": [e.to_dict() for e in self.entities],
         }
+        if self.background_image:
+            data["background_image"] = self.background_image
+        if self.ambient_audio:
+            data["ambient_audio"] = self.ambient_audio
+        return data
 
     @classmethod
     def from_dict(cls, data):
@@ -209,4 +216,6 @@ class TileData:
             last_updated=data.get("last_updated"),
             entities=[GameEntity.from_dict(e) for e in data.get("entities", [])],
             triggers=triggers,
+            background_image=data.get("background_image"),
+            ambient_audio=data.get("ambient_audio"),
         )

@@ -1,5 +1,7 @@
+import logging
 import pytest
 from models.flow.turn_system import TurnSystem
+from core.logger import app_logger
 from core.gameCreation.event_bus import EventBus    # your EventBus :contentReference[oaicite:0]{index=0}:contentReference[oaicite:1]{index=1}
 from models.flow.action.action_validator import ActionValidator
 from models.flow.reaction.reaction_queue import ReactionQueue
@@ -21,36 +23,42 @@ def reset_eventbus(monkeypatch):
                         classmethod(lambda cls, et, data: emits.append((et, data))))
     return emits
 
-def test_schedule_and_start_round(capsys):
+def test_schedule_and_start_round(caplog):
     ts = TurnSystem([])
     called = []
     ts.schedule_in(0, lambda d: called.append(("now", d)), data=1)
     ts.schedule_in(1, lambda d: called.append(("next", d)), data=2)
 
-    # At round 1 start we fire the 0‐delay only
-    ts.start_round()
-    out = capsys.readouterr().out.strip()
-    assert out == "Round 1 starts!"
+    # At round 1 start we fire the 0-delay only
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        ts.start_round()
+    assert "Round 1 starts!" in caplog.text
     assert called == [("now", 1)]
     # One remains for round 2
     assert len(ts._scheduled) == 1
     assert ts._scheduled[0][0] == 2 and ts._scheduled[0][2] == 2
 
     # Now start round 2
-    ts.start_round()
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        ts.start_round()
     assert ("next", 2) in called
 
-def test_next_turn_cycles_and_prints(capsys):
+def test_next_turn_cycles_and_prints(caplog):
     e1, e2, e3 = DummyEntity("E1"), DummyEntity("E2"), DummyEntity("E3")
     ts = TurnSystem([e1, e2, e3])
-    ts.next_turn()
-    assert capsys.readouterr().out.strip() == "It is now E2's turn."
-    ts.next_turn()
-    assert capsys.readouterr().out.strip() == "It is now E3's turn."
-    ts.next_turn()
-    assert capsys.readouterr().out.strip() == "It is now E1's turn."
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        ts.next_turn()
+    assert "It is now E2's turn." in caplog.text
+    caplog.clear()
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        ts.next_turn()
+    assert "It is now E3's turn." in caplog.text
+    caplog.clear()
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        ts.next_turn()
+    assert "It is now E1's turn." in caplog.text
 
-def test_execute_turn_not_blocked(monkeypatch, reset_eventbus, capsys):
+def test_execute_turn_not_blocked(monkeypatch, reset_eventbus, caplog):
     p1 = DummyEntity("P1")
     p2 = DummyEntity("P2")
     ts = TurnSystem([p1, p2])
@@ -69,7 +77,8 @@ def test_execute_turn_not_blocked(monkeypatch, reset_eventbus, capsys):
 
     ts.current_turn = 0
     ts.round_number = 1
-    ts.execute_turn()
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        ts.execute_turn()
 
     evts = reset_eventbus
     assert ("ACTION_PROPOSED", action) in evts
@@ -77,9 +86,8 @@ def test_execute_turn_not_blocked(monkeypatch, reset_eventbus, capsys):
     assert action.execute_called is True
     assert did_resolve["called"] is False
 
-    out = capsys.readouterr().out
-    assert "P1's turn ends." in out
-    assert "It is now P2's turn." in out
+    assert "P1's turn ends." in caplog.text
+    assert "It is now P2's turn." in caplog.text
 
 def test_execute_turn_blocked(monkeypatch, reset_eventbus):
     p = DummyEntity("Px")

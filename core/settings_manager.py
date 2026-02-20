@@ -1,5 +1,6 @@
 import os
 import json
+from core.logger import app_logger
 
 CONFIG_VERSION = 1
 """
@@ -11,9 +12,11 @@ DEFAULT_SETTINGS = {
     "default_rows": 25,
     "default_cols": 25,
     "grid_size": 50,
-    "theme": "light",
+    "theme": "dark_teal.xml",
     "last_profile_used": None,
     "recent_files": [],
+    "auto_save_enabled": True,
+    "auto_save_interval_seconds": 300,
 }
 """
 Default settings for the application.
@@ -46,7 +49,7 @@ class SettingsManager:
         Handles loading and error recovery.
         """
         if not os.path.exists(self.path):
-            print(f"[Settings] No config found at {self.path}. Creating default config.")
+            app_logger.info(f"[Settings] No config found at {self.path}. Creating default config.")
             self.settings = DEFAULT_SETTINGS.copy()
             self.save_settings()
         else:
@@ -55,14 +58,14 @@ class SettingsManager:
                     self.settings = json.load(f)
 
                 if "config_version" not in self.settings:
-                    print("[Settings] Config version missing. Assuming version 0.")
+                    app_logger.warning("[Settings] Config version missing. Assuming version 0.")
                     self.settings["config_version"] = 0
 
                 self._migrate_if_needed()
 
             except (json.JSONDecodeError, IOError) as e:
-                print(f"[Settings] Error loading config: {e}")
-                print("[Settings] Resetting to default config.")
+                app_logger.error(f"[Settings] Error loading config: {e}")
+                app_logger.info("[Settings] Resetting to default config.")
                 self.settings = DEFAULT_SETTINGS.copy()
                 self.save_settings()
 
@@ -73,7 +76,7 @@ class SettingsManager:
         current_version = self.settings.get("config_version", 0)
 
         if current_version < CONFIG_VERSION:
-            print(f"[Settings] Migrating config from version {current_version} to {CONFIG_VERSION}")
+            app_logger.info(f"[Settings] Migrating config from version {current_version} to {CONFIG_VERSION}")
 
             if current_version == 0:
                 # Example: In v1, we added grid_size

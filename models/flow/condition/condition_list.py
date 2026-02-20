@@ -1,4 +1,5 @@
 from models.flow.condition.condition import Condition
+from core.logger import app_logger
 
 class AlwaysTrue(Condition):
     """
@@ -64,7 +65,7 @@ class PerceptionCheck(Condition):
             perception = int(event_data.get("perception", 0))
             return perception >= self.dc
         except (TypeError, ValueError):
-            print(f"[⚠️ PerceptionCheck] Invalid perception value in: {event_data}")
+            app_logger.warning(f"[PerceptionCheck] Invalid perception value in event_data: {event_data}")
             return False
 
     def to_dict(self):

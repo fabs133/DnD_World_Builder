@@ -1,4 +1,5 @@
 # tests/integration/test_proximity_alert_with_vision.py
+import logging
 import pytest
 
 from models.world.world import World
@@ -10,7 +11,7 @@ from models.flow.reaction.reactions_list import AlertGamemaster
 from models.tiles.tile_data import TileTag
 
 
-def test_proximity_alert_within_vision_range(capsys):
+def test_proximity_alert_within_vision_range(caplog):
     # Create a 3x1 world
     world = World(
         world_version=1,
@@ -48,15 +49,15 @@ def test_proximity_alert_within_vision_range(capsys):
     world.place_entity(guard_b, 2, 0)
 
     # Emit event at the trap location
-    EventBus.emit('ON_ENTER', {'position': (0, 0), 'world': world})
+    with caplog.at_level(logging.DEBUG):
+        EventBus.emit('ON_ENTER', {'position': (0, 0), 'world': world})
 
-    out = capsys.readouterr().out
-    assert '[GM ALERT] Trap sprung!' in out
-    assert '[GM ALERT] Guard A alert!' in out
-    assert '[GM ALERT] Guard B alert!' not in out
+    assert '[GM ALERT] Trap sprung!' in caplog.text
+    assert '[GM ALERT] Guard A alert!' in caplog.text
+    assert '[GM ALERT] Guard B alert!' not in caplog.text
 
 
-def test_proximity_alert_blocked_by_obstacle(capsys):
+def test_proximity_alert_blocked_by_obstacle(caplog):
     # Create a 3x1 world
     world = World(
         world_version=1,
@@ -90,8 +91,8 @@ def test_proximity_alert_blocked_by_obstacle(capsys):
     world.place_entity(guard_c, 2, 0)
 
     # Emit event at trap
-    EventBus.emit('ON_ENTER', {'position': (0, 0), 'world': world})
+    with caplog.at_level(logging.DEBUG):
+        EventBus.emit('ON_ENTER', {'position': (0, 0), 'world': world})
 
-    out = capsys.readouterr().out
-    assert '[GM ALERT] Trap sprung!' in out
-    assert '[GM ALERT] Guard C alert!' not in out
+    assert '[GM ALERT] Trap sprung!' in caplog.text
+    assert '[GM ALERT] Guard C alert!' not in caplog.text

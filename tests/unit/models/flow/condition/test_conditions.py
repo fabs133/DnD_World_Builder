@@ -1,5 +1,7 @@
+import logging
 import pytest
 from models.flow.condition.condition_list import AlwaysTrue, PerceptionCheck
+from core.logger import app_logger
 
 
 def test_always_true():
@@ -23,12 +25,12 @@ def test_perception_check_missing_key():
     assert cond({}) is False
 
 
-def test_perception_check_invalid_type(capfd):
+def test_perception_check_invalid_type(caplog):
     cond = PerceptionCheck(dc=5)
-    assert cond({"perception": "bad"}) is False
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        assert cond({"perception": "bad"}) is False
 
-    captured = capfd.readouterr()
-    assert "invalid perception" in captured.out.lower()
+    assert "invalid perception" in caplog.text.lower()
 
 def test_always_true_serialization_roundtrip():
     original = AlwaysTrue()
@@ -52,11 +54,11 @@ import pytest
     (5, None, False),
     (5, "bad", False),
 ])
-def test_perception_check_various(dc, perception, expected, capfd):
+def test_perception_check_various(dc, perception, expected, caplog):
     cond = PerceptionCheck(dc=dc)
-    result = cond({"perception": perception})
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        result = cond({"perception": perception})
     assert result is expected
 
     if isinstance(perception, str) or perception is None:
-        captured = capfd.readouterr()
-        assert "invalid perception" in captured.out.lower()
+        assert "invalid perception" in caplog.text.lower()

@@ -25,8 +25,8 @@ class Updater:
         :type data: dict
         :param current_version: The current version of the data.
         :type current_version: int
-        :return: The migrated data at the latest version.
-        :rtype: dict
+        :return: A tuple of (migrated_data, final_version).
+        :rtype: tuple[dict, int]
         :raises ValueError: If there are no migrations registered for the given entity type.
         :raises TypeError: If a migration function does not return a dictionary.
         """
@@ -44,6 +44,11 @@ class Updater:
             if not isinstance(new_data, dict):
                 raise TypeError(f"Migration for version {version} did not return a dict")
 
-            # advance the version: use explicit or assume 1
-            version = new_data.get("version", version + 1)
+            # advance the version: use explicit new version or assume +1
+            new_version = new_data.get("version", version + 1)
+            if new_version <= version:
+                new_version = version + 1
+            version = new_version
             data = new_data
+
+        return data, version

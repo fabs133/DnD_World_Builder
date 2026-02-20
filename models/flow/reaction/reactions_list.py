@@ -1,4 +1,5 @@
 from models.flow.reaction.reactions import Reactions
+from core.logger import app_logger
 
 class ApplyDamage(Reactions):
     """
@@ -32,7 +33,7 @@ class ApplyDamage(Reactions):
         if hasattr(target, "take_damage"):
             target.take_damage(self.amount, self.damage_type)
         else:
-            print(f"[⚠️ ApplyDamage] Invalid or missing target in event_data: {event_data}")
+            app_logger.warning(f"[ApplyDamage] Invalid or missing target in event_data: {event_data}")
 
     def to_dict(self):
         """
@@ -82,7 +83,7 @@ class AlertGamemaster(Reactions):
         :param event_data: Dictionary containing event information, may include 'game'.
         :type event_data: dict
         """
-        print(f"[GM ALERT] {self.message}")
+        app_logger.info(f"[GM ALERT] {self.message}")
         if "game" in event_data and hasattr(event_data["game"], "flag_event"):
             event_data["game"].flag_event(self.message)
 

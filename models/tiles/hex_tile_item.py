@@ -1,9 +1,11 @@
 import math
+from core.logger import app_logger
 from PyQt5.QtWidgets import QGraphicsPolygonItem
-from PyQt5.QtGui import QBrush, QPen, QColor, QPolygonF
+from PyQt5.QtGui import QBrush, QPen, QColor, QPolygonF, QPixmap, QPainterPath
 from PyQt5.QtCore import Qt, QPointF
 from models.tiles.base_tile_item import BaseTileItem
 from models.tiles.tile_data import TileData
+from ui.commands.tile_edit_command import TileEditCommand
 
 class HexTileItem(QGraphicsPolygonItem, BaseTileItem):
     """
@@ -48,6 +50,8 @@ class HexTileItem(QGraphicsPolygonItem, BaseTileItem):
         self.setBrush(QBrush(QColor(200, 200, 200)))
         self.setPen(QPen(Qt.black))
         self.setAcceptHoverEvents(True)
+        self._bg_pixmap = None
+        self._load_background_image()
 
     def create_hexagon(self):
         """
@@ -112,17 +116,16 @@ class HexTileItem(QGraphicsPolygonItem, BaseTileItem):
             if self.editor_window and self.editor_window.paint_mode_active:
                 preset = self.editor_window.active_tile_preset
                 if preset:
-                    if self.editor_window.paint_mode_type == "visual":
-                        preset.apply_to(self.tile_data, logic=False)
-                    else:
-                        preset.apply_to(self.tile_data, logic=True)
-                    self.set_overlay_color(self.tile_data.overlay_color)
+                    logic = (self.editor_window.paint_mode_type != "visual")
+                    cmd = TileEditCommand(self.tile_data, preset, logic,
+                        description=f"Paint tile {self.tile_data.position}")
+                    self.editor_window.undo_stack.push(cmd)
 
         elif event.button() == Qt.RightButton:
             if self.editor_window and self.editor_window.paint_mode_active:
                 from models.tiles.tile_preset import TilePreset
                 self.editor_window.active_tile_preset = TilePreset.from_tile_data(self.tile_data)
-                print("[Paint Mode] Sampled preset from tile at", self.tile_data.position)
+                app_logger.debug(f"[Paint Mode] Sampled preset from tile at {self.tile_data.position}")
             else:
                 self.handle_right_click(event)
 
@@ -179,3 +182,52 @@ class HexTileItem(QGraphicsPolygonItem, BaseTileItem):
         """
         color = QColor(self.tile_data.overlay_color or "#CCCCCC")
         self.setBrush(QBrush(color))
+
+    def _load_background_image(self):
+        """
+        Load the background image from tile_data if set.
+        """
+        bg = getattr(self.tile_data, "background_image", None)
+        if bg:
+            pixmap = QPixmap(bg)
+            if not pixmap.isNull():
+                self._bg_pixmap = pixmap
+                return
+        self._bg_pixmap = None
+
+    def reload_background_image(self):
+        """
+        Reload the background image (call after changing tile_data.background_image).
+        """
+        self._load_background_image()
+        self.update()
+
+    def paint(self, painter, option, widget=None):
+        """
+        Paint the tile, rendering a background image clipped to the hex shape if set.
+
+        :param painter: The QPainter to draw with.
+        :param option: Style options.
+        :param widget: The widget being painted on.
+        """
+        if self._bg_pixmap:
+            painter.save()
+            path = QPainterPath()
+            path.addPolygon(self.polygon())
+            path.closeSubpath()
+            painter.setClipPath(path)
+
+            bounding = self.boundingRect()
+            painter.drawPixmap(
+                bounding.toRect(),
+                self._bg_pixmap.scaled(
+                    int(bounding.width()), int(bounding.height()),
+                    Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation
+                ),
+            )
+            painter.restore()
+
+            painter.setPen(self.pen())
+            painter.drawPolygon(self.polygon())
+        else:
+            super().paint(painter, option, widget)

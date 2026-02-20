@@ -1,7 +1,9 @@
+import logging
 import sqlite3
 import json
 import pytest
 
+from core.logger import app_logger
 from models.world.world_lore import WorldLore
 
 @pytest.fixture
@@ -43,20 +45,20 @@ def test_constructor_and_describe_world():
     assert "Weather: sunny" in desc
     assert desc.startswith("World Description:")
 
-def test_update_weather_prints_and_sets(capsys):
+def test_update_weather_prints_and_sets(caplog):
     wl = WorldLore("D", {}, "noon", "rainy")
-    wl.update_weather("stormy")
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        wl.update_weather("stormy")
     # Attribute updated
     assert wl.weather_conditions == "stormy"
-    out = capsys.readouterr().out.strip()
-    assert out == "Weather updated to: stormy"
+    assert "Weather updated to: stormy" in caplog.text
 
-def test_update_time_of_day_prints_and_sets(capsys):
+def test_update_time_of_day_prints_and_sets(caplog):
     wl = WorldLore("Desc", {}, "night", "clear")
-    wl.update_time_of_day("dawn")
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        wl.update_time_of_day("dawn")
     assert wl.time_of_day == "dawn"
-    out = capsys.readouterr().out.strip()
-    assert out == "Time of day updated to: dawn"
+    assert "Time of day updated to: dawn" in caplog.text
 
 def test_save_to_db_inserts_row(db_conn):
     data = {"level":1, "area":"plains"}

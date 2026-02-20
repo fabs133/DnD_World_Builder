@@ -1,3 +1,5 @@
+from core.logger import app_logger
+
 class CombatSystem:
     """
     Handles the flow of combat between a player and an enemy.
@@ -27,7 +29,7 @@ class CombatSystem:
 
         This method announces the start of combat and begins the fight loop.
         """
-        print(f"Combat begins between {self.player.name} and {self.enemy.name}!")
+        app_logger.info(f"Combat begins between {self.player.name} and {self.enemy.name}!")
         self.fight()
 
     def fight(self):
@@ -37,18 +39,18 @@ class CombatSystem:
         This method alternates turns between the player and the enemy until one is defeated.
         """
         while self.player.character.hp > 0 and self.enemy.hp > 0:
-            print(f"Round {self.combat_round}")
+            app_logger.info(f"Round {self.combat_round}")
             # Player attacks
             self.player.take_turn()
             if self.enemy.hp <= 0:
-                print(f"{self.enemy.name} is defeated!")
+                app_logger.info(f"{self.enemy.name} is defeated!")
                 break
 
             # Enemy attacks
             self.enemy.take_turn()
             if self.player.character.hp <= 0:
-                print(f"{self.player.character.name} is defeated!")
+                app_logger.info(f"{self.player.character.name} is defeated!")
                 break
 
             self.combat_round += 1
-        print("Combat ends.")
+        app_logger.info("Combat ends.")

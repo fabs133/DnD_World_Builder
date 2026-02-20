@@ -8,7 +8,7 @@ from PyQt5.QtCore import QPointF
 from PyQt5.QtWidgets import QPushButton
 
 import ui.main_window
-from ui.main_window import MainWindow
+from ui.main_window import MainWindow, hex_tile_center
 from models.tiles.square_tile_item import SquareTileItem
 from models.tiles.hex_tile_item import HexTileItem
 
@@ -18,6 +18,7 @@ def dummy_settings(tmp_path):
     class S:
         config_version = 1
         def __getitem__(self, key): return None
+        def get(self, key, default=None): return default
     return S()
 
 @pytest.fixture
@@ -114,3 +115,74 @@ def test_save_and_load_map(tmp_path, qapp, dummy_settings, monkeypatch):
     # After loading we should have 1 SquareTileItem in the scene
     loaded = mw2.scene.items()
     assert any(isinstance(i, SquareTileItem) for i in loaded)
+
+
+# --- hex_tile_center tests ---
+
+class TestHexTileCenter:
+    """Tests for the hex_tile_center positioning function."""
+
+    def test_origin_tile(self):
+        """Tile at (0, 0) should be at pixel origin."""
+        x, y = hex_tile_center(0, 0, 30)
+        assert x == pytest.approx(0.0)
+        assert y == pytest.approx(0.0)
+
+    def test_even_column_no_vertical_offset(self):
+        """Even columns should not have a vertical offset beyond row spacing."""
+        s = 30
+        vert = math.sqrt(3) * s
+        x, y = hex_tile_center(2, 0, s)
+        assert x == pytest.approx(0.0)
+        assert y == pytest.approx(2 * vert)
+
+    def test_odd_column_has_half_vertical_offset(self):
+        """Odd columns should be offset down by half the vertical spacing."""
+        s = 30
+        vert = math.sqrt(3) * s
+        x, y = hex_tile_center(0, 1, s)
+        assert x == pytest.approx(1.5 * s)
+        assert y == pytest.approx(vert / 2)
+
+    def test_horizontal_spacing(self):
+        """Horizontal spacing between columns should be 1.5 * hex_size."""
+        s = 30
+        x0, _ = hex_tile_center(0, 0, s)
+        x1, _ = hex_tile_center(0, 1, s)
+        x2, _ = hex_tile_center(0, 2, s)
+        assert x1 - x0 == pytest.approx(1.5 * s)
+        assert x2 - x1 == pytest.approx(1.5 * s)
+
+    def test_vertical_spacing(self):
+        """Vertical spacing between rows in the same column should be sqrt(3)*s."""
+        s = 30
+        vert = math.sqrt(3) * s
+        _, y0 = hex_tile_center(0, 0, s)
+        _, y1 = hex_tile_center(1, 0, s)
+        assert y1 - y0 == pytest.approx(vert)
+
+    def test_adjacent_tiles_no_gap_no_overlap(self):
+        """Adjacent hex tiles should touch exactly (distance between centers
+        equals the hex width across flats = sqrt(3)*s for vertical neighbors,
+        and 1.5*s horizontal + vert/2 vertical for diagonal neighbors)."""
+        s = 30
+        vert = math.sqrt(3) * s
+
+        # Vertical neighbor: (0,0) -> (1,0)
+        x0, y0 = hex_tile_center(0, 0, s)
+        x1, y1 = hex_tile_center(1, 0, s)
+        dist_vert = math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2)
+        assert dist_vert == pytest.approx(vert)
+
+        # Diagonal neighbor: (0,0) -> (0,1)
+        x2, y2 = hex_tile_center(0, 1, s)
+        dist_diag = math.sqrt((x2 - x0) ** 2 + (y2 - y0) ** 2)
+        # For flat-top hex, diagonal neighbor distance = 2 * s * sin(60°) = sqrt(3) * s
+        assert dist_diag == pytest.approx(vert)
+
+    def test_different_sizes(self):
+        """Function should scale correctly with different hex sizes."""
+        for s in [10, 20, 50, 100]:
+            x, y = hex_tile_center(1, 1, s)
+            assert x == pytest.approx(1.5 * s)
+            assert y == pytest.approx(math.sqrt(3) * s + math.sqrt(3) * s / 2)

@@ -3,6 +3,7 @@ from .spell_importer import SpellImporter
 from models.entities.game_entity import GameEntity
 from models.spell import Spell
 from core.db_api_handler import LocalAPIHandler
+from core.logger import app_logger
 
 
 class RulebookImporter:
@@ -58,7 +59,7 @@ class RulebookImporter:
             rbe = self.monsters.get_by_name(name)
             return rbe.to_game_entity() if rbe else None
         except Exception as e:
-            print(f"[Importer] Failed to import monster '{name}': {e}")
+            app_logger.error(f"[Importer] Failed to import monster '{name}': {e}")
             return None
 
     def import_spell(self, name: str) -> Spell:
@@ -74,5 +75,5 @@ class RulebookImporter:
             rbs = self.spells.get_by_name(name)
             return rbs.to_spell() if rbs else None
         except Exception as e:
-            print(f"[Importer] Failed to import spell '{name}': {e}")
+            app_logger.error(f"[Importer] Failed to import spell '{name}': {e}")
             return None

@@ -1,5 +1,7 @@
+import logging
 import pytest
 from core.gameCreation.trigger import Trigger
+from core.logger import app_logger
 from models.flow.reaction.reactions_list import ApplyDamage
 from models.flow.condition.condition_list import AlwaysTrue
 from registries.trigger_registry import TriggerRegistry, global_trigger_registry
@@ -62,20 +64,21 @@ def test_register_and_get_function():
     reg.register_function(bar, name="baz")
     assert reg.get_function("baz") is bar
 
-def test_debug_print(capsys):
+def test_debug_print(caplog):
     reg = TriggerRegistry()
     t1 = Trigger("E1", AlwaysTrue, None)
     t2 = Trigger("E2", AlwaysTrue, None)
     reg.add_trigger(t1, source="S1")
     reg.add_trigger(t2)  # no source => unknown
 
-    reg.debug_print()
-    out = capsys.readouterr().out.strip().splitlines()
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        reg.debug_print()
+    lines = caplog.text.strip().splitlines()
     # First line header
-    assert out[0] == "TriggerRegistry:"
+    assert any("TriggerRegistry:" in line for line in lines)
     # Should print each trigger with its repr and source
-    assert any("E1" in line and "from: S1" in line for line in out[1:])
-    assert any("E2" in line and "from: unknown" in line for line in out[1:])
+    assert any("E1" in line and "from: S1" in line for line in lines)
+    assert any("E2" in line and "from: unknown" in line for line in lines)
 
 def test_global_registry_is_separate_instance():
     # Clear any existing triggers

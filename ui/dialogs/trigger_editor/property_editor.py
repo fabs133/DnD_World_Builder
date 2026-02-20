@@ -8,6 +8,7 @@ from PyQt5.QtCore import Qt
 from registries.condition_registry import condition_registry
 from registries.reaction_registry import reaction_registry
 from core.gameCreation.trigger import Trigger
+from core.logger import app_logger
 import inspect
 import uuid
 import copy
@@ -256,7 +257,7 @@ class TriggerPropertyEditor(QWidget):
             unique_id = uuid.uuid4().hex[:6].upper()
             label = f"{event_type}:{reaction_name}:{unique_id}"
 
-        print(f"[DEBUG - save_trigger] Creating trigger with label: {label}")
+        app_logger.debug(f"Creating trigger with label: {label}")
 
         new_trigger = Trigger(
             event_type=event_type,
@@ -273,16 +274,16 @@ class TriggerPropertyEditor(QWidget):
             if self.trigger:
                 for i, existing in enumerate(self.context.triggers):
                     if existing.label == self.trigger.label:
-                        print(f"[DEBUG - save_trigger] Replacing trigger at index {i}")
+                        app_logger.debug(f"Replacing trigger at index {i}")
                         self.context.triggers[i] = new_trigger
                         break
                 else:
-                    print("[DEBUG - save_trigger] Trigger not found; appending new one.")
+                    app_logger.debug("Trigger not found; appending new one.")
                     self.context.triggers.append(new_trigger)
             else:
                 self.context.triggers.append(new_trigger)
         else:
-            print("[WARNING] Context has no triggers list.")
+            app_logger.warning("Context has no triggers list.")
 
         # 🔄 Call register_trigger if it's needed elsewhere
         if hasattr(self.context, "register_trigger"):
@@ -300,7 +301,7 @@ class TriggerPropertyEditor(QWidget):
         :type context: object
         """
         self.context = context
-        print(f"[DEBUG - set_context property_editor ] Context set: {context}")
+        app_logger.debug(f"Context set: {context}")
         # Clear dropdown before repopulating
         self.next_trigger_input.clear()
         self.next_trigger_input.addItem("None")
@@ -309,7 +310,7 @@ class TriggerPropertyEditor(QWidget):
             current_label = getattr(self.trigger, "label", None)
 
             for trig in context.triggers:
-                print(f"[DEBUG - set_context] Candidate: {trig.label}, Current: {current_label}")
+                app_logger.debug(f"Candidate: {trig.label}, Current: {current_label}")
                 if trig.label != current_label:
                     self.next_trigger_input.addItem(trig.label)
 

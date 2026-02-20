@@ -1,4 +1,5 @@
 import json
+from core.logger import app_logger
 
 class WorldLore:
     """
@@ -40,7 +41,7 @@ class WorldLore:
         :type new_weather: str
         """
         self.weather_conditions = new_weather
-        print(f"Weather updated to: {new_weather}")
+        app_logger.info(f"Weather updated to: {new_weather}")
 
     def update_time_of_day(self, new_time):
         """
@@ -50,7 +51,7 @@ class WorldLore:
         :type new_time: str
         """
         self.time_of_day = new_time
-        print(f"Time of day updated to: {new_time}")
+        app_logger.info(f"Time of day updated to: {new_time}")
 
     def describe_world(self):
         """

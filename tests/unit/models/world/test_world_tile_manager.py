@@ -1,4 +1,6 @@
+import logging
 import pytest
+from core.logger import app_logger
 from models.world.world_tile_manager import WorldTileManager
 from models.tiles.tile_data import TileData
 
@@ -39,13 +41,13 @@ def test_get_adjacent_tiles(tile_type, expected):
     adj = set(mgr.get_adjacent_tiles(1, 1))
     assert adj == expected
 
-def test_place_and_get_entities(capsys):
+def test_place_and_get_entities(caplog):
     mgr = WorldTileManager(2, 2, tile_type="square")
     ent = DummyEntity("Hero")
     # place at valid tile
-    mgr.place_entity(ent, 1, 1)
-    out = capsys.readouterr().out.strip()
-    assert out == "Placed Hero at (1, 1)"
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        mgr.place_entity(ent, 1, 1)
+    assert "Placed Hero at (1, 1)" in caplog.text
     # entity.position updated
     assert ent.position == (1, 1)
     # get_entities_at returns the list
@@ -55,26 +57,28 @@ def test_place_and_get_entities(capsys):
     with pytest.raises(ValueError):
         mgr.place_entity(bad, -1, 0)
 
-def test_move_entity_prints_and_updates_position(capsys):
+def test_move_entity_prints_and_updates_position(caplog):
     mgr = WorldTileManager(2, 2, tile_type="square")
     ent = DummyEntity("Rogue")
     # valid move
-    mgr.move_entity(ent, 0, 1)
-    out1 = capsys.readouterr().out.strip()
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        mgr.move_entity(ent, 0, 1)
     assert ent.position == (0, 1)
-    assert out1 == "Rogue moved to tile (0, 1)"
+    assert "Rogue moved to tile (0, 1)" in caplog.text
     # invalid move
-    mgr.move_entity(ent, 3, 3)
-    out2 = capsys.readouterr().out.strip()
+    caplog.clear()
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        mgr.move_entity(ent, 3, 3)
     # position unchanged
     assert ent.position == (0, 1)
-    assert out2 == "Invalid move for Rogue."
+    assert "Invalid move for Rogue." in caplog.text
 
-def test_display_world(capsys):
+def test_display_world(caplog):
     mgr = WorldTileManager(4, 2, tile_type="square")
-    mgr.display_world()
-    out = capsys.readouterr().out.strip().splitlines()
-    # Should be 2 lines, each with four "[ ]"
-    assert len(out) == 2
-    for line in out:
-        assert line == "[ ][ ][ ][ ]"
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        mgr.display_world()
+    # Should contain two lines of "[ ][ ][ ][ ]"
+    lines = [line for line in caplog.text.splitlines() if "[ ]" in line]
+    assert len(lines) == 2
+    for line in lines:
+        assert "[ ][ ][ ][ ]" in line

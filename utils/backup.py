@@ -1,5 +1,7 @@
 import shutil
 import os
+from core.logger import app_logger
+
 
 def create_backup(path):
     """
@@ -18,5 +20,5 @@ def create_backup(path):
     
     backup_path = f"{path}.bak"
     shutil.copy2(path, backup_path)
-    print(f"Backup created: {backup_path}")
+    app_logger.info(f"Backup created: {backup_path}")
     return backup_path

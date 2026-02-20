@@ -24,11 +24,12 @@ def test_trigger_initialization_label_auto():
     trig = Trigger("ON_TEST", always_true_condition, dummy_reaction)
     assert trig.label == "ON_TEST:function"  # Adjusted to match actual label
 
-def test_trigger_label_change_warning(capsys):
+def test_trigger_label_change_warning(caplog):
+    import logging
     trig = Trigger("ON_TEST", always_true_condition, dummy_reaction)
-    trig.label = "New Label"
-    captured = capsys.readouterr()
-    assert "Trigger label modified" in captured.out
+    with caplog.at_level(logging.DEBUG):
+        trig.label = "New Label"
+    assert "Label changed" in caplog.text
 
 def test_check_and_react_with_callable_condition_and_reaction():
     data = {}

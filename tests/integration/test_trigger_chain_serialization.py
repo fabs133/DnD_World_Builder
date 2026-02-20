@@ -1,3 +1,4 @@
+import logging
 import pytest
 from core.gameCreation.trigger import Trigger
 from models.flow.condition.condition_list import PerceptionCheck, AlwaysTrue
@@ -42,7 +43,7 @@ def test_trigger_chain_serialization_roundtrip():
     assert deserialized.next_trigger.reaction.damage_type == "fire"
 
 
-def test_trigger_chain_reaction_execution(capfd):
+def test_trigger_chain_reaction_execution(caplog):
     target = DummyTarget()
     data = {"perception": 12, "target": target}
 
@@ -59,8 +60,8 @@ def test_trigger_chain_reaction_execution(capfd):
         next_trigger=chain
     )
 
-    initial.check_and_react(data)
+    with caplog.at_level(logging.DEBUG):
+        initial.check_and_react(data)
 
-    captured = capfd.readouterr()
-    assert "[GM ALERT] You see something!" in captured.out
+    assert "[GM ALERT] You see something!" in caplog.text
     assert ("ice", 6) in target.damage_log

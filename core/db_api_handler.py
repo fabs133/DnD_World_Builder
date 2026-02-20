@@ -2,6 +2,7 @@ import json
 import re
 from pathlib import Path
 from typing import Optional, Dict, Any, List
+from core.logger import app_logger
 
 
 class APIError(Exception):
@@ -21,8 +22,7 @@ class LocalAPIHandler:
 
     def __init__(self, base_path: str = "core/data_/rulebook_json"):
         self.base_path = Path(base_path).resolve()
-        print(f"[DEBUG] LocalAPIHandler base path: {self.base_path}")
-        print(f"[DEBUG] base_path contents: {[f.name for f in self.base_path.iterdir() if f.is_file()]}")
+        app_logger.debug(f"[LocalAPI] Base path: {self.base_path}")
 
         self.cache: Dict[str, Any] = {}
         self.filenames: Dict[str, str] = {}
@@ -30,17 +30,16 @@ class LocalAPIHandler:
         # More robust matching
         for file in self.base_path.iterdir():
             if file.is_file() and file.name.lower().startswith("5e-srd-") and file.suffix.lower() == ".json":
-                print(f"[DEBUG] Scanning file: {file.name}")
                 match = re.match(r"5e-srd-(.+)\.json", file.name.lower())
                 if match:
                     category = match.group(1).replace("-", "_")
-                    print(f"[DEBUG] Mapping file '{file.name}' to category '{category}'")
+                    app_logger.debug(f"[LocalAPI] Mapped '{file.name}' -> '{category}'")
                     self.filenames[category] = file.name
                 else:
-                    print(f"[WARN] Skipped file not matching pattern: {file.name}")
+                    app_logger.warning(f"[LocalAPI] Skipped file not matching pattern: {file.name}")
 
         if not self.filenames:
-            print(f"[ERROR] No valid SRD files detected in {self.base_path}. Check file names and ensure correct casing.")
+            app_logger.error(f"[LocalAPI] No valid SRD files detected in {self.base_path}")
 
     def _load_file(self, category: str) -> Any:
         if category not in self.cache:

@@ -7,11 +7,9 @@ from models.entities.character import Character
 
 @pytest.fixture
 def db_conn(tmp_path):
-    # Create an on-disk SQLite database just for this test
     db_file = tmp_path / "test.db"
     conn = sqlite3.connect(str(db_file))
     cursor = conn.cursor()
-    # Manually create the schema we need
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS characters (
             character_id INTEGER PRIMARY KEY,
@@ -28,7 +26,6 @@ def db_conn(tmp_path):
     return conn
 
 def make_minimal_char(**overrides):
-    # spells must be dicts so spell_details={name:...} works
     dummy_spell = {
         "name": "MagicMissile",
         "level": 1,
@@ -98,22 +95,19 @@ def test_take_damage_and_heal():
     assert char.hp == stats["max_hp"]
 
 def test_cast_spell_does_not_error_and_uses_dummy(monkeypatch):
-    created = {"inst": False, "del": False}
+    created = {"inst": False}
     class DummySpell:
         def __init__(self, **kwargs):
             created["inst"] = True
-        def __del__(self):
-            created["del"] = True
+        def cast(self, caster, target):
+            pass
 
-    # Patch Spell *in the module under test*
     monkeypatch.setattr(char_mod, "Spell", DummySpell)
 
-    # Use a spell name that matches our dummy_spell name
     char = make_minimal_char()
     char.cast_spell("MagicMissile", target=None)
 
     assert created["inst"] is True
-    # __del__ timing isn’t guaranteed under CPython, but at least no crash occurred
 
 def test_save_to_db_inserts_row(db_conn):
     char = make_minimal_char()
@@ -135,7 +129,5 @@ def test_save_to_db_inserts_row(db_conn):
     assert inv_loaded == ["sword", "shield"]
 
     spells_loaded = json.loads(row[6])
-    # since we saved a list containing our dummy_spell dict,
-    # round-tripping via JSON should match exactly
     assert isinstance(spells_loaded, list)
     assert spells_loaded[0]["name"] == "MagicMissile"

@@ -1,6 +1,8 @@
+import logging
 import pytest
 
 from models.flow.reaction.reaction import Reaction
+from core.logger import app_logger
 
 class DummyReactor:
     def __init__(self, name):
@@ -22,19 +24,19 @@ def test_reaction_attributes():
     assert rx.reactor is reactor
     assert rx.trigger_action is action
 
-def test_resolve_prints_with_string_action(capsys):
+def test_resolve_prints_with_string_action(caplog):
     reactor = DummyReactor("Ally")
     action = "Attack"
     rx = Reaction(reactor, action)
-    rx.resolve()
-    out = capsys.readouterr().out.strip()
-    assert out == "Ally reacts to Attack!"
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        rx.resolve()
+    assert "Ally reacts to Attack!" in caplog.text
 
-def test_resolve_uses_str_of_action(capsys):
+def test_resolve_uses_str_of_action(caplog):
     reactor = DummyReactor("Mage")
     action = DummyAction()
     rx = Reaction(reactor, action)
-    rx.resolve()
-    out = capsys.readouterr().out.strip()
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        rx.resolve()
     # Should use action.__str__()
-    assert out == "Mage reacts to ActionX!"
+    assert "Mage reacts to ActionX!" in caplog.text

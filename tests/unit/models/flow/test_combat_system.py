@@ -1,7 +1,9 @@
+import logging
 import pytest
 from models.flow.combat_system import CombatSystem
+from core.logger import app_logger
 
-def test_player_victory(capsys):
+def test_player_victory(caplog):
     # Enemy stub: starts at 5 HP, should never get its turn
     class EnemyStub:
         def __init__(self):
@@ -24,19 +26,19 @@ def test_player_victory(capsys):
     player = PlayerStub()
 
     cs = CombatSystem(player, enemy)
-    cs.start_combat()
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        cs.start_combat()
 
-    out = capsys.readouterr().out.splitlines()
     # 1) combat begins
-    assert out[0] == "Combat begins between Hero and Ogre!"
+    assert "Combat begins between Hero and Ogre!" in caplog.text
     # 2) round 1
-    assert out[1] == "Round 1"
+    assert "Round 1" in caplog.text
     # 3) ogre defeated
-    assert out[2] == "Ogre is defeated!"
+    assert "Ogre is defeated!" in caplog.text
     # 4) combat ends
-    assert out[3] == "Combat ends."
+    assert "Combat ends." in caplog.text
 
-def test_enemy_victory(capsys):
+def test_enemy_victory(caplog):
     # Player stub: does nothing on its turn
     class PlayerStub:
         def __init__(self):
@@ -58,16 +60,16 @@ def test_enemy_victory(capsys):
     enemy = EnemyStub()
 
     cs = CombatSystem(player, enemy)
-    cs.start_combat()
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        cs.start_combat()
 
-    out = capsys.readouterr().out.splitlines()
-    assert out[0] == "Combat begins between Hero and Goblin!"
-    assert out[1] == "Round 1"
+    assert "Combat begins between Hero and Goblin!" in caplog.text
+    assert "Round 1" in caplog.text
     # hero defeated
-    assert out[2] == "Hero is defeated!"
-    assert out[3] == "Combat ends."
+    assert "Hero is defeated!" in caplog.text
+    assert "Combat ends." in caplog.text
 
-def test_fight_multiple_rounds(capsys):
+def test_fight_multiple_rounds(caplog):
     # Test that combat_round increments properly
     logs = []
     class PlayerStub:
@@ -93,18 +95,18 @@ def test_fight_multiple_rounds(capsys):
 
     enemy = EnemyStub()
     cs = CombatSystem(player, enemy)
-    cs.start_combat()
+    with caplog.at_level(logging.DEBUG, logger=app_logger.name):
+        cs.start_combat()
 
-    out = capsys.readouterr().out
-    # Expect lines:
+    # Expect log messages:
     # Combat begins...
     # Round 1
     # Round 2
     # Round 3
     # E is defeated!
     # Combat ends.
-    assert "Round 1" in out
-    assert "Round 2" in out
-    assert "Round 3" in out
-    assert "E is defeated!" in out
-    assert out.strip().endswith("Combat ends.")
+    assert "Round 1" in caplog.text
+    assert "Round 2" in caplog.text
+    assert "Round 3" in caplog.text
+    assert "E is defeated!" in caplog.text
+    assert "Combat ends." in caplog.text

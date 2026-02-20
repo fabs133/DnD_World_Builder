@@ -1,5 +1,6 @@
 # core/gameCreation/turn_system.py
 
+from core.logger import app_logger
 from core.gameCreation.event_bus import EventBus
 from .combat_system import CombatSystem
 from .action.action_validator import ActionValidator
@@ -69,7 +70,7 @@ class TurnSystem:
         """
         Start a new round, dispatching any scheduled events for this round.
         """
-        print(f"Round {self.round_number} starts!")
+        app_logger.info(f"Round {self.round_number} starts!")
         # dispatch any events scheduled at the start of this round
         self._dispatch_scheduled()
         self.current_turn = 0
@@ -81,7 +82,7 @@ class TurnSystem:
         """
         self.current_turn = (self.current_turn + 1) % len(self.entities)
         current_entity = self.entities[self.current_turn]
-        print(f"It is now {current_entity.name}'s turn.")
+        app_logger.info(f"It is now {current_entity.name}'s turn.")
 
     def execute_turn(self):
         """
@@ -107,7 +108,7 @@ class TurnSystem:
         """
         End the current entity's turn and advance to the next turn.
         """
-        print(f"{self.entities[self.current_turn].name}'s turn ends.")
+        app_logger.info(f"{self.entities[self.current_turn].name}'s turn ends.")
         self.next_turn()
 
     # … rest of your methods unchanged …
