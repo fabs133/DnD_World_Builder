@@ -48,9 +48,9 @@ def test_create_hexagon_shape(qapp):
     # Should have exactly 6 points
     assert poly.count() == 6
 
-    # Check first point is at angle -30°
-    expected_x = size * math.cos(math.radians(-30))
-    expected_y = size * math.sin(math.radians(-30))
+    # Check first point is at angle 0° (flat-top hex)
+    expected_x = size * math.cos(math.radians(0))
+    expected_y = size * math.sin(math.radians(0))
     p0 = poly.at(0)
     assert pytest.approx(p0.x(), rel=1e-3) == expected_x
     assert pytest.approx(p0.y(), rel=1e-3) == expected_y

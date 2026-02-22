@@ -56,7 +56,7 @@ class HexTileItem(QGraphicsPolygonItem, BaseTileItem):
 
     def create_hexagon(self):
         """
-        Create a QPolygonF representing a regular hexagon centered at self.center.
+        Create a QPolygonF representing a flat-top regular hexagon centered at self.center.
 
         Returns
         -------
@@ -65,7 +65,7 @@ class HexTileItem(QGraphicsPolygonItem, BaseTileItem):
         """
         points = []
         for i in range(6):
-            angle_deg = 60 * i - 30
+            angle_deg = 60 * i
             angle_rad = math.radians(angle_deg)
             x = self.center.x() + self.size * math.cos(angle_rad)
             y = self.center.y() + self.size * math.sin(angle_rad)
