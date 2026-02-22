@@ -75,9 +75,7 @@ def test_collect_data_and_export(tmp_path, window, caplog, monkeypatch):
     window.race_input.setCurrentIndex(0)
     window.char_class_input.setCurrentIndex(0)
     window.subclass_input.addItem("Champion")
-    window.saving_throws_input.setText("STR")
-    window.skills_input.setText("Athletics")
-    
+    # Saving throws and skills are now auto-calculated from stats + proficiency checkboxes
     # New stat input system using QSpinBox per stat
     window.stats_inputs['STR'].setValue(12)
     window.stats_inputs['DEX'].setValue(14)
@@ -89,7 +87,7 @@ def test_collect_data_and_export(tmp_path, window, caplog, monkeypatch):
     window.armor_class_input.setValue(18)
     window.speed_label.setText("32")
     window.initiative_input.setValue(4)
-    window.conditions_input.setText("None")
+    # Conditions are now a checkable list; leave all unchecked (empty)
     window.temporary_hp_input.setValue(0)
     window.inventory_list.addItem("Sword")
     window.currency_input.setText("10gp")
@@ -117,6 +115,7 @@ def test_collect_data_and_export(tmp_path, window, caplog, monkeypatch):
 
 def test_export_canceled(window, monkeypatch, tmp_path):
     monkeypatch.setattr(CharacterCreationWindow, 'get_file_name', lambda self: None)
+    monkeypatch.setattr("PyQt5.QtWidgets.QMessageBox.warning", lambda *args, **kwargs: None)
     window.export_data()
     files = list(tmp_path.glob("*.json"))
     assert not files

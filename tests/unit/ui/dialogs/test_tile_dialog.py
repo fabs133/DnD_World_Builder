@@ -14,6 +14,8 @@ class DummyTileItem:
         self.last_set = None
     def set_overlay_color(self, color):
         self.last_set = color
+    def update(self):
+        pass
 
 @pytest.fixture
 def tile_data(tmp_path):

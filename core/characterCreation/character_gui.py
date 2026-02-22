@@ -1,8 +1,11 @@
 import json
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QFormLayout, QLineEdit, QComboBox,
-    QSpinBox, QGroupBox, QPushButton, QHBoxLayout, QListWidget, QTextEdit, QLabel, QInputDialog, QTabWidget, QMessageBox, QFileDialog
+    QSpinBox, QGroupBox, QPushButton, QHBoxLayout, QListWidget, QListWidgetItem,
+    QTextEdit, QLabel, QInputDialog, QTabWidget, QMessageBox, QFileDialog,
+    QCheckBox, QScrollArea, QGridLayout,
 )
+from PyQt5.QtCore import Qt
 
 from models.entities.game_entity import GameEntity
 from core.logger import app_logger
@@ -12,6 +15,31 @@ CLASS_TO_SPELL_ABILITY = {
     "Ranger": "WIS", "Sorcerer": "CHA", "Warlock": "CHA", "Wizard": "INT",
     "Artificer": "INT"
 }
+
+CLASS_SAVING_THROW_PROFS = {
+    "Barbarian": ["STR", "CON"], "Bard": ["DEX", "CHA"],
+    "Cleric": ["WIS", "CHA"], "Druid": ["INT", "WIS"],
+    "Fighter": ["STR", "CON"], "Monk": ["STR", "DEX"],
+    "Paladin": ["WIS", "CHA"], "Ranger": ["STR", "DEX"],
+    "Rogue": ["DEX", "INT"], "Sorcerer": ["CON", "CHA"],
+    "Warlock": ["WIS", "CHA"], "Wizard": ["INT", "WIS"],
+}
+
+SKILLS = {
+    "Acrobatics": "DEX", "Animal Handling": "WIS", "Arcana": "INT",
+    "Athletics": "STR", "Deception": "CHA", "History": "INT",
+    "Insight": "WIS", "Intimidation": "CHA", "Investigation": "INT",
+    "Medicine": "WIS", "Nature": "INT", "Perception": "WIS",
+    "Performance": "CHA", "Persuasion": "CHA", "Religion": "INT",
+    "Sleight of Hand": "DEX", "Stealth": "DEX", "Survival": "WIS",
+}
+
+DND_CONDITIONS = [
+    "Blinded", "Charmed", "Deafened", "Exhaustion",
+    "Frightened", "Grappled", "Incapacitated", "Invisible",
+    "Paralyzed", "Petrified", "Poisoned", "Prone",
+    "Restrained", "Stunned", "Unconscious",
+]
 
 
 class CharacterCreationWindow(QWidget):
@@ -60,14 +88,16 @@ class CharacterCreationWindow(QWidget):
 
         # === Attributes Tab ===
         self.proficiency_bonus_label = QLabel()
-        self.saving_throws_input = QLineEdit()
-        self.skills_input = QLineEdit()
         self.stats_inputs = {}
-        self.stats_modifiers = {}  # Store modifier labels
+        self.stats_modifiers = {}
         self.stats_warnings = {}
+        self.saving_throw_profs = {}
+        self.saving_throw_labels = {}
+        self.skill_profs = {}
+        self.skill_labels = {}
 
-        attributes_tab = QWidget()
-        attributes_layout = QFormLayout(attributes_tab)
+        stats_group = QGroupBox("Ability Scores")
+        stats_form = QFormLayout(stats_group)
         for ability in ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA']:
             spin = QSpinBox()
             spin.setRange(8, 15)
@@ -89,11 +119,23 @@ class CharacterCreationWindow(QWidget):
             self.stats_inputs[ability] = spin
             self.stats_warnings[ability] = warning
 
-            attributes_layout.addRow(f"{ability}:", container)
+            stats_form.addRow(f"{ability}:", container)
 
-        attributes_layout.addRow("Saving Throws:", self.saving_throws_input)
-        attributes_layout.addRow("Skills:", self.skills_input)
-        attributes_layout.addRow("Proficiency Bonus:", self.proficiency_bonus_label)
+        stats_form.addRow("Proficiency Bonus:", self.proficiency_bonus_label)
+
+        attributes_content = QWidget()
+        attributes_vbox = QVBoxLayout(attributes_content)
+        attributes_vbox.addWidget(stats_group)
+        attributes_vbox.addWidget(self._build_saving_throws_widget())
+        attributes_vbox.addWidget(self._build_skills_widget())
+        attributes_vbox.addStretch()
+
+        attributes_scroll = QScrollArea()
+        attributes_scroll.setWidget(attributes_content)
+        attributes_scroll.setWidgetResizable(True)
+
+        attributes_tab = QWidget()
+        QVBoxLayout(attributes_tab).addWidget(attributes_scroll)
         self.tab_widget.addTab(attributes_tab, "Attributes")
 
         # === Combat Tab ===
@@ -101,7 +143,13 @@ class CharacterCreationWindow(QWidget):
         self.initiative_input = QSpinBox(); self.initiative_input.setRange(-10, 10); self.initiative_input.setValue(0)
         self.speed_label = QLabel()
         self.temporary_hp_input = QSpinBox(); self.temporary_hp_input.setRange(0, 100); self.temporary_hp_input.setValue(0)
-        self.conditions_input = QLineEdit()
+        self.conditions_list = QListWidget()
+        self.conditions_list.setFixedHeight(160)
+        for _cond in DND_CONDITIONS:
+            _item = QListWidgetItem(_cond)
+            _item.setFlags(_item.flags() | Qt.ItemIsUserCheckable)
+            _item.setCheckState(Qt.Unchecked)
+            self.conditions_list.addItem(_item)
         self.currency_input = QLineEdit()
         self.inventory_list = QListWidget()
         self.inventory_add_button = QPushButton("Add Item")
@@ -128,7 +176,7 @@ class CharacterCreationWindow(QWidget):
         combat_layout.addRow("Initiative:", self.initiative_input)
         combat_layout.addRow("Speed:", self.speed_label)
         combat_layout.addRow("Temporary HP:", self.temporary_hp_input)
-        combat_layout.addRow("Conditions:", self.conditions_input)
+        combat_layout.addRow("Conditions:", self._build_conditions_widget())
         combat_layout.addRow("Currency:", self.currency_input)
         combat_layout.addRow("Inventory:", self._wrap_layout(inventory_container))
         combat_layout.addRow("Passive Perception:", self.passive_perception_label)
@@ -175,6 +223,9 @@ class CharacterCreationWindow(QWidget):
 
         # === Final Setup ===
         self.update_proficiency_bonus()
+        self.update_class_saving_throw_profs()
+        self.update_saving_throws()
+        self.update_skills()
         self.update_passive_perception()
         self.update_spellcasting_ability()
         self.update_summary()
@@ -187,10 +238,17 @@ class CharacterCreationWindow(QWidget):
         for stat in self.stats_inputs.values():
             stat.valueChanged.connect(self.update_summary)
             stat.valueChanged.connect(self.update_stat_modifiers)
+            stat.valueChanged.connect(self.update_saving_throws)
+            stat.valueChanged.connect(self.update_skills)
 
         self.stats_inputs["WIS"].valueChanged.connect(self.update_passive_perception)
-        self.skills_input.textChanged.connect(self.update_passive_perception)
+        self.skill_profs["Perception"].stateChanged.connect(self.update_passive_perception)
         self.char_class_input.currentIndexChanged.connect(self.update_spellcasting_ability)
+        self.char_class_input.currentIndexChanged.connect(self.update_class_saving_throw_profs)
+        for _cb in self.saving_throw_profs.values():
+            _cb.stateChanged.connect(self.update_saving_throws)
+        for _cb in self.skill_profs.values():
+            _cb.stateChanged.connect(self.update_skills)
         self.armor_class_input.valueChanged.connect(self.validate_combat_inputs)
         self.initiative_input.valueChanged.connect(self.validate_combat_inputs)
         self.temporary_hp_input.valueChanged.connect(self.validate_combat_inputs)
@@ -292,10 +350,9 @@ class CharacterCreationWindow(QWidget):
 
         file_name = self.get_file_name()
         if file_name:
-            entity = self.to_game_entity()
-            with open(f'{file_name}.entity.json', 'w') as file:
-                json.dump(entity.to_dict(), file, indent=4)
-            app_logger.info(f"[CharacterGUI] GameEntity saved: {file_name}.entity.json")
+            with open(f'{file_name}.json', 'w') as file:
+                json.dump(self.collect_data(), file, indent=4)
+            app_logger.info("[CharacterGUI] Data exported successfully")
 
 
 
@@ -332,13 +389,17 @@ class CharacterCreationWindow(QWidget):
             'class': self.char_class_input.currentText(),
             'subclass': self.subclass_input.currentText(),
             'proficiency_bonus': self.proficiency_bonus_label.text(),
-            'saving_throws': self.saving_throws_input.text(),
-            'skills': self.skills_input.text(),
+            'saving_throws': self._get_saving_throw_values(),
+            'skills': self._get_skill_values(),
             'stats': {key: spin.value() for key, spin in self.stats_inputs.items()},
             'armor_class': self.armor_class_input.value(),
             'speed': self.speed_label.text(),
             'initiative': self.initiative_input.value(),
-            'conditions': self.conditions_input.text(),
+            'conditions': [
+                self.conditions_list.item(i).text()
+                for i in range(self.conditions_list.count())
+                if self.conditions_list.item(i).checkState() == Qt.Checked
+            ],
             'temporary_hp': self.temporary_hp_input.value(),
             'inventory': [self.inventory_list.item(i).text() for i in range(self.inventory_list.count())],
             'currency': self.currency_input.text(),
@@ -355,8 +416,7 @@ class CharacterCreationWindow(QWidget):
     def update_passive_perception(self):
         wis = self.stats_inputs.get("WIS").value()
         wis_mod = (wis - 10) // 2
-        skills = self.skills_input.text().lower()
-        prof_bonus = 2 if "perception" in skills else 0
+        prof_bonus = 2 if self.skill_profs["Perception"].isChecked() else 0
         value = 10 + wis_mod + prof_bonus
         self.passive_perception_label.setText(str(value))
         self.update_summary()
@@ -382,22 +442,6 @@ class CharacterCreationWindow(QWidget):
         text, ok = QInputDialog.getText(self, 'Save Character', 'Enter file name:')
         return text if ok and text else None
 
-    def export_data(self):
-        if not self.validate_stats():
-            from PyQt5.QtWidgets import QMessageBox
-            QMessageBox.critical(self, "Invalid Stats", "Total point-buy exceeds 27 or contains invalid values.")
-            return
-
-        if not self.is_character_reasonable():
-            from PyQt5.QtWidgets import QMessageBox
-            QMessageBox.warning(self, "Unbalanced Character", "This character exceeds sane starting limits. Please adjust AC, initiative, HP or spell slots.")
-            return
-
-        file_name = self.get_file_name()
-        if file_name:
-            with open(f'{file_name}.json', 'w') as file:
-                json.dump(self.collect_data(), file, indent=4)
-            app_logger.info("[CharacterGUI] Data exported successfully")
 
     def validate_combat_inputs(self):
         ac = self.armor_class_input.value()
@@ -545,6 +589,115 @@ class CharacterCreationWindow(QWidget):
 
 
 
+
+    # ------------------------------------------------------------------
+    # Widget builders
+    # ------------------------------------------------------------------
+
+    def _build_saving_throws_widget(self):
+        group = QGroupBox("Saving Throws")
+        grid = QGridLayout(group)
+        for i, ability in enumerate(['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA']):
+            cb = QCheckBox()
+            lbl = QLabel(f"{ability} Save: +0")
+            self.saving_throw_profs[ability] = cb
+            self.saving_throw_labels[ability] = lbl
+            cell = QWidget()
+            cell_layout = QHBoxLayout(cell)
+            cell_layout.setContentsMargins(0, 0, 0, 0)
+            cell_layout.addWidget(cb)
+            cell_layout.addWidget(lbl)
+            grid.addWidget(cell, i // 2, i % 2)
+        return group
+
+    def _build_skills_widget(self):
+        group = QGroupBox("Skills")
+        grid = QGridLayout(group)
+        for i, (skill, ability) in enumerate(SKILLS.items()):
+            cb = QCheckBox()
+            lbl = QLabel(f"{skill} ({ability}): +0")
+            self.skill_profs[skill] = cb
+            self.skill_labels[skill] = lbl
+            cell = QWidget()
+            cell_layout = QHBoxLayout(cell)
+            cell_layout.setContentsMargins(0, 0, 0, 0)
+            cell_layout.addWidget(cb)
+            cell_layout.addWidget(lbl)
+            grid.addWidget(cell, i // 2, i % 2)
+        return group
+
+    def _build_conditions_widget(self):
+        widget = QWidget()
+        layout = QVBoxLayout(widget)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.conditions_list)
+        btn_row = QHBoxLayout()
+        add_btn = QPushButton("Add Custom")
+        add_btn.clicked.connect(self._add_custom_condition)
+        remove_btn = QPushButton("Remove Custom")
+        remove_btn.clicked.connect(self._remove_custom_condition)
+        btn_row.addWidget(add_btn)
+        btn_row.addWidget(remove_btn)
+        layout.addLayout(btn_row)
+        return widget
+
+    def _add_custom_condition(self):
+        text, ok = QInputDialog.getText(self, "Add Custom Condition", "Condition name:")
+        if ok and text.strip():
+            item = QListWidgetItem(text.strip())
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            item.setCheckState(Qt.Checked)
+            self.conditions_list.addItem(item)
+
+    def _remove_custom_condition(self):
+        for item in self.conditions_list.selectedItems():
+            if item.text() not in DND_CONDITIONS:
+                self.conditions_list.takeItem(self.conditions_list.row(item))
+
+    # ------------------------------------------------------------------
+    # Derived-value updaters
+    # ------------------------------------------------------------------
+
+    def update_class_saving_throw_profs(self):
+        class_name = self.char_class_input.currentText()
+        profs = CLASS_SAVING_THROW_PROFS.get(class_name, [])
+        for ability, checkbox in self.saving_throw_profs.items():
+            checkbox.blockSignals(True)
+            checkbox.setChecked(ability in profs)
+            checkbox.blockSignals(False)
+        self.update_saving_throws()
+
+    def update_saving_throws(self):
+        prof = 2
+        for ability, checkbox in self.saving_throw_profs.items():
+            mod = (self.stats_inputs[ability].value() - 10) // 2
+            total = mod + (prof if checkbox.isChecked() else 0)
+            sign = '+' if total >= 0 else ''
+            self.saving_throw_labels[ability].setText(f"{ability} Save: {sign}{total}")
+
+    def update_skills(self):
+        prof = 2
+        for skill, ability in SKILLS.items():
+            mod = (self.stats_inputs[ability].value() - 10) // 2
+            total = mod + (prof if self.skill_profs[skill].isChecked() else 0)
+            sign = '+' if total >= 0 else ''
+            self.skill_labels[skill].setText(f"{skill} ({ability}): {sign}{total}")
+
+    def _get_saving_throw_values(self):
+        prof = 2
+        return {
+            ability: (self.stats_inputs[ability].value() - 10) // 2
+                     + (prof if cb.isChecked() else 0)
+            for ability, cb in self.saving_throw_profs.items()
+        }
+
+    def _get_skill_values(self):
+        prof = 2
+        return {
+            skill: (self.stats_inputs[ability].value() - 10) // 2
+                   + (prof if self.skill_profs[skill].isChecked() else 0)
+            for skill, ability in SKILLS.items()
+        }
 
     def update_subclasses(self):
         selected_class = self.char_class_input.currentText()

@@ -1,50 +1,96 @@
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QPushButton
-from .editor_stack import TriggerEditorStack
+from PyQt5.QtWidgets import (
+    QDialog, QVBoxLayout, QHBoxLayout, QPushButton, QTabWidget,
+)
+from .graph_view import TriggerGraphView
+from .property_editor import TriggerPropertyEditor
+from .list_view import TriggerListView
 
 
 class TriggerEditorDialog(QDialog):
     """
     Dialog window for editing triggers associated with a tile or entity.
-    This dialog provides a user interface for viewing, creating, and editing triggers.
-    It contains a stack widget for trigger editing and a button to add new triggers.
+
+    Presents three tabs — Graph, Properties, and Triggers — with a shared
+    button row for creating, saving, and deleting triggers.
+
     Parameters
     ----------
     tile_data_or_entity : object
-        The tile data or entity to associate with the trigger editor context.
-    *args : tuple
-        Additional positional arguments passed to the QDialog constructor.
-    **kwargs : dict
-        Additional keyword arguments passed to the QDialog constructor.
-    Attributes
-    ----------
-    editor_stack : TriggerEditorStack
-        The stack widget managing the trigger list and property editor views.
-    add_trigger_btn : QPushButton
-        Button to create a new trigger.
-    Methods
-    -------
-    create_new_trigger()
-        Clears the property editor and switches to the trigger creation view.
+        The tile data or entity whose triggers are being edited.
     """
+
     def __init__(self, tile_data_or_entity, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setWindowTitle("Trigger Editor")
+        self.setMinimumSize(900, 650)
+        self.resize(1000, 700)
+        self._context = tile_data_or_entity
+
         layout = QVBoxLayout(self)
 
-        self.editor_stack = TriggerEditorStack()
-        self.editor_stack.set_context(tile_data_or_entity)
-        layout.addWidget(self.editor_stack)
+        # --- Tab widget ---
+        self.tabs = QTabWidget()
+        self.graph_view = TriggerGraphView()
+        self.property_editor = TriggerPropertyEditor()
+        self.list_view = TriggerListView()
 
-        self.add_trigger_btn = QPushButton("New Trigger")
-        self.add_trigger_btn.clicked.connect(self.create_new_trigger)
-        layout.addWidget(self.add_trigger_btn)
+        self.tabs.addTab(self.graph_view, "Graph")
+        self.tabs.addTab(self.property_editor, "Properties")
+        self.tabs.addTab(self.list_view, "Triggers")
+        layout.addWidget(self.tabs)
 
+        # --- Button row ---
+        btn_row = QHBoxLayout()
+        self.new_btn    = QPushButton("New Trigger")
+        self.save_btn   = QPushButton("Save Trigger")
+        self.delete_btn = QPushButton("Delete Trigger")
+        for b in (self.new_btn, self.save_btn, self.delete_btn):
+            btn_row.addWidget(b)
+        layout.addLayout(btn_row)
 
-        self.editor_stack.show_list_view()
+        # --- Wire signals ---
+        self.new_btn.clicked.connect(self._on_new_trigger)
+        self.save_btn.clicked.connect(self._on_save_trigger)
+        self.delete_btn.clicked.connect(self._on_delete_trigger)
+        self.graph_view.node_selected.connect(self._on_node_selected)
+
+        # --- Load initial data ---
+        self.graph_view.set_context(tile_data_or_entity)
+        self.property_editor.set_context(tile_data_or_entity)
+        self.list_view.set_context(tile_data_or_entity)
+
+    # ------------------------------------------------------------------
+    # Slot implementations
+    # ------------------------------------------------------------------
+
+    def _on_new_trigger(self):
+        self.property_editor.clear_inputs()
+        self.property_editor.set_defaults()
+        self.property_editor.set_trigger(None)
+        self.tabs.setCurrentWidget(self.property_editor)
+
+    def _on_save_trigger(self):
+        self.property_editor.save_trigger()
+        self.graph_view.refresh()
+        self.list_view.set_context(self._context)
+
+    def _on_node_selected(self, trigger):
+        self.property_editor.set_trigger(trigger)
+        self.tabs.setCurrentWidget(self.property_editor)
+
+    def _on_delete_trigger(self):
+        trigger = self.property_editor.trigger
+        if trigger is None:
+            return
+        triggers = getattr(self._context, "triggers", [])
+        self._context.triggers = [t for t in triggers if t.label != trigger.label]
+        self.property_editor.set_trigger(None)
+        self.graph_view.refresh()
+        self.list_view.set_context(self._context)
+
+    # ------------------------------------------------------------------
+    # Legacy compat — kept so existing call-sites don't break
+    # ------------------------------------------------------------------
 
     def create_new_trigger(self):
-        self.editor_stack.property_editor.clear_inputs()
-        self.editor_stack.property_editor.set_defaults()
-        self.editor_stack.property_editor.set_trigger(None)  # ⬅️ this is a nice-to-have
-        self.editor_stack.setCurrentWidget(self.editor_stack.property_editor)
-
+        self._on_new_trigger()

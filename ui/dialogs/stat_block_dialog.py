@@ -29,6 +29,10 @@ class StatBlockDialog(QDialog):
 
         self.browser = QTextBrowser()
         self.browser.setOpenExternalLinks(False)
+        from core import theme_palette as tp
+        self.browser.setStyleSheet(
+            f"background-color: {tp.get('stat_bg')}; border: none;"
+        )
         self.browser.setHtml(self._build_html())
         layout.addWidget(self.browser)
 
@@ -37,8 +41,16 @@ class StatBlockDialog(QDialog):
     # ------------------------------------------------------------------
 
     def _build_html(self):
+        from core import theme_palette as tp
+        bg = tp.get("stat_bg")
+        css_block = self._css()
         e = self.entity
-        parts = [self._css(), '<div class="stat-block">']
+
+        parts = [
+            f'<html><head>{css_block}</head>',
+            f'<body style="margin:0;padding:0;background-color:{bg};">',
+            '<div class="stat-block">',
+        ]
 
         # Portrait image (Phase 2 integration)
         image_path = getattr(e, "image_path", None)
@@ -69,7 +81,7 @@ class StatBlockDialog(QDialog):
         # Inventory / equipment
         parts.append(self._inventory_section(e))
 
-        parts.append("</div>")
+        parts.append('</div></body></html>')
         return "\n".join(parts)
 
     # ------------------------------------------------------------------
@@ -291,83 +303,92 @@ class StatBlockDialog(QDialog):
     # CSS
     # ------------------------------------------------------------------
 
-    @staticmethod
-    def _css():
-        return """
+    def _css(self):
+        from core import theme_palette as tp
+        bg       = tp.get("stat_bg")
+        text     = tp.get("stat_text")
+        header   = tp.get("stat_header")
+        border   = tp.get("stat_border")
+        sep_edge = tp.get("stat_sep_edge")
+        sep_mid  = tp.get("stat_sep_mid")
+        subhdr   = tp.get("stat_subheader")
+        lore     = tp.get("stat_lore")
+        return f"""
         <style>
-            .stat-block {
+            .stat-block {{
                 font-family: 'Segoe UI', 'Noto Sans', sans-serif;
                 font-size: 13px;
-                color: #1a1a1a;
-                background-color: #fdf1dc;
+                color: {text};
+                background-color: {bg};
                 padding: 14px;
-                border: 2px solid #7a200d;
-            }
-            .portrait {
+                border: 2px solid {border};
+            }}
+            .portrait {{
                 max-width: 100%;
                 max-height: 200px;
                 display: block;
                 margin: 0 auto 10px auto;
-                border: 1px solid #7a200d;
-            }
-            .header h1 {
+                border: 1px solid {border};
+            }}
+            .header h1 {{
                 margin: 0;
                 font-size: 22px;
-                color: #7a200d;
+                color: {header};
+                background-color: transparent;
                 font-variant: small-caps;
-            }
-            .subheader {
+            }}
+            .subheader {{
                 margin: 0 0 4px 0;
                 font-style: italic;
                 font-size: 12px;
-                color: #333;
-            }
-            .separator {
+                color: {subhdr};
+            }}
+            .separator {{
                 height: 2px;
-                background: linear-gradient(to right, #7a200d, #e0c8a8, #7a200d);
+                background: linear-gradient(to right, {sep_edge}, {sep_mid}, {sep_edge});
                 margin: 6px 0;
-            }
-            .property-block {
+            }}
+            .property-block {{
                 line-height: 1.6;
                 font-size: 12px;
-            }
-            .abilities table {
+            }}
+            .abilities table {{
                 width: 100%;
                 text-align: center;
                 border-collapse: collapse;
                 font-size: 12px;
-            }
-            .abilities th {
-                color: #7a200d;
+            }}
+            .abilities th {{
+                color: {header};
                 font-weight: bold;
                 padding: 2px 8px;
-            }
-            .abilities td {
+            }}
+            .abilities td {{
                 padding: 2px 8px;
-            }
-            .section-header {
+            }}
+            .section-header {{
                 font-size: 16px;
-                color: #7a200d;
+                color: {header};
                 font-variant: small-caps;
-                border-bottom: 1px solid #7a200d;
+                border-bottom: 1px solid {border};
                 margin-top: 8px;
                 margin-bottom: 4px;
                 font-weight: bold;
-            }
-            .action {
+            }}
+            .action {{
                 font-size: 12px;
                 margin-bottom: 4px;
                 line-height: 1.4;
-            }
-            .lore {
+            }}
+            .lore {{
                 font-size: 11px;
                 font-style: italic;
-                color: #444;
+                color: {lore};
                 margin-bottom: 6px;
-            }
-            .property-line {
+            }}
+            .property-line {{
                 font-size: 12px;
                 margin-bottom: 4px;
-            }
+            }}
         </style>
         """

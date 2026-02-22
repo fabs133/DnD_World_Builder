@@ -1,10 +1,10 @@
 from PyQt5.QtWidgets import (
     QDialog, QFormLayout, QLabel, QLineEdit, QComboBox, QVBoxLayout,
     QPushButton, QTextEdit, QCheckBox, QColorDialog, QHBoxLayout,
-    QFileDialog,
+    QFileDialog, QGroupBox, QMessageBox,
 )
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor, QPixmap
+from PyQt5.QtGui import QColor, QPixmap, QImageReader
 from models.tiles.tile_data import TileTag, TerrainType, TileData
 from core.logger import app_logger
 from .entity_editor_dialog import EntityEditorDialog
@@ -96,13 +96,27 @@ class TileDialog(QDialog):
 
         # --- TAGS ---
         self.tag_checkboxes = {}
-        tag_box = QVBoxLayout()
+        tag_group = QGroupBox("Tags")
+        tag_layout = QVBoxLayout(tag_group)
         for tag in TileTag:
             cb = QCheckBox(tag.name.replace("_", " ").title())
             cb.setChecked(tag in tile_data.tags)
+            cb.setStyleSheet("""
+                QCheckBox::indicator {
+                    width: 16px;
+                    height: 16px;
+                    border: 2px solid #888;
+                    border-radius: 3px;
+                    background: transparent;
+                }
+                QCheckBox::indicator:checked {
+                    background-color: #6d4c9e;
+                    border-color: #c084fc;
+                }
+            """)
             self.tag_checkboxes[tag] = cb
-            tag_box.addWidget(cb)
-        layout.addRow(QLabel("Tags:"), tag_box)
+            tag_layout.addWidget(cb)
+        layout.addRow(tag_group)
 
         inherited_attributes = [attr for attr in dir(tile_data) if not attr.startswith('__') and not callable(getattr(tile_data, attr))]
         app_logger.debug(f"Inherited attributes: {inherited_attributes}")
@@ -210,6 +224,24 @@ class TileDialog(QDialog):
         """
         td = self.tile_data
 
+        # --- START ZONE exclusivity: only one tile per scenario ---
+        was_start_zone = "START_ZONE" in self._original_state.get("tags", [])
+        will_be_start_zone = self.tag_checkboxes[TileTag.START_ZONE].isChecked()
+        if will_be_start_zone and not was_start_zone and self.tile_item:
+            scene = self.tile_item.scene() if hasattr(self.tile_item, "scene") else None
+            if scene:
+                for item in scene.items():
+                    if hasattr(item, "tile_data") and item is not self.tile_item:
+                        if TileTag.START_ZONE in item.tile_data.tags:
+                            QMessageBox.warning(
+                                self, "Start Zone Conflict",
+                                "Another tile is already marked as the Start Zone.\n"
+                                "Only one Start Zone is allowed per scenario.\n\n"
+                                "Remove the existing Start Zone tag first."
+                            )
+                            self.tag_checkboxes[TileTag.START_ZONE].setChecked(False)
+                            return
+
         # Apply changes
         td.terrain = TerrainType[self.terrain_input.currentText()]
         td.tags = [tag for tag, cb in self.tag_checkboxes.items() if cb.isChecked()]
@@ -227,6 +259,9 @@ class TileDialog(QDialog):
         if self.main_window:
             cmd = TileEditCommand(td, self._original_state, new_state, tile_item=self.tile_item)
             self.main_window.undo_stack.push(cmd)
+
+        if self.tile_item:
+            self.tile_item.update()
 
         self.accept()
 
@@ -272,10 +307,13 @@ class TileDialog(QDialog):
         self._update_bg_image_preview()
 
     def _update_bg_image_preview(self):
-        """Update the background image preview label."""
+        """Update the background image preview label, respecting EXIF orientation."""
         if self._background_image_path:
-            pixmap = QPixmap(self._background_image_path)
-            if not pixmap.isNull():
+            reader = QImageReader(self._background_image_path)
+            reader.setAutoTransform(True)
+            image = reader.read()
+            if not image.isNull():
+                pixmap = QPixmap.fromImage(image)
                 self.bg_image_label.setPixmap(
                     pixmap.scaled(100, 100, Qt.KeepAspectRatio, Qt.SmoothTransformation)
                 )

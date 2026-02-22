@@ -2,7 +2,7 @@
 
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QFormLayout, QComboBox,
-    QPushButton, QLabel, QHBoxLayout, QLineEdit, QSpinBox, QMessageBox
+    QLabel, QLineEdit, QSpinBox, QMessageBox
 )
 from PyQt5.QtCore import Qt
 from registries.condition_registry import condition_registry
@@ -64,15 +64,6 @@ class TriggerPropertyEditor(QWidget):
         self.reaction_param_layout = QFormLayout()
         layout.addLayout(self.reaction_param_layout)
 
-        # --- Buttons ---
-        btns = QHBoxLayout()
-        self.save_btn = QPushButton("Save Trigger")
-        self.cancel_btn = QPushButton("Cancel")
-        btns.addWidget(self.save_btn)
-        btns.addWidget(self.cancel_btn)
-        layout.addLayout(btns)
-
-        self.save_btn.clicked.connect(self.save_trigger)
 
     def update_condition_fields(self, name):
         """
@@ -289,9 +280,7 @@ class TriggerPropertyEditor(QWidget):
         if hasattr(self.context, "register_trigger"):
             self.context.register_trigger(new_trigger)
 
-        # Update the graph view
-        self.parent().set_context(self.context)
-        self.parent().setCurrentWidget(self.parent().graph_view)
+        # Post-save navigation is handled by the parent dialog
 
     def set_context(self, context):
         """

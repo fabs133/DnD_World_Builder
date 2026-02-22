@@ -52,9 +52,11 @@ def test_migration_from_version_0(tmp_path, caplog):
     with caplog.at_level(logging.DEBUG):
         mgr = SettingsManager(path=str(config_file))
 
-    assert "Migrating config from version 0 to 1" in caplog.text
+    assert f"Migrating config from version 0 to {CONFIG_VERSION}" in caplog.text
     assert mgr.settings["some_key"] == "value"
     assert mgr.settings["grid_size"] == DEFAULT_SETTINGS["grid_size"]
+    assert mgr.settings["show_tutorial"] == DEFAULT_SETTINGS["show_tutorial"]
+    assert mgr.settings["multiplayer_default_port"] == DEFAULT_SETTINGS["multiplayer_default_port"]
     assert mgr.settings["config_version"] == CONFIG_VERSION
 
     data = json.loads(config_file.read_text(encoding="utf-8"))

@@ -1,9 +1,20 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QComboBox, QLabel
+from PyQt5.QtCore import qInstallMessageHandler, QtMsgType
 from core.gameCreation.main_controller import MainController
 from core.characterCreation.character_gui import CharacterCreationWindow
 from core.settings_manager import SettingsManager
-from qt_material import apply_stylesheet, list_themes
+
+
+def _qt_msg_handler(msg_type, _context, message):
+    """Suppress cosmetic SVG icon path errors emitted by qt_material on Windows."""
+    if 'Cannot open file' in message and 'icon:/' in message:
+        return
+    if msg_type in (QtMsgType.QtWarningMsg, QtMsgType.QtCriticalMsg, QtMsgType.QtFatalMsg):
+        print(message, file=sys.stderr)
+
+
+qInstallMessageHandler(_qt_msg_handler)
 
 
 # Map user-friendly names to qt-material theme files
@@ -33,9 +44,13 @@ THEME_MAP = {
 def apply_theme(app, theme_file):
     """Apply a qt-material theme to the application.
 
+    Imported here (after QApplication exists) so qt_material initialises
+    its font/resource system correctly and avoids spurious warnings.
+
     :param app: The QApplication instance.
     :param theme_file: The theme XML filename (e.g., 'dark_teal.xml').
     """
+    from qt_material import apply_stylesheet, list_themes  # noqa: PLC0415
     if theme_file in list_themes():
         apply_stylesheet(app, theme=theme_file)
     else:
@@ -102,4 +117,9 @@ if __name__ == "__main__":
 
     launcher = LaunchDialog(settings)
     launcher.show()
+
+    if settings.get("show_tutorial", True):
+        from ui.dialogs.tutorial_dialog import TutorialDialog
+        TutorialDialog(settings, launcher).exec_()
+
     sys.exit(app.exec_())

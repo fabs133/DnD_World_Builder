@@ -1,4 +1,6 @@
 # trigger_editor/editor_stack.py
+# NOTE: TriggerEditorStack is no longer used by TriggerEditorDialog.
+# Kept for backwards compatibility. Remove in a future cleanup.
 
 from PyQt5.QtWidgets import QStackedWidget
 from .list_view import TriggerListView

@@ -6,7 +6,6 @@ from PyQt5.QtCore import Qt
 
 def test_undo_redo_tile_paint(qtbot):
     from ui.main_window import MainWindow
-    from models.tiles.tile_preset import TilePreset
     from models.tiles.square_tile_item import SquareTileItem
 
     # Create a 1x1 grid MainWindow
@@ -23,25 +22,18 @@ def test_undo_redo_tile_paint(qtbot):
     # Record initial overlay_color (may be None or default)
     initial_color = td.overlay_color
 
-    # Create a simple visual-only preset changing overlay_color
-    preset = TilePreset(
-        terrain=td.terrain,
-        tags=td.tags,
-        overlay_color='#FF0000'
-    )
-    mw.active_tile_preset = preset
-    mw.paint_mode_active = True
-    mw.paint_mode_type = 'visual'
+    # Activate color mode with a target color
+    mw.color_mode_active = True
+    mw.active_color = '#FF0000'
 
-    # Paint the tile (redo) via mouse click
-    # Need to click on the view's viewport at the tile's scene position
+    # Paint the tile via mouse click
     pos = mw.view.mapFromScene(tile_item.rect().center())
     qtbot.mouseClick(mw.view.viewport(), Qt.LeftButton, pos=pos)
     assert td.overlay_color == '#FF0000'
 
-    # Undo should revert the overlay_color the overlay_color
+    # Undo should revert the overlay_color; _refresh normalizes None -> "#CCCCCC"
     mw.undo_stack.undo()
-    assert td.overlay_color == initial_color
+    assert td.overlay_color == (initial_color or "#CCCCCC")
 
     # Redo should reapply the overlay_color
     mw.undo_stack.redo()

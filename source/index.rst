@@ -37,6 +37,7 @@ documentation for details.
    ui.dialogs
    ui.dialogs.trigger_editor
    ui.dialogs.tile_edit
+   network
    utils.backup
    utils.string.slugify
    versioning

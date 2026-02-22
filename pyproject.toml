@@ -1,0 +1,75 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dnd-world-builder"
+version = "1.0.0"
+description = "A PyQt5 tactical map editor and scenario logic engine for Dungeons & Dragons 5e"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+authors = [
+    {name = "fabs133"},
+]
+keywords = ["dnd", "dungeons-and-dragons", "map-editor", "vtt", "tabletop"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Games/Entertainment :: Role-Playing",
+    "Framework :: Qt",
+]
+dependencies = [
+    "PyQt5==5.15.11",
+    "qt-material>=2.14",
+    "aiohttp>=3.9.0",
+    "requests>=2.32.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/fabs133/DnD_World_Builder"
+Documentation = "https://fabs133.github.io/DnD_World_Builder/"
+Repository = "https://github.com/fabs133/DnD_World_Builder"
+Issues = "https://github.com/fabs133/DnD_World_Builder/issues"
+
+# ── Testing ──────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+timeout = 60
+asyncio_mode = "auto"
+addopts = "-v --tb=short"
+
+# ── Linting (ruff) ──────────────────────────────────────────────────
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "SIM",  # flake8-simplify
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "B008",   # function call in default argument
+    "SIM108", # ternary operator
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["core", "ui", "models", "domain", "network", "registries"]
+
+# ── Coverage ─────────────────────────────────────────────────────────
+[tool.coverage.run]
+source = ["core", "ui", "models", "domain", "network", "registries"]
+omit = ["tests/*", "docs/*", "*.spec"]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true

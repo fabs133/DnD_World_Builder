@@ -79,7 +79,7 @@ class MediaManager:
         if not dest.exists():
             shutil.copy2(source, dest)
 
-        return str(dest.relative_to(self.workspace))
+        return dest.relative_to(self.workspace).as_posix()
 
     @staticmethod
     def _files_identical(a, b):

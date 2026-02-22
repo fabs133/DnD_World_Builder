@@ -1,4 +1,5 @@
-﻿certifi==2025.4.26
+# Runtime dependencies
+certifi==2025.4.26
 charset-normalizer==3.4.2
 idna==3.10
 PyQt5==5.15.11
@@ -7,4 +8,4 @@ PyQt5_sip==12.17.0
 qt-material>=2.14
 requests==2.32.4
 urllib3==2.4.0
-pytest-qt
+aiohttp>=3.9.0

@@ -1,35 +1,25 @@
 from PyQt5.QtWidgets import (
-    QMainWindow, QGraphicsScene, QVBoxLayout, QPushButton, QWidget,
-    QMenuBar, QAction, QFileDialog
+    QMainWindow, QGraphicsScene, QVBoxLayout, QHBoxLayout,
+    QPushButton, QWidget, QAction, QFileDialog, QLabel, QSplitter,
+    QDockWidget,
 )
 from PyQt5.QtCore import Qt, QPointF, QTimer
+from PyQt5.QtWidgets import QUndoStack
 import json
 import math
+from datetime import datetime
+from pathlib import Path
+
 from models.tiles.tile_data import TileData
 from models.tiles.square_tile_item import SquareTileItem
 from models.tiles.hex_tile_item import HexTileItem
-from PyQt5.QtWidgets import QUndoStack
-from datetime import datetime
 from core.backup_manager import BackupManager
 from core.logger import app_logger
-from pathlib import Path
 from ui.map_view import MapView
 
 
 def hex_tile_center(row, col, hex_size):
-    """Calculate the pixel center of a flat-top hex tile at a given grid position.
-
-    For flat-top hexagons with radius *hex_size*:
-        - horizontal spacing = 1.5 * hex_size  (3/4 of the hex width)
-        - vertical spacing   = sqrt(3) * hex_size  (full hex height)
-        - odd columns are offset down by half the vertical spacing
-
-    :param row: Row index in the grid.
-    :param col: Column index in the grid.
-    :param hex_size: Radius of each hexagon (center to vertex).
-    :return: (x, y) pixel coordinates for the hex center.
-    :rtype: tuple[float, float]
-    """
+    """Calculate the pixel center of a flat-top hex tile at a given grid position."""
     horiz = 1.5 * hex_size
     vert = math.sqrt(3) * hex_size
     x = col * horiz
@@ -41,31 +31,27 @@ class MainWindow(QMainWindow):
     """
     Main application window for the DnD Map Editor.
 
-    :param settings: Application settings object.
-    :param grid_type: Type of grid to use ('square' or 'hex').
-    :param rows: Number of rows for the grid.
-    :param cols: Number of columns for the grid.
+    The window is split horizontally: the map canvas on the left and
+    TileSidePanel on the right. Selecting a tile (left-click) populates
+    the side panel with that tile's data.
     """
-    def __init__(self, settings, grid_type='square', rows=None, cols=None, *args, **kwargs):
-        """
-        Initialize the main window.
 
-        :param settings: Application settings object.
-        :param grid_type: Type of grid to use ('square' or 'hex').
-        :param rows: Number of rows for the grid.
-        :param cols: Number of columns for the grid.
-        """
+    def __init__(self, settings, grid_type="square", rows=None, cols=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.settings = settings
         self.setWindowTitle("DnD Map Editor")
         self.grid_type = grid_type
-        self.paint_mode_active = False
-        self.paint_mode_type = "visual"
-        self.active_tile_preset = None
         self.selected_tile = None
         self.backup_manager = BackupManager()
         self.undo_stack = QUndoStack(self)
         self.current_map_path = None
+
+        # Color mode state (replaces paint_mode_active / active_tile_preset)
+        self.color_mode_active = False
+        self.active_color = "#CCCCCC"
+
+        # Multiplayer session
+        self.session_manager = None
 
         self._auto_save_timer = QTimer(self)
         self._auto_save_timer.timeout.connect(self._auto_save)
@@ -74,44 +60,83 @@ class MainWindow(QMainWindow):
         self.init_ui()
         self.init_menu()
 
-        # Only create a grid if starting fresh
         if rows is not None and cols is not None:
             self.init_grid(rows, cols)
 
+    # ------------------------------------------------------------------
+    # UI setup
+    # ------------------------------------------------------------------
+
     def init_ui(self):
-        """
-        Initialize the main UI components.
-        """
+        """Build the main layout: map (left) + side panel (right) in a QSplitter."""
         self.view = MapView()
         self.scene = QGraphicsScene(self)
         self.view.setScene(self.scene)
 
-        layout = QVBoxLayout()
-        layout.addWidget(self.view)
+        # --- Map container (left column) ---
+        map_container = QWidget()
+        map_layout = QVBoxLayout(map_container)
+        map_layout.setContentsMargins(0, 0, 0, 0)
+        map_layout.setSpacing(0)
+        map_layout.addWidget(self.view)
 
-        self.trigger_btn = self.create_button("Open Trigger Graph", self.open_trigger_graph, enabled=False)
-        layout.addWidget(self.trigger_btn)
+        # Persistent hint label below the canvas
+        hint = QLabel(
+            "Tip: Right-click any tile to edit its attributes  \u00b7  "
+            "Enable Paint Mode then Left-click to paint"
+        )
+        hint.setAlignment(Qt.AlignCenter)
+        hint.setStyleSheet("font-size: 11px; color: gray; padding: 2px;")
+        map_layout.addWidget(hint)
 
-        self.paint_toggle_button = self.create_button("🎨 Paint Mode", self.toggle_paint_mode, checkable=True)
-        layout.addWidget(self.paint_toggle_button)
+        # Color mode indicator bar (shown when color mode is on)
+        self.color_bar = QLabel(
+            "  Color Mode — left-click to paint  |  right-click to sample  "
+        )
+        self.color_bar.setAlignment(Qt.AlignCenter)
+        self.color_bar.setStyleSheet(
+            "border: 2px solid #22c55e; color: #22c55e; font-size: 11px; padding: 2px;"
+        )
+        self.color_bar.hide()
+        map_layout.addWidget(self.color_bar)
 
-        self.mode_type_button = self.create_button("🧠 Logic Mode", self.toggle_paint_mode_type)
-        layout.addWidget(self.mode_type_button)
+        # Compact toolbar: save buttons only
+        toolbar = QWidget()
+        toolbar_layout = QHBoxLayout(toolbar)
+        toolbar_layout.setContentsMargins(4, 2, 4, 2)
+        toolbar_layout.addWidget(self.create_button("Save Scenario", self.save_scenario))
+        toolbar_layout.addWidget(self.create_button("Save Map", self.save_map_dialog))
+        map_layout.addWidget(toolbar)
 
-        self.save_scenario_button = self.create_button("💾 Save Scenario", self.save_scenario)
-        layout.addWidget(self.save_scenario_button)
+        # --- Side panel (right column) ---
+        from ui.panels.tile_side_panel import TileSidePanel
+        self.side_panel = TileSidePanel(self)
+        self.side_panel.setMinimumWidth(360)
 
-        self.save_button = self.create_button("💾 Save Map", self.save_map_dialog)
-        layout.addWidget(self.save_button)
+        # --- Horizontal splitter ---
+        splitter = QSplitter(Qt.Horizontal)
+        splitter.addWidget(map_container)
+        splitter.addWidget(self.side_panel)
+        splitter.setSizes([700, 380])
+        splitter.setCollapsible(0, False)
 
-        container = QWidget()
-        container.setLayout(layout)
-        self.setCentralWidget(container)
+        self.setCentralWidget(splitter)
+
+        # --- Session panel dock (hidden until session starts) ---
+        from network.ui.session_panel import SessionPanel
+        self.session_panel = SessionPanel()
+        self.session_panel.disconnect_requested.connect(self._disconnect_session)
+        self._session_dock = QDockWidget("Session", self)
+        self._session_dock.setWidget(self.session_panel)
+        self.addDockWidget(Qt.RightDockWidgetArea, self._session_dock)
+        self._session_dock.hide()
+
+        self.statusBar().showMessage(
+            "Right-click a tile to edit attributes  |  Ctrl+Z Undo  |  Ctrl+Y Redo"
+        )
 
     def init_menu(self):
-        """
-        Initialize the menu bar and actions.
-        """
+        """Build the menu bar."""
         menubar = self.menuBar()
         edit_menu = menubar.addMenu("Edit")
 
@@ -124,35 +149,51 @@ class MainWindow(QMainWindow):
         edit_menu.addAction(redo_action)
 
         view_menu = menubar.addMenu("View")
-
         reset_zoom_action = QAction("Reset &Zoom", self)
         reset_zoom_action.setShortcut("Ctrl+0")
         reset_zoom_action.triggered.connect(self.view.reset_zoom)
         view_menu.addAction(reset_zoom_action)
 
-    def init_grid(self, rows, cols):
-        """
-        Initialize the grid with the specified number of rows and columns.
+        # --- Session menu ---
+        session_menu = menubar.addMenu("Session")
 
-        :param rows: Number of rows.
-        :param cols: Number of columns.
-        :raises ValueError: If grid_type is not supported.
-        """
-        if self.grid_type == 'square':
+        host_action = QAction("&Host Session...", self)
+        host_action.triggered.connect(self._host_session)
+        session_menu.addAction(host_action)
+
+        join_action = QAction("&Join Session...", self)
+        join_action.triggered.connect(self._join_session)
+        session_menu.addAction(join_action)
+
+        session_menu.addSeparator()
+
+        self._disconnect_action = QAction("&Disconnect", self)
+        self._disconnect_action.triggered.connect(self._disconnect_session)
+        self._disconnect_action.setEnabled(False)
+        session_menu.addAction(self._disconnect_action)
+
+        help_menu = menubar.addMenu("Help")
+        tutorial_action = QAction("Tutorial", self)
+        tutorial_action.triggered.connect(self._show_tutorial)
+        help_menu.addAction(tutorial_action)
+
+    def _show_tutorial(self):
+        from ui.dialogs.tutorial_dialog import TutorialDialog
+        TutorialDialog(self.settings, self).exec_()
+
+    # ------------------------------------------------------------------
+    # Grid management
+    # ------------------------------------------------------------------
+
+    def init_grid(self, rows, cols):
+        if self.grid_type == "square":
             self.create_square_grid(rows, cols, 50)
-        elif self.grid_type == 'hex':
+        elif self.grid_type == "hex":
             self.create_hex_grid(rows, cols, 30)
         else:
             raise ValueError("Unsupported grid type. Use 'square' or 'hex'.")
 
     def create_square_grid(self, rows, cols, size):
-        """
-        Create a square grid of tiles.
-
-        :param rows: Number of rows.
-        :param cols: Number of columns.
-        :param size: Size of each square tile.
-        """
         for i in range(rows):
             for j in range(cols):
                 tile_id = f"{i}_{j}"
@@ -162,13 +203,6 @@ class MainWindow(QMainWindow):
                 self.scene.addItem(tile)
 
     def create_hex_grid(self, rows, cols, hex_size):
-        """
-        Create a hexagonal grid of tiles.
-
-        :param rows: Number of rows.
-        :param cols: Number of columns.
-        :param hex_size: Size of each hex tile.
-        """
         for row in range(rows):
             for col in range(cols):
                 x, y = hex_tile_center(row, col, hex_size)
@@ -179,43 +213,56 @@ class MainWindow(QMainWindow):
                 tile_data.tile_item = tile
                 self.scene.addItem(tile)
 
-    def toggle_paint_mode(self, checked):
-        """
-        Toggle the paint mode on or off.
+    def initialize_default_map(self):
+        """Initialize a new default map using grid settings."""
+        self.scene.clear()
+        self.grid_type = self.settings.get("grid_type", "square")
+        rows = self.settings.get("default_rows", 15)
+        cols = self.settings.get("default_cols", 15)
+        self.init_grid(rows, cols)
+        app_logger.info(f"[Grid Initialized] {self.grid_type} {rows}x{cols}")
 
-        :param checked: Whether the paint mode is active.
-        """
-        self.paint_mode_active = checked
-        mode_icon = "🧠" if self.paint_mode_type == "logic" else "🎨"
-        self.paint_toggle_button.setText(f"{mode_icon} Paint Mode" if checked else "Paint Mode")
+    # ------------------------------------------------------------------
+    # Tile selection
+    # ------------------------------------------------------------------
 
-    def toggle_paint_mode_type(self):
-        """
-        Toggle between visual and logic paint modes.
-        """
-        self.paint_mode_type = "logic" if self.paint_mode_type == "visual" else "visual"
-        self.mode_type_button.setText("🧠 Logic Mode" if self.paint_mode_type == "logic" else "🎨 Visual Mode")
-        if self.paint_mode_active:
-            mode_icon = "🧠" if self.paint_mode_type == "logic" else "🎨"
-            self.paint_toggle_button.setText(f"{mode_icon} Paint Mode")
+    def select_tile(self, tile_item):
+        """Called by tile items on click; loads the tile into the side panel."""
+        if self.color_mode_active:
+            return  # color mode overrides normal selection
+        self.selected_tile = tile_item
+        self.side_panel.load_tile(tile_item.tile_data, tile_item, self)
+
+    # ------------------------------------------------------------------
+    # Color mode
+    # ------------------------------------------------------------------
+
+    def activate_color_mode(self, color: str):
+        """Enable color-painting mode with the given hex color."""
+        self.color_mode_active = True
+        self.active_color = color
+        self.color_bar.show()
+        self.scene.update()
+
+    def deactivate_color_mode(self):
+        """Disable color-painting mode."""
+        self.color_mode_active = False
+        self.color_bar.hide()
+        self.scene.update()
+
+    # ------------------------------------------------------------------
+    # File operations
+    # ------------------------------------------------------------------
 
     def save_map_dialog(self):
-        """
-        Open a dialog to save the current map to a file.
-        """
         path, _ = QFileDialog.getSaveFileName(self, "Save Map", "", "JSON Files (*.json)")
         if path:
             self.current_map_path = path
             self.save_map_to_file(path)
 
     def save_map_to_file(self, filename="map.json"):
-        """
-        Save the current map to a JSON file.
-
-        :param filename: Path to the file where the map will be saved.
-        """
         map_path = Path(filename)
-        should_backup = map_path.exists()  # Check before overwriting
+        should_backup = map_path.exists()
 
         tile_data_list = [
             item.tile_data.to_dict()
@@ -225,11 +272,8 @@ class MainWindow(QMainWindow):
 
         full_map_data = {
             "version": "1.0",
-            "meta": {
-                "author": "Fabio",
-                "created": datetime.now().isoformat()
-            },
-            "tiles": tile_data_list
+            "meta": {"author": "Fabio", "created": datetime.now().isoformat()},
+            "tiles": tile_data_list,
         }
 
         with open(map_path, "w", encoding="utf-8") as f:
@@ -237,39 +281,15 @@ class MainWindow(QMainWindow):
 
         app_logger.info(f"[Saved] Map written to {map_path}")
 
-        # Only backup if this was overwriting a file
         if should_backup:
             self.backup_manager.backup_map(map_path)
 
-    def select_tile(self, tile_item):
-        """
-        Select a tile in the scene.
-
-        :param tile_item: The tile item to select.
-        """
-        if self.paint_mode_active:
-            return
-        self.selected_tile = tile_item
-        self.trigger_btn.setEnabled(True)
-
-    def open_trigger_graph(self):
-        """
-        Open the trigger editor dialog for the selected tile.
-        """
-        from dialogs.trigger_editor.editor_dialog import TriggerEditorDialog
-        if self.selected_tile:
-            dlg = TriggerEditorDialog(self.selected_tile.tile_data)
-            dlg.exec_()
-
     def save_scenario(self):
-        """
-        Save the current scenario as a bundle (ZIP file).
-        """
         from core.export_manager import ExportManager
-        from PyQt5.QtWidgets import QFileDialog
-        from pathlib import Path
 
-        final_path_str, _ = QFileDialog.getSaveFileName(self, "Save Scenario As", "", "Scenario Bundle (*.zip)")
+        final_path_str, _ = QFileDialog.getSaveFileName(
+            self, "Save Scenario As", "", "Scenario Bundle (*.zip)"
+        )
         if not final_path_str:
             return
 
@@ -285,60 +305,15 @@ class MainWindow(QMainWindow):
         export_manager = ExportManager(export_dir=final_path.parent)
         bundle_path = export_manager.export_bundle(temp_map_path, profile_dir, media_dir)
 
-        # Move to final destination
         bundle_path.rename(final_path)
         temp_map_path.unlink()
 
         app_logger.info(f"[Exported] Scenario exported to {final_path}")
 
-        # Backup if user overwrote an existing scenario
         if should_backup:
             self.backup_manager.backup_map(final_path)
 
-    def initialize_default_map(self):
-        """
-        Initialize a new default map with standard grid size (25x25).
-        """
-        from models.tiles.tile_data import TileData
-
-        self.scene.clear()
-        self.grid_type = "square"  # Or use self.settings.get("grid_type", "square")
-
-        rows, cols = 15, 15
-        self.init_grid(rows, cols)
-
-        for row in range(rows):
-            for col in range(cols):
-                tile_data = TileData(position=(row, col))
-
-                if self.grid_type == "square":
-                    size = 50
-                    x, y = col * size, row * size
-                    tile = SquareTileItem(x, y, size, tile_data, self)
-
-                elif self.grid_type == "hex":
-                    hex_size = 30
-                    x, y = hex_tile_center(row, col, hex_size)
-                    center = QPointF(x, y)
-                    tile = HexTileItem(center, hex_size, tile_data, self)
-
-                else:
-                    raise ValueError(f"Unsupported grid type: {self.grid_type}")
-
-                tile_data.tile_item = tile
-                self.scene.addItem(tile)
-
-        app_logger.info(f"[Grid Initialized] Default map with {rows} rows x {cols} cols created.")
-
-
     def load_map_from_file(self, filename):
-        """
-        Load a map from a JSON file.
-
-        :param filename: Path to the map file.
-        """
-        from models.tiles.tile_data import TileData
-
         self.current_map_path = filename
         self.scene.clear()
 
@@ -360,11 +335,10 @@ class MainWindow(QMainWindow):
             rows = meta.get("rows", 25)
             cols = meta.get("cols", 25)
             self.init_grid(rows, cols)
-            app_logger.info(f"[Grid Initialized] Empty map loaded with {rows} rows x {cols} cols")
+            app_logger.info(f"[Grid Initialized] Empty map loaded with {rows}x{cols}")
             return
 
         for td_data in tiles:
-
             tile_data = TileData.from_dict(td_data)
             row, col = tile_data.position
 
@@ -372,13 +346,11 @@ class MainWindow(QMainWindow):
                 size = 50
                 x, y = col * size, row * size
                 tile = SquareTileItem(x, y, size, tile_data, self)
-
             elif self.grid_type == "hex":
                 hex_size = 30
                 x, y = hex_tile_center(row, col, hex_size)
                 center = QPointF(x, y)
                 tile = HexTileItem(center, hex_size, tile_data, self)
-
             else:
                 raise ValueError(f"Unsupported grid type: {self.grid_type}")
 
@@ -387,10 +359,11 @@ class MainWindow(QMainWindow):
 
         app_logger.info(f"[Loaded] {len(tiles)} tiles loaded from {filename}")
 
+    # ------------------------------------------------------------------
+    # Auto-save
+    # ------------------------------------------------------------------
+
     def _init_auto_save(self):
-        """
-        Initialize the auto-save timer based on settings.
-        """
         enabled = self.settings.get("auto_save_enabled", True)
         interval = self.settings.get("auto_save_interval_seconds", 300)
         if enabled and interval > 0:
@@ -401,25 +374,121 @@ class MainWindow(QMainWindow):
             app_logger.debug("[AutoSave] Disabled")
 
     def _auto_save(self):
-        """
-        Auto-save the current map if a file path is known.
-        """
         if self.current_map_path:
             self.save_map_to_file(self.current_map_path)
             app_logger.info(f"[AutoSave] Saved to {self.current_map_path}")
 
-    def create_button(self, text, callback, checkable=False, enabled=True):
-        """
-        Utility function to create a QPushButton.
+    # ------------------------------------------------------------------
+    # Helper
+    # ------------------------------------------------------------------
 
-        :param text: Button label.
-        :param callback: Function to call when the button is clicked.
-        :param checkable: Whether the button is checkable.
-        :param enabled: Whether the button is enabled.
-        :return: The created QPushButton.
-        """
+    def create_button(self, text, callback, checkable=False, enabled=True):
         button = QPushButton(text)
         button.setCheckable(checkable)
         button.setEnabled(enabled)
         button.clicked.connect(callback)
         return button
+
+    # ------------------------------------------------------------------
+    # Multiplayer session
+    # ------------------------------------------------------------------
+
+    def _host_session(self):
+        from network.ui.host_dialog import HostDialog
+        dlg = HostDialog(self.settings, self)
+        if dlg.exec_():
+            self._start_hosting(dlg.port)
+
+    def _join_session(self):
+        from network.ui.join_dialog import JoinDialog
+        dlg = JoinDialog(self.settings, self)
+        if dlg.exec_():
+            self._start_joining(dlg.host, dlg.port, dlg.player_name)
+
+    def _start_hosting(self, port):
+        from network.session_manager import SessionManager
+
+        gm = self._build_gamemaster_from_scene()
+        self.session_manager = SessionManager(gamemaster=gm, settings=self.settings)
+        self.session_manager.signals.chat_received.connect(self.session_panel.append_chat)
+        self.session_manager.signals.disconnected.connect(self._on_session_ended)
+        self.session_panel.chat_submitted.connect(self._on_chat_submitted)
+        self.session_manager.host(port)
+
+        self.session_panel.set_hosting(
+            self.session_manager.join_address or f"localhost:{port}"
+        )
+        self._session_dock.show()
+        self._disconnect_action.setEnabled(True)
+        self.statusBar().showMessage(f"Hosting session on port {port}")
+
+    def _start_joining(self, host_addr, port, player_name):
+        from network.session_manager import SessionManager
+
+        self.session_manager = SessionManager(settings=self.settings)
+        self.session_manager.signals.connected.connect(
+            lambda: self.session_panel.set_connected(host_addr)
+        )
+        self.session_manager.signals.chat_received.connect(self.session_panel.append_chat)
+        self.session_manager.signals.entity_claimed.connect(self.session_panel.set_entity_claim)
+        self.session_manager.signals.disconnected.connect(self._on_session_ended)
+        self.session_manager.signals.connection_error.connect(
+            lambda e: self.statusBar().showMessage(f"Connection error: {e}")
+        )
+        self.session_panel.chat_submitted.connect(self._on_chat_submitted)
+        self.session_manager.join(host_addr, port, player_name)
+
+        self._session_dock.show()
+        self._disconnect_action.setEnabled(True)
+        self.statusBar().showMessage(f"Connecting to {host_addr}:{port}...")
+
+        # Save last host for convenience
+        if self.settings:
+            self.settings.set("multiplayer_last_host", host_addr)
+            self.settings.set("multiplayer_player_name", player_name)
+
+    def _disconnect_session(self):
+        if self.session_manager:
+            if self.session_manager.is_hosting:
+                self.session_manager.stop_hosting()
+            else:
+                self.session_manager.leave()
+            self.session_manager = None
+        self._on_session_ended()
+
+    def _on_session_ended(self):
+        self._disconnect_action.setEnabled(False)
+        self._session_dock.hide()
+        self.session_panel.clear()
+        self.statusBar().showMessage("Session ended")
+
+    def _on_chat_submitted(self, message):
+        if self.session_manager:
+            self.session_manager.send_chat(message)
+
+    def _build_gamemaster_from_scene(self):
+        """Create a Gamemaster populated from the current scene."""
+        from models.game_master import Gamemaster
+        from models.world.world import World
+        from models.world.world_tile_manager import WorldTileManager
+
+        gm = Gamemaster()
+
+        tile_manager = WorldTileManager(0, 0, self.grid_type)
+        for item in self.scene.items():
+            if hasattr(item, "tile_data"):
+                td = item.tile_data
+                tile_manager.tiles[td.position] = td
+                for entity in td.entities:
+                    tile_manager.entities.setdefault(td.position, []).append(entity)
+                    gm.add_entity(entity)
+
+        gm.world = World(
+            world_version="1.0",
+            width=self.settings.get("default_cols", 25),
+            height=self.settings.get("default_rows", 25),
+            tile_type=self.grid_type,
+        )
+        gm.world.tile_manager = tile_manager
+
+        return gm

@@ -5,7 +5,6 @@ from pathlib import Path
 
 import pytest
 from PyQt5.QtCore import QPointF
-from PyQt5.QtWidgets import QPushButton
 
 import ui.main_window
 from ui.main_window import MainWindow, hex_tile_center
@@ -26,20 +25,12 @@ def mw(qapp, dummy_settings):
     # Create with a 2×3 square grid
     return MainWindow(dummy_settings, grid_type="square", rows=2, cols=3)
 
-def test_initial_buttons_and_properties(mw):
-    # Paint toggle is a QPushButton, initially unchecked
-    pb: QPushButton = mw.paint_toggle_button
-    assert isinstance(pb, QPushButton)
-    assert not pb.isChecked()
-    assert mw.paint_mode_active is False
-
-    # Mode type button exists
-    mtb: QPushButton = mw.mode_type_button
-    assert isinstance(mtb, QPushButton)
-    assert mw.paint_mode_type == "visual"
-
-    # Trigger button starts disabled
-    assert not mw.trigger_btn.isEnabled()
+def test_initial_color_mode_state(mw):
+    # Color mode starts off
+    assert mw.color_mode_active is False
+    assert mw.active_color == "#CCCCCC"
+    # Color bar starts hidden
+    assert not mw.color_bar.isVisible()
 
 def test_square_grid_created(qapp, dummy_settings):
     mw2 = MainWindow(dummy_settings, grid_type="square", rows=2, cols=3)
@@ -54,33 +45,21 @@ def test_hex_grid_created(qapp, dummy_settings):
     items = mw2.scene.items()
     assert len([i for i in items if isinstance(i, HexTileItem)]) == 2
 
-def test_toggle_paint_mode_changes_state_and_text(qapp, dummy_settings):
+def test_activate_color_mode_shows_bar(qapp, dummy_settings):
     mw2 = MainWindow(dummy_settings, grid_type="square", rows=1, cols=1)
-    btn = mw2.paint_toggle_button
-    # Turn on
-    mw2.toggle_paint_mode(True)
-    assert mw2.paint_mode_active is True
-    # As grid_type visual, icon 🎨
-    assert btn.text().startswith("🎨")
-    # Turn off
-    mw2.toggle_paint_mode(False)
-    assert mw2.paint_mode_active is False
-    assert btn.text() == "Paint Mode"
+    assert mw2.color_bar.isHidden()
+    mw2.activate_color_mode("#FF0000")
+    assert mw2.color_mode_active is True
+    assert mw2.active_color == "#FF0000"
+    assert not mw2.color_bar.isHidden()
 
-def test_toggle_paint_mode_type_updates_both_buttons(qapp, dummy_settings):
+def test_deactivate_color_mode_hides_bar(qapp, dummy_settings):
     mw2 = MainWindow(dummy_settings, grid_type="square", rows=1, cols=1)
-    mtb = mw2.mode_type_button
-    pb  = mw2.paint_toggle_button
-
-    # Initially visual
-    assert mw2.paint_mode_type == "visual"
-    # Switch to logic
-    mw2.toggle_paint_mode_type()
-    assert mw2.paint_mode_type == "logic"
-    assert mtb.text().startswith("🧠")
-    # If paint mode is active, paint button text also updates
-    mw2.toggle_paint_mode(True)
-    assert pb.text().startswith("🧠")
+    mw2.activate_color_mode("#00FF00")
+    assert not mw2.color_bar.isHidden()
+    mw2.deactivate_color_mode()
+    assert mw2.color_mode_active is False
+    assert mw2.color_bar.isHidden()
 
 def test_save_and_load_map(tmp_path, qapp, dummy_settings, monkeypatch):
     mw2 = MainWindow(dummy_settings, grid_type="square", rows=1, cols=1)

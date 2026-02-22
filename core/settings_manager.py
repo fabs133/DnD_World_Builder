@@ -2,7 +2,7 @@ import os
 import json
 from core.logger import app_logger
 
-CONFIG_VERSION = 1
+CONFIG_VERSION = 3
 """
 The current configuration version. Used for migration.
 """
@@ -17,6 +17,10 @@ DEFAULT_SETTINGS = {
     "recent_files": [],
     "auto_save_enabled": True,
     "auto_save_interval_seconds": 300,
+    "show_tutorial": True,
+    "multiplayer_default_port": 8765,
+    "multiplayer_player_name": "",
+    "multiplayer_last_host": "",
 }
 """
 Default settings for the application.
@@ -79,12 +83,26 @@ class SettingsManager:
             app_logger.info(f"[Settings] Migrating config from version {current_version} to {CONFIG_VERSION}")
 
             if current_version == 0:
-                # Example: In v1, we added grid_size
+                # In v1, we added grid_size
                 if "grid_size" not in self.settings:
                     self.settings["grid_size"] = 50
                 current_version = 1
 
-            # Future migrations go here...
+            if current_version == 1:
+                # In v2, we added show_tutorial
+                if "show_tutorial" not in self.settings:
+                    self.settings["show_tutorial"] = True
+                current_version = 2
+
+            if current_version == 2:
+                # In v3, we added multiplayer settings
+                if "multiplayer_default_port" not in self.settings:
+                    self.settings["multiplayer_default_port"] = 8765
+                if "multiplayer_player_name" not in self.settings:
+                    self.settings["multiplayer_player_name"] = ""
+                if "multiplayer_last_host" not in self.settings:
+                    self.settings["multiplayer_last_host"] = ""
+                current_version = 3
 
             self.settings["config_version"] = CONFIG_VERSION
             self.save_settings()

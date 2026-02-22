@@ -64,15 +64,15 @@ def test_hover_enter_event_changes_pen(qapp, qtbot):
     # Simulate hover enter with no editor_window
     item.hoverEnterEvent(None)
     assert item.pen().color() == QColor(Qt.black)
-    # Now simulate an editor_window in paint mode
+    # Now simulate an editor_window in color mode
     class Editor:
-        paint_mode_active = True
+        color_mode_active = True
     ed = Editor()
     item.editor_window = ed
-    # On hover enter, should turn blue, width 3
+    # On hover enter, should turn green, width 3
     item.hoverEnterEvent(None)
     pen = item.pen()
-    assert pen.color() == QColor(Qt.blue)
+    assert pen.color() == QColor("#22c55e")
     assert pen.width() == 3
 
 def test_hover_leave_event_resets_pen_and_updates_overlay(qapp):

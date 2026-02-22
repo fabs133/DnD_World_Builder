@@ -1,9 +1,10 @@
 from core.logger import app_logger
 from PyQt5.QtWidgets import QGraphicsRectItem
 from PyQt5.QtCore import QRectF, Qt
-from PyQt5.QtGui import QBrush, QColor, QPen, QPixmap
+from PyQt5.QtGui import QBrush, QColor, QPen, QPixmap, QImageReader
 from models.tiles.base_tile_item import BaseTileItem
 from ui.commands.tile_edit_command import TileEditCommand
+from ui.commands.color_paint_command import ColorPaintCommand
 
 class SquareTileItem(QGraphicsRectItem, BaseTileItem):
     """
@@ -43,13 +44,13 @@ class SquareTileItem(QGraphicsRectItem, BaseTileItem):
         """
         Handle the hover enter event.
 
-        Highlights the tile if paint mode is active.
+        Shows a green border when color mode is active, otherwise default.
 
         :param event: The hover event.
         :type event: QGraphicsSceneHoverEvent
         """
-        if self.editor_window and self.editor_window.paint_mode_active:
-            self.setPen(QPen(Qt.blue, 3))
+        if self.editor_window and self.editor_window.color_mode_active:
+            self.setPen(QPen(QColor("#22c55e"), 3))
         else:
             self.setPen(QPen(Qt.black))
         super().hoverEnterEvent(event)
@@ -69,27 +70,34 @@ class SquareTileItem(QGraphicsRectItem, BaseTileItem):
 
     def mousePressEvent(self, event):
         """
-        Handle mouse press events for painting or sampling tiles.
+        Handle mouse press events.
+
+        Left-click in color mode paints the tile; otherwise selects it.
+        Right-click in color mode samples the tile's color; otherwise also selects.
 
         :param event: The mouse event.
         :type event: QGraphicsSceneMouseEvent
         """
         if event.button() == Qt.LeftButton:
-            if self.editor_window and self.editor_window.paint_mode_active:
-                preset = self.editor_window.active_tile_preset
-                if preset:
-                    logic = (self.editor_window.paint_mode_type != "visual")
-                    cmd = TileEditCommand(self.tile_data, preset, logic,
-                        description=f"Paint tile {self.tile_data.position}")
-                    self.editor_window.undo_stack.push(cmd)
+            if self.editor_window and self.editor_window.color_mode_active:
+                cmd = ColorPaintCommand(self.tile_data, self.editor_window.active_color)
+                self.editor_window.undo_stack.push(cmd)
+            else:
+                if self.editor_window:
+                    self.editor_window.select_tile(self)
 
         elif event.button() == Qt.RightButton:
-            if self.editor_window and self.editor_window.paint_mode_active:
-                from models.tiles.tile_preset import TilePreset
-                self.editor_window.active_tile_preset = TilePreset.from_tile_data(self.tile_data)
-                app_logger.debug(f"[Paint Mode] Sampled preset from tile at {self.tile_data.position}")
+            if self.editor_window and self.editor_window.color_mode_active:
+                self.editor_window.active_color = (
+                    self.tile_data.overlay_color or "#CCCCCC"
+                )
+                app_logger.debug(
+                    f"[Color Mode] Sampled color {self.editor_window.active_color} "
+                    f"from tile {self.tile_data.position}"
+                )
             else:
-                self.handle_right_click(event)
+                if self.editor_window:
+                    self.editor_window.select_tile(self)
 
     def handle_hover_enter(self, event):
         """
@@ -117,7 +125,7 @@ class SquareTileItem(QGraphicsRectItem, BaseTileItem):
         :type event: QGraphicsSceneMouseEvent
         """
         from ui.dialogs.tile_dialog import TileDialog
-        dialog = TileDialog(self.tile_data)
+        dialog = TileDialog(self.tile_data, main_window=self.editor_window, tile_item=self)
         dialog.exec_()
 
     def set_overlay_color(self, hex_color):
@@ -139,13 +147,15 @@ class SquareTileItem(QGraphicsRectItem, BaseTileItem):
 
     def _load_background_image(self):
         """
-        Load the background image from tile_data if set.
+        Load the background image from tile_data, respecting EXIF orientation.
         """
         bg = getattr(self.tile_data, "background_image", None)
         if bg:
-            pixmap = QPixmap(bg)
-            if not pixmap.isNull():
-                self._bg_pixmap = pixmap
+            reader = QImageReader(bg)
+            reader.setAutoTransform(True)
+            image = reader.read()
+            if not image.isNull():
+                self._bg_pixmap = QPixmap.fromImage(image)
                 return
         self._bg_pixmap = None
 

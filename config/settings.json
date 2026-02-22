@@ -1,10 +1,14 @@
 {
-    "grid_type": "square",
+    "grid_type": "hex",
     "default_rows": 6,
     "default_cols": 6,
     "grid_size": 50,
     "theme": "dark_teal.xml",
     "last_profile_used": null,
-    "config_version": 1,
-    "recent_files": []
+    "config_version": 3,
+    "recent_files": [],
+    "show_tutorial": true,
+    "multiplayer_default_port": 8765,
+    "multiplayer_player_name": "",
+    "multiplayer_last_host": ""
 }

@@ -1,0 +1,85 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            artifact_name: DnD-World-Builder-Windows
+            archive_cmd: Compress-Archive -Path "dist/DnD World Builder/*" -DestinationPath "DnD-World-Builder-Windows.zip"
+            archive_ext: zip
+          - os: macos-latest
+            artifact_name: DnD-World-Builder-macOS
+            archive_cmd: cd dist && tar -czf ../DnD-World-Builder-macOS.tar.gz "DnD World Builder"
+            archive_ext: tar.gz
+          - os: ubuntu-latest
+            artifact_name: DnD-World-Builder-Linux
+            archive_cmd: cd dist && tar -czf ../DnD-World-Builder-Linux.tar.gz "DnD World Builder"
+            archive_ext: tar.gz
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install system dependencies (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libxcb-xinerama0 libxkbcommon-x11-0
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+
+    - name: Build with PyInstaller
+      run: pyinstaller dnd_world_builder.spec
+
+    - name: Archive build (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: ${{ matrix.archive_cmd }}
+
+    - name: Archive build (macOS/Linux)
+      if: runner.os != 'Windows'
+      run: ${{ matrix.archive_cmd }}
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.artifact_name }}
+        path: ${{ matrix.artifact_name }}.${{ matrix.archive_ext }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        generate_release_notes: true
+        files: |
+          DnD-World-Builder-Windows/DnD-World-Builder-Windows.zip
+          DnD-World-Builder-macOS/DnD-World-Builder-macOS.tar.gz
+          DnD-World-Builder-Linux/DnD-World-Builder-Linux.tar.gz
