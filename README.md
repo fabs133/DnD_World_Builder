@@ -3,11 +3,28 @@
 # DnD World Builder: A Tactical Map Editor & Scenario Logic Engine for 5e
 
 [![CI](https://github.com/fabs133/DnD_World_Builder/actions/workflows/ci.yml/badge.svg)](https://github.com/fabs133/DnD_World_Builder/actions)
+[![Release](https://img.shields.io/github/v/release/fabs133/DnD_World_Builder)](https://github.com/fabs133/DnD_World_Builder/releases/latest)
 [![Docs](https://github.com/fabs133/DnD_World_Builder/actions/workflows/docs.yml/badge.svg)](https://fabs133.github.io/DnD_World_Builder/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
 
 A PyQt-powered tactical map editor and scenario manager for **Dungeons & Dragons 5e**. Design encounters, place entities, and create intricate event-driven logic using a flexible grid system and a visual trigger scripting engine.
+
+---
+
+## Download
+
+Pre-built binaries are available for all major platforms — no Python installation required.
+
+| Platform | Download |
+|----------|----------|
+| **Windows** | [DnD-World-Builder-Windows.zip](https://github.com/fabs133/DnD_World_Builder/releases/latest/download/DnD-World-Builder-Windows.zip) |
+| **macOS** | [DnD-World-Builder-macOS.tar.gz](https://github.com/fabs133/DnD_World_Builder/releases/latest/download/DnD-World-Builder-macOS.tar.gz) |
+| **Linux** | [DnD-World-Builder-Linux.tar.gz](https://github.com/fabs133/DnD_World_Builder/releases/latest/download/DnD-World-Builder-Linux.tar.gz) |
+
+> **Note:** On macOS, you may need to right-click and select "Open" the first time to bypass Gatekeeper (the app is not code-signed). On Linux, ensure X11 libraries are available (`libxcb-xinerama0`, `libxkbcommon-x11-0`).
+
+See all releases on the [Releases page](https://github.com/fabs133/DnD_World_Builder/releases).
 
 ---
 
