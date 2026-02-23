@@ -42,6 +42,10 @@ a = Analysis(
         ('dnd_database.db', '.'),
         # Default config
         ('config', 'config'),
+        # Demo scenario
+        ('scenarios', 'scenarios'),
+        # User documentation
+        ('docs/user', 'docs'),
     ] + qt_material_datas,
     hiddenimports=[
         'aiohttp',
@@ -69,6 +73,7 @@ a = Analysis(
         'network.session_manager',
         'network.event_bridge',
         'network.sync',
+        'yaml',
     ],
     hookspath=[],
     hooksconfig={},
@@ -99,6 +104,7 @@ exe = EXE(
     strip=False,
     upx=True,
     console=False,  # Windowed application (no console)
+    icon='assets/icons/app.ico',
 )
 
 coll = COLLECT(
