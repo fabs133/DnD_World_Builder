@@ -17,7 +17,7 @@ from network.transport import TransportServer, TransportConnection
 from network.protocol import (
     Message, MessageType, PROTOCOL_VERSION,
     make_welcome, make_error, make_entity_claimed,
-    make_full_state, make_chat, ErrorCode,
+    make_full_state, make_action_result, make_chat, ErrorCode,
 )
 from network.sync import serialize_world, serialize_entity
 
@@ -222,8 +222,149 @@ class SessionHost:
         await self.broadcast(claimed)
 
     async def _handle_action_request(self, player, msg):
-        """Process an ACTION_REQUEST. Stub for future gameplay phase."""
-        pass
+        """Process an ACTION_REQUEST from a player.
+
+        Validates:
+        1. Player has a claimed entity.
+        2. The claimed entity matches ``_entity_claims``.
+        3. It is that entity's turn.
+        4. The action itself is valid.
+
+        On success the action is executed directly on the entity, an
+        ``ACTION_RESULT(success=True)`` is sent to the requesting player,
+        and the :class:`~network.event_bridge.EventBridge` (if attached)
+        will automatically broadcast the resulting ``STATE_DELTA``.
+        """
+        action_type = msg.payload.get("action_type", "").upper()
+        params = msg.payload.get("params", {})
+
+        # 1. Player must have a claimed entity
+        entity_id = player.claimed_entity_id
+        if not entity_id:
+            error = make_error(
+                ErrorCode.UNKNOWN_ENTITY,
+                "You have not claimed an entity",
+            )
+            await player.conn.send(error.to_json())
+            return
+
+        # 2. Verify ownership via _entity_claims
+        if self._entity_claims.get(entity_id) != player.player_id:
+            error = make_error(
+                ErrorCode.INVALID_ACTION,
+                f"You do not own entity '{entity_id}'",
+            )
+            await player.conn.send(error.to_json())
+            return
+
+        # 3. Look up the entity object
+        entity = next(
+            (e for e in self.gamemaster.game_entities if e.name == entity_id),
+            None,
+        )
+        if not entity:
+            error = make_error(
+                ErrorCode.UNKNOWN_ENTITY,
+                f"Entity '{entity_id}' not found in game",
+            )
+            await player.conn.send(error.to_json())
+            return
+
+        # 4. Check it is this entity's turn
+        ts = self.gamemaster.turn_system
+        if not ts.entities:
+            error = make_error(
+                ErrorCode.INVALID_ACTION,
+                "No turn order established",
+            )
+            await player.conn.send(error.to_json())
+            return
+        if ts.entities[ts.current_turn].name != entity_id:
+            current_name = ts.entities[ts.current_turn].name
+            error = make_error(
+                ErrorCode.NOT_YOUR_TURN,
+                f"It is {current_name}'s turn, not {entity_id}'s",
+            )
+            await player.conn.send(error.to_json())
+            return
+
+        # 5. Build the action object
+        action = self._build_action(action_type, params, entity)
+        if action is None:
+            error = make_error(
+                ErrorCode.INVALID_ACTION,
+                f"Unknown action type: {action_type}",
+            )
+            await player.conn.send(error.to_json())
+            return
+
+        # 6. Validate and execute
+        from models.flow.action.action_validator import ActionValidator
+
+        if not ActionValidator.validate(action, None):
+            error = make_error(
+                ErrorCode.INVALID_ACTION,
+                f"Action validation failed for {action_type}",
+            )
+            await player.conn.send(error.to_json())
+            return
+
+        try:
+            result_data = action.execute(None) or {}
+        except Exception as exc:
+            error = make_error(
+                ErrorCode.INVALID_ACTION,
+                f"Action execution failed: {exc}",
+            )
+            await player.conn.send(error.to_json())
+            return
+
+        # 7. Send success result to the requesting player
+        result_msg = make_action_result(
+            success=True,
+            result=result_data,
+            state_delta=[],
+        )
+        await player.conn.send(result_msg.to_json())
+
+        logger.info(
+            f"Player '{player.player_name}' executed {action_type} "
+            f"for entity '{entity_id}'"
+        )
+
+    def _build_action(self, action_type, params, actor):
+        """Construct an Action object from network parameters.
+
+        Returns ``None`` if the action type is unknown.
+        """
+        from core.engine.actions.attack_action import AttackAction
+        from core.engine.actions.move_action import MoveAction
+        from core.engine.actions.end_turn_action import EndTurnAction
+
+        if action_type == "ATTACK":
+            target_name = params.get("target")
+            target = next(
+                (e for e in self.gamemaster.game_entities if e.name == target_name),
+                None,
+            )
+            if target is None:
+                return None
+            return AttackAction(actor, target)
+
+        if action_type == "MOVE":
+            position = params.get("position")
+            if not position or len(position) != 2:
+                return None
+            return MoveAction(
+                actor,
+                tuple(position),
+                world_tile_manager=self.gamemaster.world_tile_manager,
+            )
+
+        if action_type in ("END_TURN", "ENDTURN", "END"):
+            return EndTurnAction(actor)
+
+        return None
 
     async def _handle_chat(self, player, msg):
         """Broadcast a CHAT message to all connected players."""

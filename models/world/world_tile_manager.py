@@ -120,6 +120,48 @@ class WorldTileManager:
         else:
             app_logger.warning(f"Invalid move for {entity.name}.")
 
+    def get_movement_cost(self, x, y):
+        """Return the movement cost (in feet) for the tile at (x, y).
+
+        Defaults to 5 if the tile has no custom cost set.
+        """
+        tile = self.tiles.get((x, y))
+        if tile is None:
+            return 5
+        return tile.movement_cost
+
+    def is_blocking(self, x, y):
+        """Return True if the tile at (x, y) blocks movement.
+
+        A tile blocks if it has the BLOCKS_MOVEMENT tag or WALL terrain.
+        """
+        from models.tiles.tile_data import TileTag, TerrainType
+
+        tile = self.tiles.get((x, y))
+        if tile is None:
+            return True  # Out-of-bounds treated as blocking
+        if TileTag.BLOCKS_MOVEMENT in tile.tags:
+            return True
+        if tile.terrain == TerrainType.WALL:
+            return True
+        return False
+
+    def set_terrain_config(self, x, y, movement_cost=None, blocking=None):
+        """Configure terrain properties on a tile.
+
+        Called by the scenario loader when parsing terrain YAML sections.
+        """
+        from models.tiles.tile_data import TileTag
+
+        tile = self.tiles.get((x, y))
+        if tile is None:
+            return
+        if movement_cost is not None:
+            tile.movement_cost = movement_cost
+        if blocking:
+            if TileTag.BLOCKS_MOVEMENT not in tile.tags:
+                tile.tags.append(TileTag.BLOCKS_MOVEMENT)
+
     def display_world(self):
         """
         Display a simple debug view of the world grid.

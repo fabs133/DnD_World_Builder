@@ -1,8 +1,15 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from core.gameCreation.trigger import Trigger
 from registries.trigger_registry import global_trigger_registry
 from enum import Enum
 from core.logger import app_logger
 from core.gameCreation.event_bus import EventBus
+
+if TYPE_CHECKING:
+    from models.ai.personality import EntityPersonality
 
 
 class GameEntity:
@@ -41,6 +48,11 @@ class GameEntity:
         self.inventory = inventory or []
         self.triggers = []
         self.image_path = image_path
+        self.personality: EntityPersonality | None = None
+        self.position: tuple[int, int] | None = None
+        self.hp: int = self.stats.get("hp", self.stats.get("hit_points", 10))
+        self.max_hp: int = self.stats.get("max_hp", self.hp)
+        self.conditions: list[str] = []
 
     def register_trigger(self, trigger):
         """
@@ -72,9 +84,16 @@ class GameEntity:
             "stats": self.stats,
             "inventory": self.inventory,
             "triggers": [t.to_dict() for t in self.triggers],
+            "hp": self.hp,
+            "max_hp": self.max_hp,
+            "conditions": self.conditions,
         }
         if self.image_path:
             data["image_path"] = self.image_path
+        if self.position:
+            data["position"] = self.position
+        if self.personality:
+            data["personality"] = self.personality.to_dict()
         return data
 
     def handle_event(self, event_type, data):
@@ -110,4 +129,50 @@ class GameEntity:
         for tdata in data.get("triggers", []):
             trigger = Trigger.from_dict(tdata)
             obj.register_trigger(trigger)
+        
+        # Restore HP and conditions
+        if "hp" in data:
+            obj.hp = data["hp"]
+        if "max_hp" in data:
+            obj.max_hp = data["max_hp"]
+        if "conditions" in data:
+            obj.conditions = data["conditions"]
+        if "position" in data:
+            obj.position = tuple(data["position"])
+        
+        # Restore personality
+        if "personality" in data:
+            from models.ai.personality import EntityPersonality
+            obj.personality = EntityPersonality.from_dict(data["personality"])
+        
         return obj
+    
+    def set_personality(self, personality: "EntityPersonality") -> None:
+        """Set the AI personality for this entity."""
+        self.personality = personality
+    
+    def take_damage(self, amount: int, damage_type: str = "untyped") -> int:
+        """Apply damage to this entity. Returns actual damage dealt."""
+        actual = min(amount, self.hp)
+        self.hp -= actual
+        app_logger.debug(f"{self.name} takes {actual} {damage_type} damage. HP: {self.hp}/{self.max_hp}")
+        return actual
+    
+    def heal(self, amount: int) -> int:
+        """Heal this entity. Returns actual healing done."""
+        actual = min(amount, self.max_hp - self.hp)
+        self.hp += actual
+        app_logger.debug(f"{self.name} heals {actual}. HP: {self.hp}/{self.max_hp}")
+        return actual
+    
+    @property
+    def is_alive(self) -> bool:
+        """Check if entity is alive (HP > 0)."""
+        return self.hp > 0
+    
+    @property
+    def hp_percent(self) -> float:
+        """Current HP as a percentage."""
+        if self.max_hp <= 0:
+            return 0.0
+        return self.hp / self.max_hp

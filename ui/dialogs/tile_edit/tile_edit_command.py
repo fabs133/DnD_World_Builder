@@ -55,7 +55,7 @@ class TileEditCommand(QUndoCommand):
         :param state: The state to apply to the tile.
         :type state: dict
         """
-        from models.tiles.tile_data import TileData
+        from models.tiles.tile_data import TileData, TerrainType, TileTag
         self.tile_data.terrain = TerrainType[state["terrain"]]
         self.tile_data.tags = [TileTag[t] for t in state["tags"]]
         self.tile_data.user_label = state["user_label"]

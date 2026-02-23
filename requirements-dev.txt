@@ -13,3 +13,6 @@ pytest-cov>=4.0
 
 # Linting & formatting
 ruff>=0.4.0
+
+# Type checking
+mypy>=1.8.0

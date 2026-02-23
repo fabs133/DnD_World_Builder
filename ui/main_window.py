@@ -131,6 +131,14 @@ class MainWindow(QMainWindow):
         self.addDockWidget(Qt.RightDockWidgetArea, self._session_dock)
         self._session_dock.hide()
 
+        # --- Initiative tracker dock (hidden until combat starts) ---
+        from ui.panels.initiative_panel import InitiativePanel
+        self.initiative_panel = InitiativePanel()
+        self._initiative_dock = QDockWidget("Initiative", self)
+        self._initiative_dock.setWidget(self.initiative_panel)
+        self.addDockWidget(Qt.RightDockWidgetArea, self._initiative_dock)
+        self._initiative_dock.hide()
+
         self.statusBar().showMessage(
             "Right-click a tile to edit attributes  |  Ctrl+Z Undo  |  Ctrl+Y Redo"
         )
@@ -153,6 +161,11 @@ class MainWindow(QMainWindow):
         reset_zoom_action.setShortcut("Ctrl+0")
         reset_zoom_action.triggered.connect(self.view.reset_zoom)
         view_menu.addAction(reset_zoom_action)
+
+        initiative_toggle = self._initiative_dock.toggleViewAction()
+        initiative_toggle.setText("&Initiative Tracker")
+        initiative_toggle.setShortcut("Ctrl+I")
+        view_menu.addAction(initiative_toggle)
 
         # --- Session menu ---
         session_menu = menubar.addMenu("Session")

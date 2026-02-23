@@ -1,0 +1,93 @@
+name: "Ruined Temple Ambush"
+description: >-
+  Two adventurers stumble into a goblin ambush in a crumbling dungeon temple.
+  The goblins use the pillars for cover while the shaman directs from behind.
+
+map_size: [7, 7]
+max_rounds: 20
+
+terrain:
+  rubble:
+    positions: [[2, 3], [3, 2], [4, 4]]
+    movement_cost: 2
+  pillars:
+    positions: [[1, 1], [5, 1], [1, 5], [5, 5]]
+    blocking: true
+  trap:
+    positions: [[3, 3]]
+    trigger:
+      event_type: "entity_enters"
+      effect: "poisoned"
+      damage: "1d4"
+
+entities:
+  # --- Players ---
+  - name: "Fighter"
+    type: "player"
+    hp: 28
+    armor_class: 16
+    dex: 12
+    speed: 30
+    position: [1, 6]
+    alignment: "lawful_good"
+    personality_preset: "paladin_companion"
+    trait: "Calm under pressure"
+    bond: "Sworn to protect the innocent"
+    flaw: "Cannot abandon anyone, even lost causes"
+
+  - name: "Wizard"
+    type: "player"
+    hp: 14
+    armor_class: 11
+    dex: 14
+    speed: 30
+    position: [2, 6]
+    alignment: "chaotic_good"
+    personality_preset: "rogue_companion"
+    trait: "Sarcastic but reliable"
+    bond: "Loyal to friends, not causes"
+    flaw: "Can't resist a dramatic moment"
+
+  # --- Enemies ---
+  - name: "Goblin_1"
+    type: "enemy"
+    hp: 7
+    armor_class: 13
+    dex: 14
+    speed: 30
+    position: [5, 1]
+    alignment: "neutral_evil"
+    personality_preset: "goblin_grunt"
+
+  - name: "Goblin_2"
+    type: "enemy"
+    hp: 7
+    armor_class: 13
+    dex: 14
+    speed: 30
+    position: [1, 2]
+    alignment: "neutral_evil"
+    personality_preset: "goblin_grunt"
+
+  - name: "Goblin_3"
+    type: "enemy"
+    hp: 7
+    armor_class: 13
+    dex: 14
+    speed: 30
+    position: [6, 3]
+    alignment: "neutral_evil"
+    personality_preset: "goblin_grunt"
+
+  - name: "Shaman"
+    type: "enemy"
+    hp: 12
+    armor_class: 14
+    dex: 12
+    speed: 30
+    position: [3, 0]
+    alignment: "lawful_evil"
+    personality_preset: "goblin_shaman"
+    trait: "Cunning and patient"
+    bond: "The tribe must survive"
+    flaw: "Overconfident in magic"

@@ -55,7 +55,6 @@ from domain.specs.checks import (
     SkillCheckSpec,
     SavingThrowSpec,
     ContestSpec,
-    AbilityCheckSpec,
 )
 
 # Movement specifications
@@ -190,7 +189,6 @@ __all__ = [
     "SkillCheckSpec",
     "SavingThrowSpec",
     "ContestSpec",
-    "AbilityCheckSpec",
     # Movement
     "TerrainType",
     "MovementMode",

@@ -91,6 +91,7 @@ class TileData:
     triggers: List[Trigger] = field(default_factory=list)
     background_image: Optional[str] = None
     ambient_audio: Optional[str] = None
+    movement_cost: int = 5
 
     def is_occupied(self) -> bool:
         """
@@ -181,6 +182,8 @@ class TileData:
             data["background_image"] = self.background_image
         if self.ambient_audio:
             data["ambient_audio"] = self.ambient_audio
+        if self.movement_cost != 5:
+            data["movement_cost"] = self.movement_cost
         return data
 
     @classmethod
@@ -218,4 +221,5 @@ class TileData:
             triggers=triggers,
             background_image=data.get("background_image"),
             ambient_audio=data.get("ambient_audio"),
+            movement_cost=data.get("movement_cost", 5),
         )

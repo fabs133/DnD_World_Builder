@@ -14,6 +14,6 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     total = terminalreporter._numcollected
     passed = len(terminalreporter.stats.get('passed', []))
     failed = len(terminalreporter.stats.get('failed', []))
-    print("\n🧪 Test Summary:")
-    print(f"  ✅ Passed: {passed}/{total}")
-    print(f"  ❌ Failed: {failed}/{total}" if failed else "  🎉 All tests passed successfully!")
+    print(f"\n  Test Summary:")
+    print(f"  Passed: {passed}/{total}")
+    print(f"  Failed: {failed}/{total}" if failed else "  All tests passed successfully!")
