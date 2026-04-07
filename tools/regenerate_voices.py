@@ -120,8 +120,8 @@ def main():
                         "output": output_file,
                         "profile": profile,
                     })
-                line_count += 1
 
+        line_count = sum(1 for t in tasks if t["name"] == name)
         ref = profile.reference_audio or "default"
         print(f"  {name}: {line_count} lines, preset={preset_id}, ref={Path(ref).name}")
 

@@ -162,8 +162,16 @@ def get_output_images(history_entry: dict) -> list[Path]:
 
 # ─── Image collection ────────────────────────────────────────────
 
+ORIGINAL_SIZE = (768, 512)
+TARGET_SIZE = (1536, 1024)  # Correct 2x upscale from 768x512
+
+
 def collect_backgrounds(skip_upscaled: bool = True) -> list[Path]:
-    """Find all tile background images, optionally skipping already-upscaled ones."""
+    """Find tile backgrounds that need upscaling (768x512 originals only).
+
+    Skips correctly upscaled images AND damaged double-upscaled ones.
+    Use ``list_damaged()`` to find the damaged images separately.
+    """
     images = []
     for ext in ("*.png", "*.jpg", "*.jpeg"):
         images.extend(BACKGROUNDS_DIR.rglob(ext))
@@ -172,11 +180,27 @@ def collect_backgrounds(skip_upscaled: bool = True) -> list[Path]:
         filtered = []
         for p in images:
             im = Image.open(p)
-            if im.size[0] <= 768:  # Not yet upscaled
-                filtered.append(p)
+            size = im.size
             im.close()
+            # Only process original-size images
+            if size == ORIGINAL_SIZE:
+                filtered.append(p)
         return sorted(filtered)
     return sorted(images)
+
+
+def list_damaged() -> list[Path]:
+    """Find images that are neither original size nor correctly upscaled."""
+    from PIL import Image
+    damaged = []
+    for ext in ("*.png", "*.jpg", "*.jpeg"):
+        for p in BACKGROUNDS_DIR.rglob(ext):
+            im = Image.open(p)
+            size = im.size
+            im.close()
+            if size != ORIGINAL_SIZE and size != TARGET_SIZE:
+                damaged.append(p)
+    return sorted(damaged)
 
 
 def collect_portraits() -> list[Path]:
@@ -322,8 +346,23 @@ def main():
                         help="Output directory (default: overwrite originals)")
     parser.add_argument("--pause", type=float, default=0.5,
                         help="Seconds between submissions (default: 0.5)")
+    parser.add_argument("--list-damaged", action="store_true",
+                        help="List double-upscaled/damaged images and exit")
 
     args = parser.parse_args()
+
+    if args.list_damaged:
+        damaged = list_damaged()
+        if damaged:
+            print(f"{len(damaged)} damaged images (need regeneration, not upscaling):")
+            for p in damaged:
+                from PIL import Image
+                im = Image.open(p)
+                print(f"  {im.size[0]}x{im.size[1]}  {p.relative_to(PROJECT_ROOT)}")
+                im.close()
+        else:
+            print("No damaged images found.")
+        return
     output_dir = Path(args.output) if args.output else None
 
     images = []
