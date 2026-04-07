@@ -1,27 +1,32 @@
-"""RPG-style conversation dialog for NPC interaction with voice playback."""
+"""RPG-style conversation dialog with branching dialogue graph and voice playback."""
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QTextEdit, QWidget, QSizePolicy,
+    QDialog, QVBoxLayout, QLabel, QPushButton,
+    QTextEdit, QWidget,
 )
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, QUrl
+from PyQt5.QtCore import Qt, QThread, QTimer, pyqtSignal
+
+from models.dialogue.dialogue_graph import DialogueGraph, DialogueNode
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
-# Map dialogue categories to player-facing choice labels
-_CHOICE_LABELS = {
-    "lore":     "Tell me about this place.",
-    "quest":    "Do you have any work for me?",
-    "trade":    "What do you have for sale?",
-    "combat":   "I'm looking for a fight.",
-    "search":   "Let me take a closer look.",
-    "farewell": None,  # handled specially
-}
+_BTN_STYLE = (
+    "text-align: left; padding: 8px 12px; font-size: 12px; "
+    "background: #2a2a3a; color: #ddd; border: 1px solid #555; "
+    "border-radius: 4px;"
+)
+_BTN_STYLE_FAREWELL = (
+    "text-align: left; padding: 8px 12px; font-size: 12px; "
+    "background: #3a2a2a; color: #ddd; border: 1px solid #555; "
+    "border-radius: 4px;"
+)
+_BTN_STYLE_DISABLED = "text-align: left; padding: 8px 12px; color: #666;"
 
 
 class _VoiceGenWorker(QThread):
@@ -50,10 +55,11 @@ class _VoiceGenWorker(QThread):
 
 
 class NpcConversationDialog(QDialog):
-    """RPG-style dialogue with clickable choices and voice playback.
+    """Branching dialogue with voice playback.
 
-    Signals:
-        conversation_ended(): Dialog closed.
+    Walks a :class:`DialogueGraph`, showing NPC text and available
+    player response options at each node.  Supports flag-based
+    conditions for dynamic option visibility.
     """
 
     conversation_ended = pyqtSignal()
@@ -74,31 +80,32 @@ class NpcConversationDialog(QDialog):
         self._voice_engine = voice_engine
         self._voice_cache = voice_cache
         self._pending_cache_key: str = ""
-        self._gen_workers: list[_VoiceGenWorker] = []  # prevent GC while running
+        self._gen_workers: list[_VoiceGenWorker] = []
         self._subscribed = False
 
-        # Track which line index we're on per category
-        self._line_index: dict[str, int] = {}
+        # ── Graph state ──────────────────────────────────────────
+        self._graph: DialogueGraph | None = getattr(entity, "dialogue_graph", None)
+        self._current_node_id: str = ""
+        self._flags: dict[str, bool] = dict(getattr(entity, "dialogue_flags", {}))
+        self._visited_nodes: set[str] = set()
 
+        # ── UI ───────────────────────────────────────────────────
         entity_name = getattr(entity, "name", "NPC")
         self.setWindowTitle(f"Talking to {entity_name}")
-        self.resize(500, 450)
+        self.resize(500, 500)
 
         layout = QVBoxLayout(self)
 
-        # Chat history
         self._chat_log = QTextEdit()
         self._chat_log.setReadOnly(True)
         self._chat_log.setStyleSheet("font-size: 13px;")
         layout.addWidget(self._chat_log, stretch=3)
 
-        # Voice status indicator
         self._voice_status = QLabel("")
         self._voice_status.setStyleSheet("color: #888; font-style: italic;")
         self._voice_status.hide()
         layout.addWidget(self._voice_status)
 
-        # Choice buttons area
         self._choices_widget = QWidget()
         self._choices_layout = QVBoxLayout(self._choices_widget)
         self._choices_layout.setContentsMargins(4, 4, 4, 4)
@@ -114,148 +121,115 @@ class NpcConversationDialog(QDialog):
         except Exception:
             pass
 
-        # Start conversation with greeting (delay voice so Qt media player is ready)
-        from PyQt5.QtCore import QTimer
-        self._show_greeting_text()
-        QTimer.singleShot(500, self._play_greeting_voice)
+        # Start conversation
+        if self._graph:
+            QTimer.singleShot(100, self._start_graph_conversation)
+        else:
+            # No graph at all — show a simple fallback
+            self._add_npc_message("...")
 
-    # ─── Dialogue flow ──────────────────────────────────────────
+    # ── Graph navigation ─────────────────────────────────────────
 
-    def _get_dialogue(self) -> dict[str, list[str]]:
-        return getattr(self._entity, "dialogue_lines", {})
+    def _start_graph_conversation(self) -> None:
+        """Enter the graph's entry node."""
+        self._navigate_to(self._graph.entry_node)
 
-    def _show_greeting_text(self) -> None:
-        """Show first NPC greeting and choices (no voice yet)."""
-        dialogue = self._get_dialogue()
-        greetings = dialogue.get("greeting", ["Greetings, traveler."])
-        self._greeting_line = greetings[0] if greetings else "Greetings, traveler."
-        name = getattr(self._entity, "name", "NPC")
-        self._chat_log.append(
-            f'<div style="margin: 4px 0;">'
-            f'<b style="color: #e8c840;">{name}:</b> {self._greeting_line}</div>'
-        )
-        self._show_choices()
+    def _navigate_to(self, node_id: str) -> None:
+        """Move to a node: show NPC text, play voice, build options."""
+        node = self._graph.get_node(node_id) if self._graph else None
+        if node is None:
+            return
 
-    def _play_greeting_voice(self) -> None:
-        """Play the greeting voice line after dialog is visible."""
-        if self._greeting_line:
-            self._play_voice_line(self._greeting_line)
+        self._current_node_id = node_id
+        self._visited_nodes.add(node_id)
 
-    def _show_choices(self) -> None:
-        """Build choice buttons from available dialogue categories."""
-        # Clear old choices
+        # Apply node-level flags
+        self._flags.update(node.set_flags)
+
+        # Show NPC text
+        self._add_npc_message(node.text, node_id=node_id)
+
+        if node.is_terminal:
+            # Auto-close after a delay
+            QTimer.singleShot(1500, self._on_close)
+            return
+
+        # Build option buttons
+        self._build_options(node)
+
+    def _build_options(self, node: DialogueNode) -> None:
+        """Create choice buttons for the current node."""
+        # Clear old buttons
         while self._choices_layout.count():
             item = self._choices_layout.takeAt(0)
             if item.widget():
                 item.widget().deleteLater()
 
-        dialogue = self._get_dialogue()
+        # Sort by priority (higher first)
+        sorted_opts = sorted(node.options, key=lambda o: -o.priority)
 
-        # Add category choices
-        for category, label in _CHOICE_LABELS.items():
-            if category == "farewell":
-                continue  # added separately at the end
-            lines = dialogue.get(category, [])
-            if not lines:
+        for opt in sorted_opts:
+            if not opt.is_available(self._flags):
                 continue
-            # Check if there are unread lines
-            idx = self._line_index.get(category, 0)
-            if idx >= len(lines):
-                # All lines exhausted — show greyed out
-                btn = QPushButton(f"  {label}  (nothing new)")
+
+            # Check if target subtree is fully visited (nothing new)
+            is_exhausted = self._is_subtree_visited(opt.next_node)
+
+            btn = QPushButton(f"  {opt.text}")
+            if is_exhausted:
+                btn.setText(f"  {opt.text}  (nothing new)")
+                btn.setStyleSheet(_BTN_STYLE_DISABLED)
                 btn.setEnabled(False)
-                btn.setStyleSheet("text-align: left; padding: 6px; color: #888;")
             else:
-                btn = QPushButton(f"  {label}")
-                btn.setStyleSheet(
-                    "text-align: left; padding: 6px; font-size: 12px; "
-                    "background: #2a2a3a; color: #ddd; border: 1px solid #555; "
-                    "border-radius: 4px;"
-                )
+                target = self._graph.get_node(opt.next_node)
+                is_farewell = target and target.is_terminal
+                btn.setStyleSheet(_BTN_STYLE_FAREWELL if is_farewell else _BTN_STYLE)
                 btn.setCursor(Qt.PointingHandCursor)
-                btn.clicked.connect(lambda checked, c=category: self._on_choice(c))
+                btn.clicked.connect(
+                    lambda checked, o=opt: self._on_option_clicked(o))
+
             self._choices_layout.addWidget(btn)
 
-        # Always add farewell
-        farewell_btn = QPushButton("  Goodbye.")
-        farewell_btn.setStyleSheet(
-            "text-align: left; padding: 6px; font-size: 12px; "
-            "background: #3a2a2a; color: #ddd; border: 1px solid #555; "
-            "border-radius: 4px;"
-        )
-        farewell_btn.setCursor(Qt.PointingHandCursor)
-        farewell_btn.clicked.connect(self._on_farewell)
-        self._choices_layout.addWidget(farewell_btn)
-
-        # Push buttons to top
         self._choices_layout.addStretch()
 
-    def _on_choice(self, category: str) -> None:
-        """Player picked a dialogue category."""
-        dialogue = self._get_dialogue()
-        lines = dialogue.get(category, [])
-        idx = self._line_index.get(category, 0)
+        # Auto-scroll
+        sb = self._chat_log.verticalScrollBar()
+        sb.setValue(sb.maximum())
 
-        if idx >= len(lines):
-            return
+    def _on_option_clicked(self, opt) -> None:
+        """Player selected an option."""
+        # Show player text
+        self._add_player_message(opt.text)
 
-        # Show player's choice text
-        label = _CHOICE_LABELS.get(category, category.title())
-        self._add_player_message(label)
+        # Apply option flags
+        self._flags.update(opt.set_flags)
 
-        # Deliver NPC lines one at a time (show next unread line)
-        self._add_npc_message(lines[idx])
-        self._line_index[category] = idx + 1
+        # Navigate to target node
+        self._navigate_to(opt.next_node)
 
-        # If there are more lines in this category, offer "Tell me more" + other choices
-        self._show_choices()
+    def _is_subtree_visited(self, node_id: str) -> bool:
+        """Check if a node and all its reachable descendants have been visited."""
+        if node_id not in self._visited_nodes:
+            return False
+        node = self._graph.get_node(node_id) if self._graph else None
+        if node is None or node.is_terminal:
+            return node_id in self._visited_nodes
+        # Check all available options' targets
+        for opt in node.options:
+            if opt.is_available(self._flags):
+                if not self._is_subtree_visited(opt.next_node):
+                    return False
+        return True
 
-        # Auto-scroll to bottom
-        scrollbar = self._chat_log.verticalScrollBar()
-        scrollbar.setValue(scrollbar.maximum())
+    # ── Chat log ─────────────────────────────────────────────────
 
-    def _on_farewell(self) -> None:
-        """Player says goodbye."""
-        self._add_player_message("Goodbye.")
-        dialogue = self._get_dialogue()
-        farewells = dialogue.get("farewell", [])
-        if farewells:
-            import random
-            self._add_npc_message(random.choice(farewells))
-        else:
-            self._add_npc_message("Farewell, traveler.")
-        self._on_close()
-
-    def _cleanup_worker(self, worker: _VoiceGenWorker) -> None:
-        """Remove finished worker from the list."""
-        if worker in self._gen_workers:
-            self._gen_workers.remove(worker)
-
-    def _on_close(self) -> None:
-        if self._subscribed:
-            try:
-                from core.gameCreation.event_bus import EventBus
-                from core.events import VOICE_LINE_READY
-                EventBus.unsubscribe(VOICE_LINE_READY, self._on_voice_ready)
-            except Exception:
-                pass
-        # Wait for any running workers before closing
-        for worker in self._gen_workers:
-            if worker.isRunning():
-                worker.wait(2000)
-        self._gen_workers.clear()
-        self.conversation_ended.emit()
-        self.accept()
-
-    # ─── Chat log ───────────────────────────────────────────────
-
-    def _add_npc_message(self, text: str) -> None:
+    def _add_npc_message(self, text: str, node_id: str | None = None) -> None:
         name = getattr(self._entity, "name", "NPC")
         self._chat_log.append(
             f'<div style="margin: 4px 0;">'
             f'<b style="color: #e8c840;">{name}:</b> {text}</div>'
         )
-        self._play_voice_line(text)
+        self._play_voice_line(text, node_id=node_id)
 
     def _add_player_message(self, text: str) -> None:
         self._chat_log.append(
@@ -263,7 +237,32 @@ class NpcConversationDialog(QDialog):
             f'<b style="color: #6090d0;">You:</b> <i>{text}</i></div>'
         )
 
-    # ─── Voice playback ─────────────────────────────────────────
+    # ── Cleanup ──────────────────────────────────────────────────
+
+    def _cleanup_worker(self, worker: _VoiceGenWorker) -> None:
+        if worker in self._gen_workers:
+            self._gen_workers.remove(worker)
+
+    def _on_close(self) -> None:
+        # Persist flags back to entity
+        if hasattr(self._entity, "dialogue_flags"):
+            self._entity.dialogue_flags.update(self._flags)
+
+        if self._subscribed:
+            try:
+                from core.gameCreation.event_bus import EventBus
+                from core.events import VOICE_LINE_READY
+                EventBus.unsubscribe(VOICE_LINE_READY, self._on_voice_ready)
+            except Exception:
+                pass
+        for worker in self._gen_workers:
+            if worker.isRunning():
+                worker.wait(2000)
+        self._gen_workers.clear()
+        self.conversation_ended.emit()
+        self.accept()
+
+    # ── Voice playback ───────────────────────────────────────────
 
     def _get_voice_profile(self):
         profile = getattr(self._entity, "voice_profile", None)
@@ -273,11 +272,11 @@ class NpcConversationDialog(QDialog):
             return None
         return profile
 
-    def _play_voice_line(self, text: str) -> None:
-        # 1. Check pre-generated files first (no profile needed)
+    def _play_voice_line(self, text: str, node_id: str | None = None) -> None:
+        # 1. Check pre-generated files first (match by node_id or text)
         voice_dir = getattr(self._entity, "voice_lines_dir", None)
         if voice_dir:
-            wav_path = self._find_voice_file(voice_dir, text)
+            wav_path = self._find_voice_file(voice_dir, text, node_id)
             if wav_path:
                 self._play_audio(wav_path)
                 return
@@ -324,14 +323,26 @@ class NpcConversationDialog(QDialog):
             self._gen_workers.append(worker)
             worker.start()
 
-    def _find_voice_file(self, voice_dir: str, text: str) -> Path | None:
+    def _find_voice_file(
+        self, voice_dir: str, text: str, node_id: str | None = None,
+    ) -> Path | None:
         manifest_path = _PROJECT_ROOT / voice_dir / "manifest.json"
         if not manifest_path.exists():
             return None
         try:
-            import json
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-            for key, entry in manifest.get("lines", {}).items():
+            lines = manifest.get("lines", {})
+
+            # Try node_id match first (faster, more reliable)
+            if node_id and node_id in lines:
+                entry = lines[node_id]
+                if entry.get("exists", False):
+                    wav = _PROJECT_ROOT / voice_dir / entry["file"]
+                    if wav.exists():
+                        return wav
+
+            # Fall back to text match
+            for key, entry in lines.items():
                 if entry.get("text") == text and entry.get("exists", False):
                     wav = _PROJECT_ROOT / voice_dir / entry["file"]
                     if wav.exists():

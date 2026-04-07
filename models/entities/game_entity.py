@@ -110,6 +110,8 @@ class GameEntity:
         self.voice_profile = None  # Optional[VoiceProfile]
         self.voice_lines_dir: str | None = None
         self.dialogue_lines: dict[str, list[str]] = {}
+        self.dialogue_graph = None  # Optional[DialogueGraph]
+        self.dialogue_flags: dict[str, bool] = {}
 
     # -- Core combat stats as properties backed by self.stats ----------------
 
@@ -209,6 +211,10 @@ class GameEntity:
             data["voice_lines_dir"] = self.voice_lines_dir
         if self.dialogue_lines:
             data["dialogue_lines"] = self.dialogue_lines
+        if self.dialogue_graph:
+            data["dialogue_graph"] = self.dialogue_graph.to_dict()
+        if self.dialogue_flags:
+            data["dialogue_flags"] = self.dialogue_flags
         return data
 
     def handle_event(self, event_type, data):
@@ -291,6 +297,15 @@ class GameEntity:
         obj.dialogue_lines = data.get("dialogue_lines", {})
         obj.portraits = data.get("portraits", {})
         obj.voice_lines_dir = data.get("voice_lines_dir")
+
+        # Restore dialogue graph — explicit graph first, auto-convert from lines
+        if "dialogue_graph" in data:
+            from models.dialogue.dialogue_graph import DialogueGraph
+            obj.dialogue_graph = DialogueGraph.from_dict(data["dialogue_graph"])
+        elif obj.dialogue_lines:
+            from models.dialogue.dialogue_graph import DialogueGraph
+            obj.dialogue_graph = DialogueGraph.from_dialogue_lines(obj.dialogue_lines)
+        obj.dialogue_flags = data.get("dialogue_flags", {})
 
         return obj
     

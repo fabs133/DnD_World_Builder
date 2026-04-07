@@ -25,6 +25,17 @@ def entity_slug(name: str) -> str:
     return name.lower().replace(" ", "_").replace("'", "")
 
 
+def _apply_voice_overrides(base_profile, node):
+    """Create a copy of the voice profile with emotion + node overrides applied."""
+    from copy import deepcopy
+    profile = deepcopy(base_profile)
+    voice_params = node.get_voice_params()
+    for key, value in voice_params.items():
+        if hasattr(profile, key):
+            setattr(profile, key, value)
+    return profile
+
+
 def main():
     parser = argparse.ArgumentParser(description="Regenerate NPC voice lines")
     parser.add_argument("map_json", help="Path to scenario map.json")
@@ -69,24 +80,46 @@ def main():
         slug = entity_slug(name)
         output_dir = PROJECT_ROOT / "assets" / "voice" / slug
 
-        dialogue = e.get("dialogue_lines", {})
-        line_count = 0
-        for category, lines in dialogue.items():
-            if not isinstance(lines, list):
-                continue
-            for i, text in enumerate(lines):
-                if not text:
+        # Prefer dialogue_graph (with emotion overrides), fall back to flat lines
+        graph_data = e.get("dialogue_graph")
+        if graph_data:
+            from models.dialogue.dialogue_graph import DialogueGraph
+            graph = DialogueGraph.from_dict(graph_data)
+            for node_id, node in graph.nodes.items():
+                if not node.text:
                     continue
-                output_file = output_dir / f"{category}_{i}.wav"
+                output_file = output_dir / f"{node_id}.wav"
+                # Build profile with emotion overrides
+                node_profile = _apply_voice_overrides(profile, node)
                 tasks.append({
                     "name": name,
                     "preset": preset_id,
-                    "category": category,
-                    "index": i,
-                    "text": text,
+                    "category": node.category,
+                    "index": 0,
+                    "text": node.text,
                     "output": output_file,
-                    "profile": profile,
+                    "profile": node_profile,
+                    "node_id": node_id,
                 })
+        else:
+            # Fall back to old dialogue_lines format
+            dialogue = e.get("dialogue_lines", {})
+            for category, lines in dialogue.items():
+                if not isinstance(lines, list):
+                    continue
+                for i, text in enumerate(lines):
+                    if not text:
+                        continue
+                    output_file = output_dir / f"{category}_{i}.wav"
+                    tasks.append({
+                        "name": name,
+                        "preset": preset_id,
+                        "category": category,
+                        "index": i,
+                        "text": text,
+                        "output": output_file,
+                        "profile": profile,
+                    })
                 line_count += 1
 
         ref = profile.reference_audio or "default"
