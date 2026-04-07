@@ -183,3 +183,40 @@ cython_debug/
 # Browser demo
 node_modules/
 browser-demo/dist/
+# ── Large generated assets (managed separately) ──────────────
+assets/tile_backgrounds/
+assets/portraits/
+assets/voice/
+assets/voice_cache/
+assets/voice_recordings/
+assets/backgrounds/
+assets/items/
+core/audio/sfx/ambient/*.mp3
+core/audio/sfx/ambient/old_clips/
+core/audio/voice_seeds/
+
+# Downloaded sound/music packs
+10 Ambient Tracks Music Pack/
+selected_sounds/
+
+# Plan/assessment docs (not code)
+*.docx
+ASSET_PIPELINE_UPGRADE_PLAN.md
+ASSET_REGENERATION_LIST.md
+AUDIO_FIXTURE_PLAN.md
+BUG_FIX_STATUS.md
+CLAUDE_CODE_PLAN.md
+COMBAT_TRANSITION_PLAN.md
+SOUND_UPGRADE_SHOPPING_LIST.md
+SYSTEM_ASSESSMENT.md
+TRIAGE_REPORT.md
+VOICE_ENHANCEMENT_PLAN.md
+VOICE_SEED_RECORDING_GUIDE.md
+ZONE_BACKGROUND_GENERATION_PLAN.md
+
+# Claude Code local config
+.claude/
+assets/fonts/
+assets/icons/
+assets/terrain/
+assets/test_samples/
