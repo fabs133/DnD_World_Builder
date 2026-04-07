@@ -45,6 +45,10 @@ DND_CONDITIONS = [
 class CharacterCreationWindow(QWidget):
     def __init__(self, api=None, base_path="core/data_/rulebook_json"):
         super().__init__()
+        self.setWindowFlags(
+            Qt.Window | Qt.WindowMinimizeButtonHint
+            | Qt.WindowMaximizeButtonHint | Qt.WindowCloseButtonHint
+        )
         if api is not None:
             self.api_handler = api
         else:
@@ -206,6 +210,17 @@ class CharacterCreationWindow(QWidget):
         roleplay_layout.addRow("Personality:", self.personality_input)
         self.tab_widget.addTab(roleplay_tab, "Roleplay")
 
+        # === Voice Tab ===
+        voice_tab = QWidget()
+        voice_layout = QVBoxLayout(voice_tab)
+        voice_layout.addWidget(QLabel("Configure how your character sounds in dialogue:"))
+        from ui.voice.voice_settings_widget import VoiceSettingsWidget
+        self._voice_widget = VoiceSettingsWidget()
+        self._voice_widget.set_preview_text("Greetings, I am ready for adventure!")
+        voice_layout.addWidget(self._voice_widget)
+        voice_layout.addStretch()
+        self.tab_widget.addTab(voice_tab, "Voice")
+
         # === Summary Tab ===
         self.summary_tab = QWidget()
         summary_layout = QFormLayout(self.summary_tab)
@@ -232,6 +247,10 @@ class CharacterCreationWindow(QWidget):
         self.update_stat_modifiers()
 
         self.name_input.textChanged.connect(self.update_summary)
+        self.name_input.textChanged.connect(
+            lambda name: self._voice_widget.set_preview_text(
+                f"I am {name}, ready for adventure!" if name else "Greetings, I am ready for adventure!")
+        )
         self.race_input.currentIndexChanged.connect(self.update_summary)
         self.char_class_input.currentIndexChanged.connect(self.update_summary)
         self.subclass_input.currentIndexChanged.connect(self.update_summary)
@@ -290,7 +309,8 @@ class CharacterCreationWindow(QWidget):
                     self.stats_inputs[stat].setValue(val)
 
             # Guess race/class if stored in entity_type
-            parts = entity.entity_type.split()
+            etype = str(entity.entity_type) if entity.entity_type else ""
+            parts = etype.split()
             if parts:
                 self.race_input.setCurrentText(parts[0])
                 if len(parts) > 1:
@@ -406,15 +426,19 @@ class CharacterCreationWindow(QWidget):
             'passive_perception': self.passive_perception_label.text(),
             'spells': [self.spells_input.item(i).text() for i in range(self.spells_input.count())],
             'spell_slots': self.spellslots_input.value(),
-            'spellcasting_ability': self.spellcasting_ability_label.text()
+            'spellcasting_ability': self.spellcasting_ability_label.text(),
+            'voice_profile': self._voice_widget.get_profile().to_dict(),
         }
 
     def update_proficiency_bonus(self):
-            self.proficiency_bonus_label.setText("+2")
+        level = self.level_input.value() if hasattr(self, "level_input") else 1
+        bonus = 2 + (level - 1) // 4  # D&D 5e: +2 at L1, +3 at L5, +4 at L9, etc.
+        self.proficiency_bonus_label.setText(f"+{bonus}")
 
 
     def update_passive_perception(self):
-        wis = self.stats_inputs.get("WIS").value()
+        wis_widget = self.stats_inputs.get("WIS")
+        wis = wis_widget.value() if wis_widget else 10
         wis_mod = (wis - 10) // 2
         prof_bonus = 2 if self.skill_profs["Perception"].isChecked() else 0
         value = 10 + wis_mod + prof_bonus
