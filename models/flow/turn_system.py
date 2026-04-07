@@ -92,11 +92,13 @@ class TurnSystem:
         current_entity = self.entities[self.current_turn]
         proposed_action = current_entity.decide_action()
         if ActionValidator.validate(proposed_action):
-            EventBus.emit("ACTION_PROPOSED", proposed_action)
+            from core.events import ACTION_PROPOSED
+            EventBus.emit(ACTION_PROPOSED, proposed_action)
 
         if not ReactionQueue.blocked():
             proposed_action.execute()
-            EventBus.emit("ACTION_EXECUTED", proposed_action)
+            from core.events import ACTION_EXECUTED
+            EventBus.emit(ACTION_EXECUTED, proposed_action)
         else:
             ReactionQueue.resolve()
 

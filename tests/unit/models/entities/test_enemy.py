@@ -99,7 +99,9 @@ def test_save_to_db_inserts_row(db_conn):
     assert row[1] == 20
 
     stats_loaded = json.loads(row[2])
-    assert stats_loaded == {"max_hp": 20, "str": 12}
+    # "str" is normalized to "Strength" by GameEntity; extra defaults present
+    assert stats_loaded["max_hp"] == 20
+    assert stats_loaded.get("Strength", stats_loaded.get("str")) == 12
 
     abilities_loaded = json.loads(row[3])
     assert abilities_loaded == [{"name": "Slash", "damage": "1d6", "to_hit": 4}]

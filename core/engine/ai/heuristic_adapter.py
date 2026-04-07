@@ -9,6 +9,7 @@ All decisions are pure functions of ``(entity_state, game_state, rng)``
 from __future__ import annotations
 
 import random
+import re
 from typing import Any
 
 from core.logger import app_logger
@@ -17,6 +18,10 @@ from core.engine.game_state import GameState, EntitySnapshot
 from core.engine.actions.attack_action import AttackAction
 from core.engine.actions.move_action import MoveAction
 from core.engine.actions.end_turn_action import EndTurnAction
+from core.engine.ai.combat_utils import (
+    are_allies, find_weakest_target, get_actor, get_personality,
+    get_enemies,
+)
 from models.flow.action.action import Action
 from models.ai.personality import EntityPersonality
 from models.ai.alignment import Alignment
@@ -41,12 +46,14 @@ class HeuristicAIAdapter(InputAdapter):
         entities_by_name: dict[str, Any] | None = None,
         rng: random.Random | None = None,
         default_personality: EntityPersonality | None = None,
+        tile_map: Any | None = None,
     ):
         self._entities_by_name = entities_by_name or {}
         self._rng = rng or random.Random()
         self._default_personality = default_personality or EntityPersonality(
             alignment=Alignment.TRUE_NEUTRAL,
         )
+        self._tile_map = tile_map
 
     # --------------------------------------------------------------------- #
     # InputAdapter interface
@@ -67,6 +74,7 @@ class HeuristicAIAdapter(InputAdapter):
         hp_ratio = hp / max_hp
 
         actor_pos = getattr(actor, "position", (0, 0)) or (0, 0)
+        speed = self._get_entity_speed(entity_name, game_state)
 
         enemies = self._get_enemies(entity_name, game_state)
         adjacent_enemies = self._adjacent_enemies(actor_pos, enemies)
@@ -77,37 +85,40 @@ class HeuristicAIAdapter(InputAdapter):
             and "MOVE" in available_actions
             and enemies
         ):
-            flee_pos = self._position_away_from_enemies(actor_pos, enemies, game_state)
+            flee_pos = self._position_away_from_enemies(actor_pos, enemies, game_state, speed)
             if flee_pos and flee_pos != actor_pos:
                 app_logger.debug(
                     f"[Heuristic] {entity_name} flees to {flee_pos} "
                     f"(hp_ratio={hp_ratio:.2f} < threshold={weights.flee_threshold})"
                 )
-                return MoveAction(actor, flee_pos, world_tile_manager=None)
+                return MoveAction(actor, flee_pos, world_tile_manager=self._tile_map)
 
         # 2) Attack adjacent enemy
         if adjacent_enemies and "ATTACK" in available_actions:
             target = self._pick_weakest(adjacent_enemies, game_state)
+            if target is None:
+                return EndTurnAction(actor)
             target_entity = self._get_actor(target.name)
             app_logger.debug(
                 f"[Heuristic] {entity_name} attacks {target.name} (hp={target.hp})"
             )
+            damage_expr, to_hit_bonus = self._get_attack_stats(actor)
             return AttackAction(
                 actor,
                 target_entity,
-                damage_expr="1d6",
-                to_hit_bonus=0,
+                damage_expr=damage_expr,
+                to_hit_bonus=to_hit_bonus,
                 rng=self._rng,
             )
 
         # 3) Move toward nearest enemy
         if enemies and "MOVE" in available_actions:
-            advance_pos = self._position_toward_enemies(actor_pos, enemies, game_state)
+            advance_pos = self._position_toward_enemies(actor_pos, enemies, game_state, speed)
             if advance_pos and advance_pos != actor_pos:
                 app_logger.debug(
                     f"[Heuristic] {entity_name} advances to {advance_pos}"
                 )
-                return MoveAction(actor, advance_pos, world_tile_manager=None)
+                return MoveAction(actor, advance_pos, world_tile_manager=self._tile_map)
 
         # 4) Fallback
         app_logger.debug(f"[Heuristic] {entity_name} ends turn (no useful action)")
@@ -149,24 +160,53 @@ class HeuristicAIAdapter(InputAdapter):
     # --------------------------------------------------------------------- #
 
     def _get_actor(self, entity_name: str) -> Any:
-        if entity_name in self._entities_by_name:
-            return self._entities_by_name[entity_name]
-
-        class _Stub:
-            name = entity_name
-            entity_type = "creature"
-            hp = 10
-            max_hp = 10
-            position = (0, 0)
-            personality = None
-
-        return _Stub()
+        return get_actor(entity_name, self._entities_by_name)
 
     def _get_personality(self, actor: Any) -> EntityPersonality:
-        personality = getattr(actor, "personality", None)
-        if personality is not None:
-            return personality
-        return self._default_personality
+        return get_personality(actor, self._default_personality)
+
+    def _get_entity_speed(self, entity_name: str, game_state: GameState) -> int:
+        """Get entity speed from GameState snapshot (feet per turn)."""
+        for snap in game_state.entities:
+            if snap.name == entity_name:
+                return snap.speed
+        return 30  # D&D default
+
+    # --------------------------------------------------------------------- #
+    # Helpers — attack stats
+    # --------------------------------------------------------------------- #
+
+    @staticmethod
+    def _get_attack_stats(actor: Any) -> tuple[str, int]:
+        """Extract damage_expr and to_hit_bonus from the actor's data.
+
+        Checks (in order):
+        1. actor.attacks list (Enemy subclass format)
+        2. actor.stats dict keys
+        3. Fallback: derive to_hit from STR modifier, damage "1d6"
+        """
+        # 1. Enemy-style attacks list
+        attacks = getattr(actor, "attacks", None)
+        if attacks:
+            atk = attacks[0]  # Use first/primary attack
+            raw_damage = atk.get("damage", "1d6")
+            # Strip damage type suffix (e.g. "1d6+2 piercing" -> "1d6+2")
+            damage_expr = raw_damage.split()[0] if raw_damage else "1d6"
+            to_hit = atk.get("to_hit", 0)
+            return damage_expr, to_hit
+
+        # 2. Stats dict
+        stats = getattr(actor, "stats", {})
+        damage_expr = stats.get("damage_expr", stats.get("damage", None))
+        if damage_expr:
+            damage_expr = damage_expr.split()[0]
+            to_hit = stats.get("to_hit_bonus", stats.get("to_hit", 0))
+            return damage_expr, to_hit
+
+        # 3. Fallback: derive from STR modifier
+        str_score = stats.get("Strength", 10)
+        to_hit = (str_score - 10) // 2
+        return "1d6", to_hit
 
     # --------------------------------------------------------------------- #
     # Helpers — enemy queries
@@ -177,15 +217,8 @@ class HeuristicAIAdapter(InputAdapter):
     ) -> list[EntitySnapshot]:
         """Return alive enemies of *actor_name*."""
         actor = self._get_actor(actor_name)
-        actor_type = getattr(actor, "entity_type", "").lower()
-
-        enemies: list[EntitySnapshot] = []
-        for snap in game_state.entities:
-            if snap.name == actor_name or not snap.is_alive:
-                continue
-            if not self._are_allies(actor_type, snap.entity_type.lower()):
-                enemies.append(snap)
-        return enemies
+        actor_type = getattr(actor, "entity_type", "")
+        return get_enemies(actor_name, actor_type, game_state)
 
     def _adjacent_enemies(
         self,
@@ -203,13 +236,7 @@ class HeuristicAIAdapter(InputAdapter):
 
     @staticmethod
     def _are_allies(type_a: str, type_b: str) -> bool:
-        player_types = {"player", "ally", "companion"}
-        enemy_types = {"enemy", "monster", "hostile"}
-        a_player = type_a in player_types
-        b_player = type_b in player_types
-        a_enemy = type_a in enemy_types
-        b_enemy = type_b in enemy_types
-        return (a_player and b_player) or (a_enemy and b_enemy)
+        return are_allies(type_a, type_b)
 
     # --------------------------------------------------------------------- #
     # Helpers — target / position selection
@@ -219,27 +246,29 @@ class HeuristicAIAdapter(InputAdapter):
     def _pick_weakest(
         enemies: list[EntitySnapshot],
         game_state: GameState,
-    ) -> EntitySnapshot:
+    ) -> EntitySnapshot | None:
+        if not enemies:
+            return None
         return min(enemies, key=lambda e: e.hp)
 
     def _find_weakest_target(
         self, valid_targets: list[str], game_state: GameState
     ) -> str:
-        weakest = valid_targets[0]
-        lowest_hp = float("inf")
-        for snap in game_state.entities:
-            if snap.name in valid_targets and snap.hp < lowest_hp:
-                lowest_hp = snap.hp
-                weakest = snap.name
-        return weakest
+        return find_weakest_target(valid_targets, game_state)
 
     def _position_toward_enemies(
         self,
         actor_pos: tuple[int, int],
         enemies: list[EntitySnapshot],
         game_state: GameState,
+        speed: int = 30,
     ) -> tuple[int, int] | None:
-        """Return the adjacent tile that gets closest to the nearest enemy."""
+        """Return the best tile to advance toward the nearest enemy.
+
+        When a tile_map is available, uses A* pathfinding and walks along
+        the path as far as the entity's speed budget allows.  Falls back
+        to a simple 1-tile step otherwise.
+        """
         if not enemies:
             return None
 
@@ -250,7 +279,24 @@ class HeuristicAIAdapter(InputAdapter):
         )
         target_pos = nearest.position
 
-        # Consider all tiles within 1 step (simple — no pathfinder yet)
+        # Pathfinder-aware movement
+        if self._tile_map is not None:
+            from core.engine.pathfinder import find_path
+
+            path = find_path(actor_pos, target_pos, self._tile_map)
+            if path and len(path) >= 2:
+                best = actor_pos
+                cost = 0
+                for tile in path[1:]:
+                    tile_cost = self._tile_map.get_movement_cost(*tile)
+                    if cost + tile_cost > speed:
+                        break
+                    cost += tile_cost
+                    best = tile
+                if best != actor_pos:
+                    return best
+
+        # Fallback: 1-tile step
         candidates = self._adjacent_valid_tiles(actor_pos, game_state)
         if not candidates:
             return None
@@ -265,13 +311,15 @@ class HeuristicAIAdapter(InputAdapter):
         actor_pos: tuple[int, int],
         enemies: list[EntitySnapshot],
         game_state: GameState,
+        speed: int = 30,
     ) -> tuple[int, int] | None:
-        """Return the adjacent tile that maximises distance from all enemies."""
-        if not enemies:
-            return None
+        """Return the best tile to flee from enemies.
 
-        candidates = self._adjacent_valid_tiles(actor_pos, game_state)
-        if not candidates:
+        When a tile_map is available, uses Dijkstra flood-fill to find all
+        reachable tiles within the speed budget and picks the one farthest
+        from all enemies.  Falls back to a 1-tile step otherwise.
+        """
+        if not enemies:
             return None
 
         def min_enemy_dist(pos: tuple[int, int]) -> int:
@@ -280,6 +328,21 @@ class HeuristicAIAdapter(InputAdapter):
                 for e in enemies
             )
 
+        # Pathfinder-aware flee
+        if self._tile_map is not None:
+            from core.engine.pathfinder import reachable_tiles
+
+            reachable = reachable_tiles(actor_pos, speed, self._tile_map)
+            if reachable:
+                best = max(reachable.keys(), key=min_enemy_dist)
+                if best != actor_pos:
+                    return best
+
+        # Fallback: 1-tile step
+        candidates = self._adjacent_valid_tiles(actor_pos, game_state)
+        if not candidates:
+            return None
+
         return max(candidates, key=min_enemy_dist)
 
     @staticmethod
@@ -287,6 +350,10 @@ class HeuristicAIAdapter(InputAdapter):
         positions: list[tuple[int, int]],
         enemies: list[EntitySnapshot],
     ) -> tuple[int, int]:
+        if not positions:
+            return (0, 0)
+        if not enemies:
+            return positions[0]
         enemy_positions = [e.position for e in enemies]
         return min(
             positions,
@@ -300,6 +367,10 @@ class HeuristicAIAdapter(InputAdapter):
         positions: list[tuple[int, int]],
         enemies: list[EntitySnapshot],
     ) -> tuple[int, int]:
+        if not positions:
+            return (0, 0)
+        if not enemies:
+            return positions[0]
         enemy_positions = [e.position for e in enemies]
         return max(
             positions,
@@ -313,15 +384,30 @@ class HeuristicAIAdapter(InputAdapter):
         pos: tuple[int, int],
         game_state: GameState,
     ) -> list[tuple[int, int]]:
-        """Return tiles within 1 step that are inside the grid bounds."""
-        x, y = pos
-        candidates = [
-            (x - 1, y - 1), (x, y - 1), (x + 1, y - 1),
-            (x - 1, y),                  (x + 1, y),
-            (x - 1, y + 1), (x, y + 1), (x + 1, y + 1),
-        ]
+        """Return tiles within 1 step that are in bounds and unoccupied."""
+        if self._tile_map:
+            candidates = self._tile_map.get_adjacent_tiles(pos[0], pos[1])
+        else:
+            # Fallback to 8-directional for square grids
+            x, y = pos
+            candidates = [
+                (x - 1, y - 1), (x, y - 1), (x + 1, y - 1),
+                (x - 1, y),                  (x + 1, y),
+                (x - 1, y + 1), (x, y + 1), (x + 1, y + 1),
+            ]
+        occupied = self._occupied_positions(game_state)
         return [
             (cx, cy)
             for cx, cy in candidates
-            if 0 <= cx < game_state.world_width and 0 <= cy < game_state.world_height
+            if 0 <= cx < game_state.world_width
+            and 0 <= cy < game_state.world_height
+            and (cx, cy) not in occupied
         ]
+
+    @staticmethod
+    def _occupied_positions(game_state: GameState) -> frozenset[tuple[int, int]]:
+        """Return positions occupied by alive entities."""
+        return frozenset(
+            e.position for e in game_state.entities
+            if e.is_alive and e.position
+        )

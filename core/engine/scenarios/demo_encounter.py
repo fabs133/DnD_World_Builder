@@ -24,6 +24,7 @@ class DemoEntity:
         self.name = name
         self.entity_type = entity_type
         self.hp = hp
+        self.max_hp = hp
         self.armor_class = armor_class
         self.speed = speed
         self.stats = {"Dexterity": dex, "Strength": 10, "max_hp": hp}
@@ -107,12 +108,14 @@ def build_demo_encounter(
                     entities_by_name=entities_by_name,
                     rng=rng,
                     default_personality=TACTICAL,
+                    tile_map=gm.world_tile_manager,
                 )
         for name in ("Goblin_1", "Goblin_2", "Goblin_3"):
             adapters[name] = HeuristicAIAdapter(
                 entities_by_name=entities_by_name,
                 rng=rng,
                 default_personality=AGGRESSIVE,
+                tile_map=gm.world_tile_manager,
             )
     else:
         # LLM-powered AI via Ollama

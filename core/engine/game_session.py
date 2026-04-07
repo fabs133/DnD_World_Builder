@@ -6,7 +6,9 @@ import random
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
+from core.events import TRIGGER_TURN_START
 from core.logger import app_logger
+from models.entities.entity_type import EntityType
 from models.game_master import Gamemaster
 from core.engine.game_state import GameState
 from core.engine.initiative import InitiativeTracker
@@ -38,6 +40,7 @@ class GameSession:
         seed: int | None = None,
         max_rounds: int = 100,
         ruleset: Any = None,
+        fog_of_war: bool = False,
         on_round_start: Callable[[GameState], None] | None = None,
         on_turn_start: Callable[[GameState, str], None] | None = None,
         on_action_result: Callable[[ActionResult], None] | None = None,
@@ -54,10 +57,20 @@ class GameSession:
         self._event_log: list[str] = []
         self._initialized = False
 
+        # Fog of war
+        self._fog_state = None
+        if fog_of_war:
+            from core.engine.fog_state import FogOfWarState
+            self._fog_state = FogOfWarState()
+
         self.on_round_start = on_round_start
         self.on_turn_start = on_turn_start
         self.on_action_result = on_action_result
         self.on_round_end = on_round_end
+
+    def set_adapter(self, entity_name: str, adapter) -> None:
+        """Swap the input adapter for an entity mid-session."""
+        self._adapters[entity_name] = adapter
 
     def setup(self, entities: list | None = None) -> None:
         """Initialize entities, roll initiative, set up initial state."""
@@ -122,9 +135,14 @@ class GameSession:
         if self.on_turn_start:
             self.on_turn_start(state, entity_name)
 
-        # Reset movement budget for this turn
-        speed = getattr(actor, "speed", 30)
+        # Reset movement budget and per-turn combat flags
+        from core.constants import DEFAULT_SPEED_FT
+        speed = getattr(actor, "speed", DEFAULT_SPEED_FT)
         actor.movement_remaining = speed
+        actor.dodging = False
+        actor.disengaging = False
+        actor.helping = False
+        actor.has_advantage = False
 
         # Skip dead entities
         hp = getattr(actor, "hp", 0)
@@ -137,6 +155,15 @@ class GameSession:
                 execution_log=[f"{entity_name} skipped (incapacitated)"],
             )
 
+        # Fire TURN_START event for trigger system
+        from core.gameCreation.event_bus import EventBus
+        EventBus.emit(TRIGGER_TURN_START, {
+            "entity": actor,
+            "position": getattr(actor, "position", None),
+            "world": self._gm.world,
+            "round_number": self._initiative.round_number,
+        })
+
         adapter = self._adapters.get(entity_name)
         if adapter is None:
             self._event_log.append(f"No adapter for {entity_name}, skipping turn.")
@@ -147,28 +174,109 @@ class GameSession:
                 execution_log=[f"{entity_name} skipped (no adapter)"],
             )
 
-        available = self._executor.get_available_actions(actor, state)
-        action = adapter.choose_action(entity_name, state, available)
+        # D&D 5e two-phase turn: Movement + Action.
+        # The adapter gets the full available list each call.  If it returns
+        # a MoveAction we execute it and loop (movement phase).  If it
+        # returns any other action we execute it once (action phase) and end.
+        # This gives every entity BOTH movement AND an action each turn.
+        actor.action_used = False
+        last_result = None
 
-        result = self._executor.execute(action, actor, state)
-        self._action_history.append(result)
+        for _ in range(7):  # safety valve
+            state = self.get_state()
+            available = self._get_available_actions(actor)
 
-        if result.success:
-            self._event_log.append(
-                f"Round {self._initiative.round_number}: "
-                f"{entity_name} executed {action.__class__.__name__}"
+            if not available or available == ["END_TURN"]:
+                break
+
+            action = adapter.choose_action(entity_name, state, available)
+            action_cls = action.__class__.__name__
+
+            # Defensive: ensure MoveAction never poisons the action flag
+            if action_cls == "MoveAction":
+                actor.action_used = False
+
+            result = self._executor.execute(
+                action, actor, state, context={"world": self._gm.world}
             )
-        else:
-            self._event_log.append(
-                f"Round {self._initiative.round_number}: "
-                f"{entity_name} failed {action.__class__.__name__}: {result.error}"
-            )
+            self._action_history.append(result)
+            last_result = result
 
-        if self.on_action_result:
-            self.on_action_result(result)
+            if result.success:
+                self._event_log.append(
+                    f"Round {self._initiative.round_number}: "
+                    f"{entity_name} executed {action_cls}"
+                )
+            else:
+                self._event_log.append(
+                    f"Round {self._initiative.round_number}: "
+                    f"{entity_name} failed {action_cls}: {result.error}"
+                )
+                break
+
+            if self.on_action_result:
+                self.on_action_result(result)
+
+            if action_cls == "MoveAction":
+                # Movement phase: keep looping so entity can also take action
+                if self._check_combat_over():
+                    break
+                continue
+
+            # Non-move action executed — mark action used and end turn
+            if action_cls in ("AttackAction", "DashAction", "DodgeAction",
+                               "DisengageAction", "HelpAction", "SpellAction"):
+                actor.action_used = True
+
+            if action_cls == "EndTurnAction":
+                break
+
+            # After any non-move action, offer remaining movement
+            # (D&D 5e: you can split movement around your action)
+            if getattr(actor, "movement_remaining", 0) > 0:
+                continue
+            break
+
+        if self._fog_state:
+            self._update_fog()
 
         self._initiative.next_turn()
-        return result
+        return last_result or ActionResult(
+            success=True, action=None,
+            execution_log=[f"{entity_name} turn ended"],
+        )
+
+    def _update_fog(self) -> None:
+        """Recalculate fog of war visibility from player-faction entities."""
+        from core.engine.vision import compute_visible_tiles
+
+        observers = []
+        for entity in self._gm.game_entities:
+            if getattr(entity, "hp", 0) <= 0:
+                continue
+            etype = getattr(entity, "entity_type", "")
+            if etype in (EntityType.PLAYER, EntityType.ALLY, EntityType.COMPANION):
+                pos = getattr(entity, "position", None)
+                vision = getattr(entity, "vision_range", 12)
+                if pos:
+                    observers.append((pos, vision))
+
+        if observers:
+            visible = compute_visible_tiles(self._gm.world, observers)
+            self._fog_state.update(visible)
+
+    def _get_available_actions(self, actor) -> list[str]:
+        """Determine what actions the actor can still take this turn."""
+        if getattr(actor, "hp", 0) <= 0:
+            return ["END_TURN"]
+
+        available = []
+        if getattr(actor, "movement_remaining", 0) > 0:
+            available.append("MOVE")
+        if not getattr(actor, "action_used", False):
+            available.extend(["ATTACK", "DASH", "DODGE", "DISENGAGE", "HELP", "CAST_SPELL"])
+        available.append("END_TURN")
+        return available
 
     def get_state(self) -> GameState:
         """Create an immutable snapshot of current state."""
@@ -200,10 +308,10 @@ class GameSession:
             hp = getattr(entity, "hp", 0)
             if hp <= 0:
                 continue
-            etype = getattr(entity, "entity_type", "").lower()
-            if etype == "player":
+            etype = getattr(entity, "entity_type", "")
+            if etype == EntityType.PLAYER:
                 players_alive = True
-            elif etype == "enemy":
+            elif etype == EntityType.ENEMY:
                 enemies_alive = True
         return not players_alive or not enemies_alive
 
@@ -212,12 +320,12 @@ class GameSession:
         players_alive = any(
             getattr(e, "hp", 0) > 0
             for e in self._gm.game_entities
-            if getattr(e, "entity_type", "").lower() == "player"
+            if getattr(e, "entity_type", "") == EntityType.PLAYER
         )
         enemies_alive = any(
             getattr(e, "hp", 0) > 0
             for e in self._gm.game_entities
-            if getattr(e, "entity_type", "").lower() == "enemy"
+            if getattr(e, "entity_type", "") == EntityType.ENEMY
         )
         if players_alive and not enemies_alive:
             return "player"

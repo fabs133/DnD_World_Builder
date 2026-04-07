@@ -140,3 +140,45 @@ class TestInitiativeRow:
         row = _InitiativeRow({"name": "Ghost", "roll": 10})
         bars = row.findChildren(QProgressBar)
         assert len(bars) == 0
+
+
+class TestInitiativePanelRoles:
+    """Tests for role-based rendering (DM vs player)."""
+
+    def test_set_role_dm_shows_next_button(self, qapp):
+        panel = InitiativePanel(role="dm")
+        panel.set_role("dm")
+        assert panel.next_turn_button.isVisibleTo(panel)
+
+    def test_set_role_player_hides_next_button(self, qapp):
+        panel = InitiativePanel(role="player")
+        panel.set_role("player")
+        assert not panel.next_turn_button.isVisibleTo(panel)
+
+    def test_player_sees_health_category(self, qapp):
+        panel = InitiativePanel(role="player")
+        panel.set_role("player", viewer_entity_name="Hero")
+        panel.set_initiative_order([
+            {"name": "Goblin", "roll": 15, "health_category": "bloodied", "entity_type": "enemy"},
+        ])
+        # Should render without crash, category label exists
+        assert panel._list.count() == 1
+
+    def test_player_sees_you_tag(self, qapp):
+        panel = InitiativePanel(role="player")
+        panel.set_role("player", viewer_entity_name="Hero")
+        panel.set_initiative_order([
+            {"name": "Hero", "roll": 18, "entity_type": "player"},
+        ])
+        widget = panel._list.itemWidget(panel._list.item(0))
+        assert "(You)" in widget._name_label.text()
+
+    def test_dm_sees_hp_bar_not_category(self, qapp):
+        from PyQt5.QtWidgets import QProgressBar
+        panel = InitiativePanel(role="dm")
+        panel.set_initiative_order([
+            {"name": "Goblin", "roll": 12, "hp": 5, "max_hp": 10, "entity_type": "enemy"},
+        ])
+        widget = panel._list.itemWidget(panel._list.item(0))
+        bars = widget.findChildren(QProgressBar)
+        assert len(bars) == 1

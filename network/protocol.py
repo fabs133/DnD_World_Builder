@@ -42,6 +42,19 @@ class MessageType(str, Enum):
     CHAT = "CHAT"
     ERROR = "ERROR"
     DISCONNECT = "DISCONNECT"
+    # Real-time collaboration messages
+    CURSOR_UPDATE = "CURSOR_UPDATE"
+    DRAW_STROKE = "DRAW_STROKE"
+    # Reliability / heartbeat
+    PING = "PING"
+    PONG = "PONG"
+    ACK = "ACK"
+    # Voice swarm messages
+    VOICE_CAPABILITY = "VOICE_CAPABILITY"
+    VOICE_CHARACTER_ASSIGN = "VOICE_CHARACTER_ASSIGN"
+    VOICE_CHARACTER_PROGRESS = "VOICE_CHARACTER_PROGRESS"
+    VOICE_CHARACTER_COMPLETE = "VOICE_CHARACTER_COMPLETE"
+    VOICE_CACHE_SYNC = "VOICE_CACHE_SYNC"
 
 
 class ErrorCode(str, Enum):
@@ -53,6 +66,7 @@ class ErrorCode(str, Enum):
     UNKNOWN_ENTITY = "UNKNOWN_ENTITY"
     INVALID_ACTION = "INVALID_ACTION"
     VERSION_MISMATCH = "VERSION_MISMATCH"
+    WRONG_PASSWORD = "WRONG_PASSWORD"
 
 
 PROTOCOL_VERSION = "1.0"
@@ -130,18 +144,20 @@ class Message:
 
 # --- Factory functions ---
 
-def make_hello(player_name: str) -> Message:
+def make_hello(player_name: str, password: str = "") -> Message:
     """Create a HELLO handshake message.
 
     :param player_name: The connecting player's display name.
-    :type player_name: str
-    :return: A HELLO message containing the player name and protocol version.
-    :rtype: Message
+    :param password: Optional session password set by the host.
+    :return: A HELLO message containing the player name, version, and password.
     """
-    return Message(type=MessageType.HELLO, payload={
+    payload = {
         "player_name": player_name,
         "version": PROTOCOL_VERSION,
-    })
+    }
+    if password:
+        payload["password"] = password
+    return Message(type=MessageType.HELLO, payload=payload)
 
 
 def make_welcome(session_id: str, player_id: str, entities: list) -> Message:
@@ -316,3 +332,74 @@ def make_disconnect() -> Message:
     :rtype: Message
     """
     return Message(type=MessageType.DISCONNECT)
+
+
+# --- Real-time collaboration ---
+
+
+def make_cursor_update(
+    player_id: str,
+    player_name: str,
+    x: float,
+    y: float,
+    color: str,
+) -> Message:
+    """Create a CURSOR_UPDATE message for real-time cursor sharing.
+
+    :param player_id: Unique ID of the player whose cursor moved.
+    :param player_name: Display name shown next to the cursor ghost.
+    :param x: Scene X coordinate (float, not tile-snapped).
+    :param y: Scene Y coordinate.
+    :param color: Hex color string assigned to this player.
+    :return: A CURSOR_UPDATE message.
+    """
+    return Message(type=MessageType.CURSOR_UPDATE, payload={
+        "player_id": player_id,
+        "player_name": player_name,
+        "x": x,
+        "y": y,
+        "color": color,
+    })
+
+
+def make_ack(ack_seq: int) -> Message:
+    """Create an ACK message acknowledging receipt of a critical message.
+
+    :param ack_seq: The sequence number of the message being acknowledged.
+    :return: An ACK message.
+    """
+    return Message(type=MessageType.ACK, payload={"ack_seq": ack_seq})
+
+
+def make_draw_stroke(
+    player_id: str,
+    points: list,
+    color: str,
+) -> Message:
+    """Create a DRAW_STROKE message for temporary line drawing.
+
+    Sent as a complete polyline on mouse release. During drawing, only
+    the local player sees their stroke.
+
+    :param player_id: Unique ID of the player who drew the stroke.
+    :param points: List of ``[x, y]`` coordinate pairs (scene coords).
+    :param color: Hex color string for the stroke.
+    :return: A DRAW_STROKE message.
+    """
+    return Message(type=MessageType.DRAW_STROKE, payload={
+        "player_id": player_id,
+        "points": points,
+        "color": color,
+    })
+
+
+# --- Reliability classification ---
+
+CRITICAL_TYPES: frozenset[MessageType] = frozenset({
+    MessageType.WELCOME,
+    MessageType.FULL_STATE,
+    MessageType.ENTITY_CLAIMED,
+    MessageType.ACTION_RESULT,
+    MessageType.DRAW_STROKE,
+    MessageType.TURN_CHANGE,
+})

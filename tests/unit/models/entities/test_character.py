@@ -123,7 +123,10 @@ def test_save_to_db_inserts_row(db_conn):
     assert row[3] == 30
 
     stats_loaded = json.loads(row[4])
-    assert stats_loaded == {"max_hp": 30, "str": 10}
+    # "str" is normalized to "Strength" by GameEntity._normalize_stats()
+    # stats now include combat defaults (hp, armor_class, speed)
+    assert stats_loaded["max_hp"] == 30
+    assert stats_loaded["Strength"] == 10
 
     inv_loaded = json.loads(row[5])
     assert inv_loaded == ["sword", "shield"]

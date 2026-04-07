@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QCheckBox, QPushButton
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 
 
 class TutorialDialog(QDialog):
@@ -15,7 +15,9 @@ class TutorialDialog(QDialog):
         self.settings = settings
         self.setWindowTitle("Welcome to DnD World Builder")
         self.setFixedWidth(500)
-        self.setAttribute(Qt.WA_DeleteOnClose)
+        # WA_DeleteOnClose removed — caused crash when dialog was moved
+        # before clicking "Get Started" (segfault from deletion during
+        # active mouse event processing)
 
         layout = QVBoxLayout(self)
         layout.setSpacing(12)
@@ -56,4 +58,6 @@ class TutorialDialog(QDialog):
     def accept(self):
         if self._no_show_cb.isChecked():
             self.settings.set("show_tutorial", False)
-        super().accept()
+        # Defer to next event loop tick — prevents crash if accept
+        # fires during an active mouse move/drag event.
+        QTimer.singleShot(0, lambda: super(TutorialDialog, self).accept())

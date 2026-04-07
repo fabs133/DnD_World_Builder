@@ -58,8 +58,10 @@ class Character(GameEntity):
     def __post_init__(self):
         """Initialize the GameEntity base class and derived fields."""
         saved_hp = self.hp
+        saved_spells = list(self.spells)
         super().__init__(self.name, "player", stats=self.stats, inventory=self.inventory)
         self.hp = saved_hp
+        self.spells = saved_spells
         self.spell_details = {
             spell['name']: spell for spell in self.spells
             if isinstance(spell, dict) and 'name' in spell

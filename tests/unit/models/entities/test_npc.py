@@ -11,7 +11,7 @@ def test_npc_initialization_and_inheritance(behavior):
     # Basic fields
     assert npc.name == "Bob"
     assert npc.entity_type == "npc"
-    assert npc.stats == {}
+    assert "hp" in npc.stats  # stats now include combat defaults
     assert npc.inventory == []
     assert npc.triggers == []
     # Behavior stored verbatim

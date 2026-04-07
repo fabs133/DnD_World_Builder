@@ -10,7 +10,7 @@ input field, and a disconnect button.
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QListWidget, QListWidgetItem, QTextEdit,
-    QLineEdit, QPushButton,
+    QLineEdit, QPushButton, QComboBox, QProgressBar,
 )
 from PyQt5.QtCore import Qt, pyqtSignal
 
@@ -32,6 +32,8 @@ class SessionPanel(QWidget):
     chat_submitted = pyqtSignal(str)
     #: Emitted when the user clicks the Disconnect button.
     disconnect_requested = pyqtSignal()
+    #: Emitted when the user clicks Claim with a selected entity name.
+    entity_claim_requested = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -56,6 +58,20 @@ class SessionPanel(QWidget):
         self._player_list.setMaximumHeight(120)
         layout.addWidget(self._player_list)
 
+        # Entity claim section
+        claim_label = QLabel("Claim Entity:")
+        claim_label.setStyleSheet("font-size: 11px; color: gray;")
+        layout.addWidget(claim_label)
+
+        claim_row = QHBoxLayout()
+        self._entity_combo = QComboBox()
+        self._entity_combo.setPlaceholderText("Select entity...")
+        claim_row.addWidget(self._entity_combo)
+        claim_btn = QPushButton("Claim")
+        claim_btn.clicked.connect(self._on_claim_clicked)
+        claim_row.addWidget(claim_btn)
+        layout.addLayout(claim_row)
+
         # Chat area
         chat_label = QLabel("Chat:")
         chat_label.setStyleSheet("font-size: 11px; color: gray;")
@@ -76,6 +92,23 @@ class SessionPanel(QWidget):
         send_btn.clicked.connect(self._send_chat)
         chat_row.addWidget(send_btn)
         layout.addLayout(chat_row)
+
+        # Voice generation progress (hidden by default)
+        self._voice_section = QWidget()
+        voice_layout = QVBoxLayout(self._voice_section)
+        voice_layout.setContentsMargins(0, 4, 0, 4)
+        voice_label = QLabel("Voice Generation:")
+        voice_label.setStyleSheet("font-size: 11px; color: gray;")
+        voice_layout.addWidget(voice_label)
+        self._voice_progress_bar = QProgressBar()
+        self._voice_progress_bar.setFormat("%v/%m characters")
+        self._voice_progress_bar.setFixedHeight(18)
+        voice_layout.addWidget(self._voice_progress_bar)
+        self._voice_status_label = QLabel("")
+        self._voice_status_label.setStyleSheet("font-size: 10px; color: gray;")
+        voice_layout.addWidget(self._voice_status_label)
+        self._voice_section.hide()
+        layout.addWidget(self._voice_section)
 
         # Disconnect button
         self._disconnect_btn = QPushButton("Disconnect")
@@ -135,6 +168,8 @@ class SessionPanel(QWidget):
             self._players[player_id] = (name, entity_id)
             self._rebuild_player_list()
 
+    _MAX_CHAT_MESSAGES = 500
+
     def append_chat(self, sender: str, message: str):
         """Append a message to the chat log.
 
@@ -144,6 +179,45 @@ class SessionPanel(QWidget):
         :type message: str
         """
         self._chat_log.append(f"<b>{sender}:</b> {message}")
+        # Trim oldest messages to prevent unbounded memory growth
+        doc = self._chat_log.document()
+        while doc.blockCount() > self._MAX_CHAT_MESSAGES:
+            cursor = self._chat_log.textCursor()
+            cursor.movePosition(cursor.Start)
+            cursor.select(cursor.BlockUnderCursor)
+            cursor.removeSelectedText()
+            cursor.deleteChar()  # remove the leftover newline
+
+    def update_voice_progress(self, character_id: str, completed: int, total: int):
+        """Update the voice generation progress display.
+
+        :param character_id: Character being generated.
+        :param completed: Lines completed.
+        :param total: Total lines.
+        """
+        self._voice_section.show()
+        self._voice_progress_bar.setMaximum(max(total, 1))
+        self._voice_progress_bar.setValue(completed)
+        self._voice_status_label.setText(f"Generating: {character_id} ({completed}/{total})")
+
+    def set_voice_complete(self):
+        """Mark voice generation as complete."""
+        self._voice_status_label.setText("Voice generation complete")
+        self._voice_progress_bar.setValue(self._voice_progress_bar.maximum())
+
+    def set_available_entities(self, entities: list):
+        """Populate the entity claim dropdown.
+
+        :param entities: List of entity dicts (with ``name`` key) or strings.
+        :type entities: list
+        """
+        self._entity_combo.clear()
+        for entity in entities:
+            if isinstance(entity, dict):
+                name = entity.get("name", str(entity))
+            else:
+                name = str(entity)
+            self._entity_combo.addItem(name)
 
     def clear(self):
         """Reset the panel to its initial state."""
@@ -151,6 +225,10 @@ class SessionPanel(QWidget):
         self._player_list.clear()
         self._chat_log.clear()
         self._chat_input.clear()
+        self._entity_combo.clear()
+        self._voice_section.hide()
+        self._voice_progress_bar.setValue(0)
+        self._voice_status_label.setText("")
         self._status_label.setText("Not connected")
 
     # ------------------------------------------------------------------
@@ -165,6 +243,11 @@ class SessionPanel(QWidget):
                 text += f"  [{entity}]"
             item = QListWidgetItem(text)
             self._player_list.addItem(item)
+
+    def _on_claim_clicked(self):
+        entity_name = self._entity_combo.currentText()
+        if entity_name:
+            self.entity_claim_requested.emit(entity_name)
 
     def _send_chat(self):
         text = self._chat_input.text().strip()

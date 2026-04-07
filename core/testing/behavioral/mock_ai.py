@@ -7,6 +7,7 @@ from typing import Any, Callable
 
 from core.engine.input_adapter import InputAdapter
 from core.engine.game_state import GameState
+from models.entities.entity_type import EntityType
 from core.engine.actions.attack_action import AttackAction
 from core.engine.actions.end_turn_action import EndTurnAction
 from core.engine.actions.move_action import MoveAction
@@ -70,7 +71,7 @@ class MockAIAdapter(InputAdapter):
 
         weights = self._get_weights(actor)
         hp_pct = self._hp_percent(actor)
-        my_type = getattr(actor, "entity_type", "enemy").lower()
+        my_type = getattr(actor, "entity_type", EntityType.ENEMY)
 
         # 1. FLEE CHECK
         if hp_pct < weights.flee_threshold:
@@ -139,7 +140,7 @@ class MockAIAdapter(InputAdapter):
             return valid_targets[0]
 
         weights = self._get_weights(actor)
-        my_type = getattr(actor, "entity_type", "enemy").lower()
+        my_type = getattr(actor, "entity_type", EntityType.ENEMY)
 
         # Filter to alive enemies
         enemies = []
@@ -168,7 +169,7 @@ class MockAIAdapter(InputAdapter):
             return valid_positions[0]
 
         weights = self._get_weights(actor)
-        my_type = getattr(actor, "entity_type", "enemy").lower()
+        my_type = getattr(actor, "entity_type", EntityType.ENEMY)
         my_pos = getattr(actor, "position", (0, 0))
 
         enemies = self._get_alive_enemies(my_type)
@@ -218,7 +219,7 @@ class MockAIAdapter(InputAdapter):
     def _get_alive_enemies(self, my_type: str) -> list[Any]:
         result = []
         for ent in self._entities.values():
-            etype = getattr(ent, "entity_type", "").lower()
+            etype = getattr(ent, "entity_type", "")
             if not _are_allies(my_type, etype) and getattr(ent, "hp", 0) > 0:
                 result.append(ent)
         return result
@@ -228,7 +229,7 @@ class MockAIAdapter(InputAdapter):
         for ent in self._entities.values():
             if ent.name == exclude_name:
                 continue
-            etype = getattr(ent, "entity_type", "").lower()
+            etype = getattr(ent, "entity_type", "")
             if _are_allies(my_type, etype) and getattr(ent, "hp", 0) > 0:
                 result.append(ent)
         return result
@@ -252,7 +253,7 @@ class MockAIAdapter(InputAdapter):
         """Find enemies at exactly 0 HP (downed but trackable)."""
         result = []
         for ent in self._entities.values():
-            etype = getattr(ent, "entity_type", "").lower()
+            etype = getattr(ent, "entity_type", "")
             if not _are_allies(my_type, etype) and getattr(ent, "hp", 0) <= 0:
                 result.append(ent)
         return result
@@ -272,7 +273,7 @@ class MockAIAdapter(InputAdapter):
             ally_targets = set()
             for name, last in self._last_targets.items():
                 other = self._entities.get(name)
-                if other and _are_allies(my_type, getattr(other, "entity_type", "").lower()):
+                if other and _are_allies(my_type, getattr(other, "entity_type", "")):
                     if name != entity_name and last:
                         ally_targets.add(last)
             # Pick an ally's target if it's alive

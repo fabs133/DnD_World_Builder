@@ -1,3 +1,4 @@
+from core.events import COMBAT_STARTED
 from core.logger import app_logger
 from models.entities.game_entity import GameEntity
 from models.flow.combat_system import CombatSystem
@@ -38,6 +39,10 @@ class Gamemaster:
         )
         self.world_lore      = self.world.lore  # same WorldLore instance
         self.world_tile_manager = self.world.tile_manager
+        # Combat encounter management
+        self.encounter_templates = {}
+        self.encounter_bindings = []
+        self.active_combat = None
 
     def add_entity(self, entity):
         """
@@ -106,3 +111,38 @@ class Gamemaster:
         :type cutscene: Callable
         """
         EventBus.subscribe(event_type, lambda data: cutscene(data) if condition(data) else None)
+
+    def register_encounter(self, template, binding=None):
+        """Register an encounter template, optionally binding to a location."""
+        self.encounter_templates[template.template_id] = template
+        if binding:
+            self.encounter_bindings.append(binding)
+
+    def start_combat(self, template_id, player_entities):
+        """Start combat from a registered template.
+
+        Returns a CombatOrchestrator.
+        """
+        from models.combat.combat_factory import create_combat_instance
+        from models.combat.combat_orchestrator import CombatOrchestrator
+
+        template = self.encounter_templates.get(template_id)
+        if template is None:
+            raise ValueError(f"No encounter template with id '{template_id}'")
+
+        instance = create_combat_instance(template, player_entities)
+        self.active_combat = CombatOrchestrator(instance, self)
+
+        EventBus.emit(COMBAT_STARTED, {
+            "instance_id": instance.instance_id,
+            "template_name": instance.template_name,
+        })
+
+        return self.active_combat
+
+    def end_combat(self):
+        """End the active combat encounter."""
+        if self.active_combat:
+            outcome = self.active_combat.check_end_conditions() or "ended"
+            self.active_combat.end_combat(outcome)
+            self.active_combat = None

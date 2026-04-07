@@ -21,6 +21,12 @@ DEFAULT_SETTINGS = {
     "multiplayer_default_port": 8765,
     "multiplayer_player_name": "",
     "multiplayer_last_host": "",
+    "volume_ui": 30,
+    "volume_combat": 50,
+    "volume_alert": 70,
+    "volume_ambient": 40,
+    "sound_muted": False,
+    "ui_theme": "tome",
 }
 """
 Default settings for the application.
@@ -69,6 +75,14 @@ class SettingsManager:
 
             except (json.JSONDecodeError, IOError) as e:
                 app_logger.error(f"[Settings] Error loading config: {e}")
+                # Backup the corrupted file before resetting
+                backup_path = self.path + ".bak"
+                try:
+                    import shutil
+                    shutil.copy2(self.path, backup_path)
+                    app_logger.info(f"[Settings] Corrupted config backed up to {backup_path}")
+                except OSError:
+                    pass
                 app_logger.info("[Settings] Resetting to default config.")
                 self.settings = DEFAULT_SETTINGS.copy()
                 self.save_settings()

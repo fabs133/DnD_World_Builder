@@ -53,6 +53,10 @@ class ActionExecutor:
                 error=failures[0].message,
             )
 
+        # Inject world context for event emission
+        if context and "world" in context:
+            action._world = context["world"]
+
         try:
             result = action.execute(game_state)
             return ActionResult(
@@ -61,7 +65,7 @@ class ActionExecutor:
                 spec_results=spec_results,
                 execution_log=list(action.execution_log),
             )
-        except Exception as exc:
+        except (ValueError, KeyError, RuntimeError, AttributeError, TypeError, IndexError) as exc:
             return ActionResult(
                 success=False,
                 action=action,
@@ -112,4 +116,10 @@ class ActionExecutor:
             registry = get_default_registry()
             return self._ruleset.build_all_specs(registry)
 
+        # EndTurnAction and MoveAction bypass CanTakeAction —
+        # ending your turn doesn't require an action, and movement
+        # uses the movement budget, not the action.
+        action_name = action.__class__.__name__
+        if action_name in ("EndTurnAction", "MoveAction"):
+            return [IsAlive()]
         return [IsAlive(), CanTakeAction()]

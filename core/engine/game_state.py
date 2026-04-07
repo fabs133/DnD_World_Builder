@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from models.entities.entity_type import EntityType
+
 
 @dataclass(frozen=True)
 class EntitySnapshot:
@@ -98,7 +100,8 @@ class GameState:
             max_hp = getattr(entity, "stats", {}).get("max_hp", hp)
             ac = getattr(entity, "armor_class", 10)
             conditions = tuple(getattr(entity, "conditions", []))
-            speed = getattr(entity, "speed", 30)
+            from core.constants import DEFAULT_SPEED_FT
+            speed = getattr(entity, "speed", DEFAULT_SPEED_FT)
             initiative_roll = getattr(entity, "initiative", 0)
             faction = _infer_faction(entity)
 
@@ -145,9 +148,9 @@ def _infer_faction(entity) -> str:
     """Infer faction from entity_type if no explicit faction attribute."""
     if hasattr(entity, "faction"):
         return entity.faction
-    etype = getattr(entity, "entity_type", "").lower()
-    if etype in ("player", "ally"):
+    etype = getattr(entity, "entity_type", "")
+    if etype in (EntityType.PLAYER, EntityType.ALLY):
         return "player"
-    if etype in ("enemy",):
+    if etype in (EntityType.ENEMY,):
         return "enemy"
     return "neutral"

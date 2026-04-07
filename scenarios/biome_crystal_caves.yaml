@@ -1,0 +1,456 @@
+# ══════════════════════════════════════════════════════════════════════
+# Crystal Caves — Difficulty 2 (Bottom-right)
+# Underground crystalline caverns with a lost dwarven forge.
+# ══════════════════════════════════════════════════════════════════════
+
+biome:
+  id: "crystal_caves"
+  name: "The Crystal Caves"
+  description: >
+    A vast underground network of caverns where strange crystals grow
+    from every surface, humming with residual energy from the artifact.
+    The deeper chambers glow with an inner light that pulses like a
+    heartbeat. Miners once came here for rare ore. Most didn't leave.
+  biome_type: "cave"
+  difficulty: 2
+  grid_size: [20, 20]
+  grid_offset: [40, 40]
+  ambient_audio: "cave"
+  terrain_default: "FLOOR"
+
+  assets:
+    background:
+      needed: true
+      prompt: >
+        underground crystal cave, massive luminous purple and blue crystals
+        growing from walls and ceiling, narrow stone path between crystal
+        formations, ethereal glow reflecting off wet stone, stalactites,
+        fantasy underground, wide cinematic shot, painterly illustration
+      output: "assets/backgrounds/crystal_caves.png"
+      status: "pending"
+
+    terrain_texture:
+      needed: true
+      terrain_type: "FLOOR"
+      prompt: >
+        section of a fantasy RPG game map, dark cave stone floor, grey
+        stone with blue-purple crystal fragments, faint glow, top down
+        view, painterly, hand painted style
+      output: "assets/terrain/cave_crystal_floor.png"
+      status: "pending"
+
+
+zones:
+  - id: "cave_entrance"
+    label: "Cave Entrance"
+    description: "Daylight fades behind you. The crystals ahead cast enough light to see — barely."
+    terrain: "FLOOR"
+    tiles: [[16, 0], [16, 1], [16, 2], [16, 3], [17, 0], [17, 1], [17, 2], [17, 3]]
+    tags: []
+    ambient_audio: "cave"
+    background:
+      needed: true
+      prompt: >
+        cave entrance with daylight fading behind, first crystals visible on
+        walls glowing faintly blue-purple, narrow stone path ahead,
+        stalactites, painterly high fantasy, wide shot, dim transitional
+        lighting
+      output: "assets/backgrounds/zones/crystal_caves_cave_entrance.png"
+      status: "pending"
+
+  - id: "crystal_gallery"
+    label: "Crystal Gallery"
+    description: >
+      A cathedral-sized chamber where crystal columns stretch from floor to
+      ceiling. The air vibrates with a low hum that you feel in your teeth.
+      Something is very wrong with the energy down here.
+    terrain: "FLOOR"
+    tiles: [[10, 7], [10, 8], [10, 9], [11, 7], [11, 8], [11, 9], [12, 7], [12, 8]]
+    tags: []
+    ambient_audio: "cave"
+    background:
+      needed: true
+      prompt: >
+        massive underground cathedral chamber, enormous crystal columns from
+        floor to ceiling, purple and blue luminescence, crystal formations
+        everywhere, ethereal glow, painterly high fantasy, wide shot,
+        magical atmosphere
+      output: "assets/backgrounds/zones/crystal_caves_crystal_gallery.png"
+      status: "pending"
+
+  - id: "collapsed_mine"
+    label: "Collapsed Mine"
+    description: >
+      Timber supports have given way, and rubble blocks half the passages.
+      Mining tools lie scattered. A voice calls out weakly from behind a
+      wall of loose stone.
+    terrain: "FLOOR"
+    tiles: [[8, 3], [8, 4], [8, 5], [9, 3], [9, 4], [9, 5]]
+    tags: []
+    ambient_audio: "cave"
+    background:
+      needed: true
+      prompt: >
+        collapsed mine tunnel, broken timber supports, rubble blocking
+        passages, scattered mining tools and lanterns, dust in air, dim
+        light, painterly high fantasy, wide shot, claustrophobic atmosphere
+      output: "assets/backgrounds/zones/crystal_caves_collapsed_mine.png"
+      status: "pending"
+
+  - id: "ancient_forge"
+    label: "The Ancient Forge"
+    description: >
+      A dwarven forge of extraordinary craftsmanship, untouched by the
+      centuries. The anvil is made of a single meteorite. The forge fire
+      has gone cold, but star-iron ingots still line the racks —
+      protected by the things that now call this place home.
+    terrain: "FLOOR"
+    tiles: [[5, 12], [5, 13], [5, 14], [6, 12], [6, 13], [6, 14]]
+    tags: []
+    ambient_audio: "dungeon"
+    background:
+      needed: true
+      prompt: >
+        ancient dwarven forge deep underground, meteorite anvil, cold forge
+        with star-iron ingots on racks, masterful stone craftsmanship, blue
+        crystal light, painterly high fantasy, wide interior shot, reverent
+        atmosphere
+      output: "assets/backgrounds/zones/crystal_caves_ancient_forge.png"
+      status: "pending"
+
+  - id: "resonance_chamber"
+    label: "Resonance Chamber"
+    description: >
+      The deepest chamber. A single enormous crystal dominates the center,
+      pulsing with sickly green light. This is a relay — channeling the
+      Crown's power outward through the earth. Destroying it would
+      weaken the blight across the eastern realms.
+    terrain: "FLOOR"
+    tiles: [[2, 8], [2, 9], [2, 10], [3, 8], [3, 9], [3, 10]]
+    tags: []
+    ambient_audio: "dungeon"
+    background:
+      needed: true
+      prompt: >
+        vast underground chamber dominated by enormous pulsing green crystal,
+        sickly green light illuminating dark walls, energy crackling between
+        crystal pillars, oppressive power, painterly high fantasy, wide shot,
+        ominous green atmosphere
+      output: "assets/backgrounds/zones/crystal_caves_resonance_chamber.png"
+      status: "pending"
+
+
+terrain_overrides:
+  - terrain: "WALL"
+    tiles: [[7, 6], [7, 7], [13, 7], [13, 8], [13, 9], [4, 11], [4, 12]]
+  - terrain: "WATER"
+    tiles: [[14, 12], [14, 13], [15, 12], [15, 13]]
+
+
+entities:
+
+  - name: "Crystal Golem"
+    entity_type: "enemy"
+    zone: "crystal_gallery"
+    count: 2
+    position: [[10, 7], [11, 9]]
+    stats:
+      str: 18
+      dex: 8
+      con: 18
+      int: 3
+      wis: 10
+      cha: 1
+      ac: 16
+      hp: 34
+      max_hp: 34
+      speed: 25
+    inventory: []
+    portraits:
+      needed: true
+      style: "creature"
+      prompt_base: >
+        crystal golem construct, body made of jagged translucent purple
+        crystals, glowing core visible inside chest, angular faceted limbs,
+        no face just a smooth crystal surface with inner light, imposing
+        stance, front-facing, painterly high fantasy, dark cave background
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/crystal_golem_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "chest core flickering, large crack across torso"
+          denoise: 0.60
+          output: "assets/portraits/enemies/crystal_golem_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "chest core dim and pulsing, chunks broken off body"
+          denoise: 0.70
+          output: "assets/portraits/enemies/crystal_golem_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "chest core nearly dark, body shattered to pieces"
+          denoise: 0.80
+          output: "assets/portraits/enemies/crystal_golem_critical.png"
+          status: "pending"
+    voice: null
+    dialogue: null
+
+  - name: "Cave Bat Swarm"
+    entity_type: "enemy"
+    zone: "cave_entrance"
+    count: 2
+    position: [[16, 1], [17, 2]]
+    stats:
+      str: 5
+      dex: 16
+      con: 10
+      int: 2
+      wis: 12
+      cha: 4
+      ac: 13
+      hp: 16
+      max_hp: 16
+      speed: 30
+    inventory: []
+    portraits:
+      needed: true
+      style: "creature"
+      prompt_base: >
+        swarm of bats with glowing purple eyes, dozens of small dark
+        bats in a dense cloud formation, wings spread, teeth bared,
+        crystal dust sparkling on their fur, front-facing,
+        painterly high fantasy, dark cave background
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/cave_bat_swarm_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "darker cloud, slight red tint, more chaotic movement"
+          denoise: 0.25
+          output: "assets/portraits/enemies/cave_bat_swarm_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "dark red shadows, desaturated, swarm thinner"
+          denoise: 0.35
+          output: "assets/portraits/enemies/cave_bat_swarm_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "very dark, nearly black cloud, sparse and fading"
+          denoise: 0.45
+          output: "assets/portraits/enemies/cave_bat_swarm_critical.png"
+          status: "pending"
+    voice: null
+    dialogue: null
+
+  - name: "Resonance Guardian"
+    entity_type: "enemy"
+    zone: "resonance_chamber"
+    count: 1
+    position: [[2, 9]]
+    stats:
+      str: 20
+      dex: 10
+      con: 20
+      int: 6
+      wis: 12
+      cha: 5
+      ac: 17
+      hp: 52
+      max_hp: 52
+      speed: 20
+    inventory: []
+    portraits:
+      needed: true
+      style: "creature"
+      prompt_base: >
+        massive corrupted crystal elemental, towering humanoid form made
+        of dark obsidian and sickly green crystal, glowing cracks across
+        its body, green energy pulsing from its chest, enormous crystal
+        fists, front-facing, painterly high fantasy, dark cave background
+        with green crystal glow
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/resonance_guardian_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "green energy flickering, fracture lines across body"
+          denoise: 0.60
+          output: "assets/portraits/enemies/resonance_guardian_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "green energy fading, large sections crumbling away"
+          denoise: 0.70
+          output: "assets/portraits/enemies/resonance_guardian_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "green energy extinguished, body collapsing to rubble"
+          denoise: 0.80
+          output: "assets/portraits/enemies/resonance_guardian_critical.png"
+          status: "pending"
+    voice: null
+    dialogue:
+      combat:
+        - "THE CRYSTAL... MUST NOT... BE SILENCED..."
+        - "INTRUDERS... WILL BE... ABSORBED..."
+
+  # ── NPCs ──
+
+  - name: "Brokk the Miner"
+    entity_type: "npc"
+    zone: "collapsed_mine"
+    count: 1
+    position: [[8, 4]]
+    stats:
+      str: 14
+      dex: 10
+      con: 15
+      int: 10
+      wis: 12
+      cha: 8
+      ac: 11
+      hp: 12
+      max_hp: 20
+      speed: 30
+    inventory: ["Pickaxe", "Lantern"]
+
+    portraits:
+      needed: true
+      style: "humanoid"
+      prompt_base: >
+        dwarf male miner, dusty and injured, one arm in a makeshift sling,
+        hard hat with a cracked lantern, grime-covered face, thick black
+        beard with crystal dust in it, exhausted but relieved expression,
+        bust shot, painterly high fantasy, dim lantern light,
+        dark cave background
+      health_states:
+        healthy:
+          output: "assets/portraits/npcs/brokk_miner.png"
+          status: "pending"
+
+    voice:
+      preset: "grizzled_veteran"
+      reference_audio: "core/audio/voice_seeds/grizzled_veteran.wav"
+      exaggeration: 0.4
+      speed: 0.95
+
+    dialogue:
+      greeting:
+        - "Oh thank the stone! I've been trapped here for... days? Weeks? Time's strange underground."
+        - "Mind the rocks, the whole section's unstable."
+      quest:
+        - "The forge! The old dwarven forge is deeper in. I was looking for it when the cave-in hit."
+        - "There are things guarding it now. Golems, but wrong. The crystals grew through them."
+        - "Past the gallery, keep left. The forge is behind a door with a hammer sigil."
+        - "The star-iron's in there — I'm sure of it. My grandfather told me about this place."
+      lore:
+        - "The crystals weren't always this color. They used to be blue. Clear. Beautiful."
+        - "Then that green started creeping in. The hum changed. Lower. Angrier."
+        - "There's a chamber at the very bottom with a crystal the size of a house. Pulsing. Like a heart."
+        - "I think it's connected to whatever's happening up top. A relay, channeling power from the center."
+        - "If you could destroy that crystal... might weaken the corruption for miles around."
+      farewell:
+        - "I'll wait here. Not going deeper without an army. Or at least a stiff drink."
+        - "If you find the forge, bring me back a souvenir. Preferably not cursed."
+
+    voice_lines:
+      needed: true
+      status: "pending"
+      output_dir: "assets/voice/brokk_miner/"
+
+
+  # ── Objects ──
+
+  - name: "Star-Iron Ingot"
+    entity_type: "object"
+    zone: "ancient_forge"
+    count: 3
+    position: [[5, 12], [5, 13], [6, 14]]
+    stats: {}
+    inventory: []
+    tags: ["item", "quest_item"]
+    portraits:
+      needed: true
+      style: "object"
+      prompt_base: >
+        a gleaming dark metallic ingot with faint starlight shimmer,
+        meteorite iron with swirling patterns, fantasy item, digital
+        painting, dark background, concept art
+      health_states:
+        healthy:
+          output: "assets/items/star_iron_ingot.png"
+          status: "pending"
+    voice: null
+    dialogue:
+      lore:
+        - "A bar of star-iron, impossibly dense and faintly warm to the touch. The swirling patterns in the metal look like frozen constellations."
+
+
+triggers:
+  - label: "cave_bat_ambush"
+    zone: "cave_entrance"
+    tile: [16, 2]
+    event_type: "ENTER_TILE"
+    condition:
+      type: "AlwaysTrue"
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: "A shriek echoes from above as disturbed bat swarms descend from the ceiling!"
+
+  - label: "crystal_hum_warning"
+    zone: "crystal_gallery"
+    tile: [10, 8]
+    event_type: "ENTER_TILE"
+    condition:
+      type: "AlwaysTrue"
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: >
+          The hum intensifies as you enter the gallery. The crystals pulse
+          in unison, and the golems among them stir to life, eyes blazing
+          with corrupted light.
+
+  - label: "resonance_chamber_entry"
+    zone: "resonance_chamber"
+    tile: [2, 8]
+    event_type: "ENTER_TILE"
+    condition:
+      type: "AlwaysTrue"
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: >
+          The massive green crystal throbs with power. The air crackles.
+          A shape peels away from the crystal wall — a guardian, formed
+          from the corrupted stone itself, stands between you and the relay.
+
+
+quests:
+  - id: "shatter_relay"
+    name: "Shatter the Relay"
+    type: "side"
+    giver: "Brokk the Miner"
+    zone: "collapsed_mine"
+    description: >
+      Brokk believes the massive crystal at the deepest point of the caves
+      is a relay channeling the Crown's power. Destroy it to weaken the
+      blight across the eastern realms.
+    objectives:
+      - "Reach the Resonance Chamber"
+      - "Defeat the Resonance Guardian"
+      - "Destroy the Blight Crystal"
+    reward:
+      xp: 350
+    difficulty: 3
+
+
+connections:
+  north: "biome_scorched_sands"
+  south: null
+  east: null
+  west: "biome_sunken_swamp"
+  border_tiles:
+    north: [[0, 8], [0, 9], [0, 10]]
+    west: [[9, 0], [10, 0], [11, 0]]

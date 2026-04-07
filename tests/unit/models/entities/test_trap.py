@@ -10,7 +10,7 @@ def test_trap_initialization_and_inheritance():
     # Core attributes
     assert trap.name == "Spike Pit"
     assert trap.entity_type == "trap"
-    assert trap.stats == {}
+    assert "hp" in trap.stats  # stats now include combat defaults
     assert trap.inventory == []
     assert trap.triggers == []
     # Trap‐specific attributes

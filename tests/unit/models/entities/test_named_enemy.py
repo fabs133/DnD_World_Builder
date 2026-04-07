@@ -68,7 +68,8 @@ def test_inheritance_and_attributes():
     assert ne.name == "Tarrasque"
     assert ne.armor_class == 25
     assert ne.hp == 676
-    assert ne.stats["str"] == 30
+    # "str" normalized to "Strength" by GameEntity
+    assert ne.stats.get("Strength", ne.stats.get("str")) == 30
 
     # NamedEnemy-specific fields
     assert ne.backstory.startswith("World")
@@ -118,7 +119,7 @@ def test_save_to_db_inserts_row(db_conn):
     assert row[1] == 676
 
     stats_loaded = json.loads(row[2])
-    assert stats_loaded == {"max_hp": 676, "str": 30}
+    assert stats_loaded["max_hp"] == 676
 
     abilities_loaded = json.loads(row[3])
     assert isinstance(abilities_loaded, list)

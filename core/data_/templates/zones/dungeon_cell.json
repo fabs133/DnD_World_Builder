@@ -1,0 +1,19 @@
+{
+  "template_id": "dungeon_cell",
+  "name": "Dungeon Cell",
+  "tags": ["dungeon", "indoor", "dark"],
+  "description": "A dark dungeon room with possible traps.",
+  "zones_data": [
+    {
+      "zone_id": "dungeon_cell_main",
+      "label": "Dungeon Chamber",
+      "description": "Cold stone walls. Water drips from the ceiling. The air smells of decay.",
+      "background_image": null,
+      "connections": [],
+      "locked": false,
+      "lock_dc": 15,
+      "tags": ["indoor", "dungeon", "dark"],
+      "encounter_template_id": null
+    }
+  ]
+}

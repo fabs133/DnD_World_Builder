@@ -1,0 +1,441 @@
+# ══════════════════════════════════════════════════════════════════════
+# Stormbreak Pass — Difficulty 2 (Top-left)
+# Mountain pass with bandits, harpies, and a hermit cartographer.
+# ══════════════════════════════════════════════════════════════════════
+
+biome:
+  id: "mountain_pass"
+  name: "Stormbreak Pass"
+  description: >
+    A narrow mountain pass once used by traders is now home to desperate
+    bandits and territorial harpies. The wind howls through the rocks
+    like a living thing. High above, the old cartographer Harlen watches
+    the roads from his cliffside hermitage, mapping the spread of corruption.
+  biome_type: "mountain"
+  difficulty: 2
+  grid_size: [20, 20]
+  grid_offset: [0, 0]
+  ambient_audio: "night"
+  terrain_default: "MOUNTAIN"
+
+  assets:
+    background:
+      needed: true
+      prompt: >
+        narrow mountain pass between tall rocky peaks, stormy sky,
+        narrow stone path winding along cliff edge, strong wind blowing
+        debris, birds circling above, rugged and dangerous, fantasy
+        mountain landscape, wide cinematic shot, painterly illustration
+      output: "assets/backgrounds/stormbreak_pass.png"
+      status: "pending"
+
+    terrain_texture:
+      needed: true
+      terrain_type: "MOUNTAIN"
+      prompt: >
+        rocky mountain ground, grey and brown rough stone with gravel,
+        top down battle map style, painted, fantasy illustration
+      output: "assets/terrain/mountain_rock.png"
+      status: "pending"
+
+
+zones:
+  - id: "pass_entrance"
+    label: "Pass Entrance"
+    description: "The road narrows between towering cliffs. Wind funnels through, making conversation impossible."
+    terrain: "MOUNTAIN"
+    tiles: [[17, 0], [17, 1], [17, 2], [17, 3], [18, 0], [18, 1], [18, 2], [18, 3]]
+    tags: []
+    ambient_audio: "night"
+    background:
+      needed: true
+      prompt: >
+        narrow mountain pass between towering rocky cliffs, strong wind
+        blowing debris, narrow stone path, stormy sky above, rugged and
+        dangerous, painterly high fantasy, wide shot, dramatic atmosphere
+      output: "assets/backgrounds/zones/mountain_pass_pass_entrance.png"
+      status: "pending"
+
+  - id: "bandit_camp"
+    label: "Bandit Camp"
+    description: >
+      A cluster of lean-tos wedged into a rock shelter. Stolen goods are
+      piled haphazardly. These aren't career criminals — they're desperate
+      refugees turned to robbery to survive.
+    terrain: "FLOOR"
+    tiles: [[12, 5], [12, 6], [12, 7], [12, 8], [13, 5], [13, 6], [13, 7], [13, 8]]
+    tags: []
+    ambient_audio: "night"
+    background:
+      needed: true
+      prompt: >
+        crude lean-to shelters wedged into rock overhang, stolen goods piled
+        haphazardly, small campfire, desperate makeshift camp, mountain rocks
+        surrounding, painterly high fantasy, wide shot, grim atmosphere
+      output: "assets/backgrounds/zones/mountain_pass_bandit_camp.png"
+      status: "pending"
+
+  - id: "harpy_nests"
+    label: "Harpy Nests"
+    description: >
+      Bone-strewn ledges high on the cliff face. The stench of carrion
+      carries on the updraft. Dark shapes circle overhead, shrieking.
+    terrain: "MOUNTAIN"
+    tiles: [[6, 12], [6, 13], [6, 14], [7, 12], [7, 13], [7, 14], [8, 12], [8, 13]]
+    tags: []
+    ambient_audio: "night"
+    background:
+      needed: true
+      prompt: >
+        bone-strewn cliff ledges high on mountain face, large nests of
+        branches and debris, carrion remains, dark shapes circling above,
+        updraft wind, painterly high fantasy, wide shot looking up,
+        threatening atmosphere
+      output: "assets/backgrounds/zones/mountain_pass_harpy_nests.png"
+      status: "pending"
+
+  - id: "hermitage"
+    label: "Harlen's Hermitage"
+    description: >
+      A tiny stone shelter built into a natural cave, barely visible from
+      the path below. Maps cover every surface — pinned to walls, spread
+      across a rough table, even hanging from the ceiling. The old
+      cartographer has been tracking the blight's spread for months.
+    terrain: "FLOOR"
+    tiles: [[4, 4], [4, 5], [4, 6], [5, 4], [5, 5], [5, 6]]
+    tags: []
+    ambient_audio: "cave"
+    background:
+      needed: true
+      prompt: >
+        tiny stone shelter built into natural cave, maps pinned to every wall
+        surface, rough wooden table covered in papers, candles and ink,
+        spyglass by window, painterly high fantasy, cozy interior shot,
+        scholarly atmosphere
+      output: "assets/backgrounds/zones/mountain_pass_hermitage.png"
+      status: "pending"
+
+  - id: "summit_overlook"
+    label: "Summit Overlook"
+    description: >
+      The highest point of the pass. From here you can see the entire
+      Shattered Realms spread below — the dark forest, the glinting swamp,
+      and at the center, the black spire of the Obsidian Citadel wreathed
+      in green lightning.
+    terrain: "MOUNTAIN"
+    tiles: [[1, 8], [1, 9], [1, 10], [2, 8], [2, 9], [2, 10]]
+    tags: []
+    ambient_audio: "night"
+    background:
+      needed: true
+      prompt: >
+        mountain summit vista overlooking vast fantasy landscape below, dark
+        spiral of corruption visible radiating from distant black citadel,
+        green lightning on horizon, standing stone marker, painterly high
+        fantasy, epic wide shot
+      output: "assets/backgrounds/zones/mountain_pass_summit_overlook.png"
+      status: "pending"
+
+
+terrain_overrides:
+  - terrain: "WALL"
+    tiles: [[3, 0], [3, 1], [3, 2], [3, 3], [9, 0], [9, 1], [9, 2], [15, 0], [15, 1], [15, 2], [15, 3]]
+  - terrain: "FLOOR"
+    tiles: [[10, 4], [10, 5], [11, 5], [11, 6], [14, 4], [14, 5], [15, 5], [16, 5]]
+  - terrain: "GRASS"
+    tiles: [[3, 8], [3, 9], [3, 10], [4, 8], [4, 9]]
+
+
+entities:
+
+  - name: "Desperate Bandit"
+    entity_type: "enemy"
+    zone: "bandit_camp"
+    count: 4
+    position: [[12, 5], [12, 7], [13, 6], [13, 8]]
+    stats:
+      str: 12
+      dex: 14
+      con: 11
+      int: 10
+      wis: 10
+      cha: 9
+      ac: 13
+      hp: 18
+      max_hp: 18
+      speed: 30
+    inventory: ["Shortsword"]
+    portraits:
+      needed: true
+      style: "humanoid"
+      prompt_base: >
+        ragged human male bandit, mismatched stolen armor pieces over
+        peasant clothes, desperate hungry eyes, unshaven gaunt face,
+        holding a notched sword, defensive stance, not evil just
+        desperate, bust shot, painterly high fantasy, overcast mountain
+        lighting, dark moody background
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/desperate_bandit_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "darker lighting, slight red tint, fearful expression"
+          denoise: 0.25
+          output: "assets/portraits/enemies/desperate_bandit_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "dark red shadows, desaturated, bruised terrified face"
+          denoise: 0.350
+          output: "assets/portraits/enemies/desperate_bandit_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "very dark, harsh shadows, beaten desperate expression"
+          denoise: 0.450
+          output: "assets/portraits/enemies/desperate_bandit_critical.png"
+          status: "pending"
+    voice: null
+    dialogue:
+      combat:
+        - "Just give us your supplies! Nobody has to die!"
+        - "We don't want to fight — we just need to eat!"
+
+  - name: "Harpy"
+    entity_type: "enemy"
+    zone: "harpy_nests"
+    count: 3
+    position: [[6, 12], [7, 13], [8, 13]]
+    stats:
+      str: 12
+      dex: 15
+      con: 12
+      int: 7
+      wis: 10
+      cha: 13
+      ac: 12
+      hp: 24
+      max_hp: 24
+      speed: 30
+    inventory: []
+    portraits:
+      needed: true
+      style: "creature"
+      prompt_base: >
+        harpy creature, female upper body with wild matted hair, large
+        dark feathered wings for arms, bird-like taloned legs, savage
+        expression showing pointed teeth, perched on a rocky ledge,
+        front-facing, painterly high fantasy, stormy sky background
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/harpy_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "darker lighting, slight red tint, angrier expression"
+          denoise: 0.25
+          output: "assets/portraits/enemies/harpy_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "dark red shadows, desaturated, pain on face"
+          denoise: 0.35
+          output: "assets/portraits/enemies/harpy_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "very dark, deep red and black, exhausted defeated"
+          denoise: 0.450
+          output: "assets/portraits/enemies/harpy_critical.png"
+          status: "pending"
+    voice: null
+    dialogue: null
+
+  # Skarn — mini-boss harpy matriarch
+  - name: "Skarn the Windcaller"
+    entity_type: "enemy"
+    zone: "harpy_nests"
+    count: 1
+    position: [[7, 12]]
+    stats:
+      str: 14
+      dex: 17
+      con: 14
+      int: 10
+      wis: 12
+      cha: 16
+      ac: 14
+      hp: 42
+      max_hp: 42
+      speed: 30
+    inventory: []
+    portraits:
+      needed: true
+      style: "creature"
+      prompt_base: >
+        harpy matriarch queen, larger and more regal than normal harpies,
+        crown of bones on her head, massive dark wings with iridescent
+        feathers, fierce intelligent golden eyes, talons clutching a
+        stolen crown, imposing and dangerous, bust shot, painterly high
+        fantasy, dramatic stormy sky, dark moody background
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/skarn_windcaller_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "bone crown tilted, claw marks on face, golden eyes fierce"
+          denoise: 0.55
+          output: "assets/portraits/enemies/skarn_windcaller_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "bone crown cracking, golden eyes dimming, blood on face"
+          denoise: 0.65
+          output: "assets/portraits/enemies/skarn_windcaller_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "bone crown shattered, golden eyes nearly dark, defeated"
+          denoise: 0.75
+          output: "assets/portraits/enemies/skarn_windcaller_critical.png"
+          status: "pending"
+    voice: null
+    dialogue:
+      combat:
+        - "THIS PEAK IS MINE! THE WIND OBEYS ME!"
+        - "Your bones will line my nest!"
+
+  # ── NPCs ──
+
+  - name: "Harlen the Cartographer"
+    entity_type: "npc"
+    zone: "hermitage"
+    count: 1
+    position: [[4, 5]]
+    stats:
+      str: 8
+      dex: 12
+      con: 10
+      int: 18
+      wis: 16
+      cha: 10
+      ac: 10
+      hp: 12
+      max_hp: 12
+      speed: 30
+    inventory: ["Cartographer's Kit", "Spyglass"]
+
+    portraits:
+      needed: true
+      style: "humanoid"
+      prompt_base: >
+        thin elderly human male scholar hermit, unkempt grey hair and
+        long beard, spectacles perched on nose, ink-stained fingers,
+        worn traveling clothes layered for warmth, hunched over a map,
+        bright curious eyes, bust shot, painterly high fantasy,
+        candlelit study, dark moody background
+      health_states:
+        healthy:
+          output: "assets/portraits/npcs/harlen_cartographer.png"
+          status: "pending"
+
+    voice:
+      preset: "scholar"
+      reference_audio: "core/audio/voice_seeds/scholar.wav"
+      exaggeration: 0.3
+      speed: 1.05
+
+    dialogue:
+      greeting:
+        - "Visitors! Actual visitors! Come in, come in — mind the maps, they're drying."
+        - "I've been expecting someone. Well, hoping. [chuckle] The expecting part is new."
+      quest:
+        - "I've mapped the blight's spread from up here. It's accelerating."
+        - "Look — the corruption radiates from the citadel in a spiral. Not a circle. A spiral."
+        - "That means it's following the old ley lines. The kingdom was built on them."
+        - "I need you to check something. At the summit, there's a standing stone. A ley line marker."
+        - "If the stone is corrupted, the ley line is too. If it's intact... there might be a way to disrupt the spiral."
+      lore:
+        - "I was the king's cartographer. I mapped every road, every ruin, every forgotten path."
+        - "When the Shattering happened, I came up here. Best vantage point in the realm."
+        - "The blight follows a pattern. It's not random. Someone — or something — is directing it."
+        - "The citadel has four approaches. The Crossing is direct but heavily guarded."
+        - "Through the forest is longer. Through the sands is dangerous. But through the pass above the Crossing... that's the route nobody watches."
+        - "Morvain was brilliant before the Crown took him. A tactician. If any of that mind remains, the citadel will be trapped."
+      farewell:
+        - "Take this map. It's not complete, but it's better than nothing."
+        - "If you reach the citadel... well, I'll watch from up here. And I'll update the map accordingly."
+
+    voice_lines:
+      needed: true
+      status: "pending"
+      output_dir: "assets/voice/harlen_cartographer/"
+
+
+triggers:
+  - label: "bandit_ambush"
+    zone: "bandit_camp"
+    tile: [12, 6]
+    event_type: "ENTER_TILE"
+    condition:
+      type: "AlwaysTrue"
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: >
+          Figures emerge from behind rocks, weapons drawn but shaking.
+          Their leader calls out: 'Drop your supplies and walk away.
+          We don't want blood — we just need to survive.'
+
+  - label: "summit_vision"
+    zone: "summit_overlook"
+    tile: [1, 9]
+    event_type: "ENTER_TILE"
+    condition:
+      type: "AlwaysTrue"
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: >
+          From the summit, the Shattered Realms stretches before you in
+          terrible beauty. A dark spiral of corruption radiates from the
+          Obsidian Citadel at the center, its spire wreathed in green
+          lightning. You can trace the blight's path through every biome
+          below. The scale of what you're facing becomes painfully clear.
+
+
+quests:
+  - id: "ley_line_marker"
+    name: "The Spiral's Secret"
+    type: "side"
+    giver: "Harlen the Cartographer"
+    zone: "hermitage"
+    description: >
+      Harlen believes the blight follows ancient ley lines. Check the
+      standing stone at the summit to confirm his theory.
+    objectives:
+      - "Reach the Summit Overlook"
+      - "Examine the standing stone"
+      - "Return to Harlen with your findings"
+    reward:
+      items: ["Harlen's Map"]
+      xp: 150
+    difficulty: 1
+
+  - id: "clear_the_pass"
+    name: "Clear Skies"
+    type: "side"
+    giver: null
+    zone: "harpy_nests"
+    description: >
+      Skarn the Windcaller and her harpy flock have made the pass
+      nearly impassable. Clear the nests to reopen the route.
+    objectives:
+      - "Defeat Skarn the Windcaller"
+      - "Clear the harpy nests"
+    reward:
+      xp: 300
+    difficulty: 2
+
+
+connections:
+  north: null
+  south: "biome_dark_forest"
+  east: "biome_blighted_crossing"
+  west: null
+  border_tiles:
+    south: [[19, 8], [19, 9], [19, 10]]
+    east: [[9, 19], [10, 19], [11, 19]]

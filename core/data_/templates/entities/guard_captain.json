@@ -1,0 +1,43 @@
+{
+  "template_id": "guard_captain",
+  "name": "Guard Captain",
+  "category": "npc",
+  "tags": ["military", "quest_giver"],
+  "description": "A seasoned captain who gives quests.",
+  "entity_data": {
+    "name": "Guard Captain",
+    "entity_type": "npc",
+    "stats": {
+      "str": 16,
+      "dex": 12,
+      "con": 14,
+      "int": 11,
+      "wis": 13,
+      "cha": 14,
+      "ac": 16,
+      "hp": 30,
+      "max_hp": 30
+    },
+    "inventory": ["Longsword", "Shield"],
+    "triggers": [],
+    "hp": 30,
+    "max_hp": 30,
+    "conditions": [],
+    "voice_profile": {
+      "voice_id": "captain_tmpl",
+      "source_type": "preset",
+      "reference_audio": "core/audio/voice_seeds/grizzled_veteran.wav",
+      "preset_name": "grizzled_veteran",
+      "exaggeration": 0.3,
+      "speed_factor": 0.95,
+      "cfg_weight": 0.5,
+      "language": "en",
+      "pitch_description": "Commanding military voice"
+    },
+    "dialogue_lines": {
+      "greeting": ["You here about the bounty?"],
+      "quest": ["We need capable hands."],
+      "farewell": ["Bring proof and the reward is yours."]
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "template_id": "scholar",
+  "name": "Scholar",
+  "category": "npc",
+  "tags": ["academic", "lore"],
+  "description": "A learned sage with ancient knowledge.",
+  "entity_data": {
+    "name": "Scholar",
+    "entity_type": "npc",
+    "stats": {
+      "str": 8,
+      "dex": 10,
+      "con": 10,
+      "int": 18,
+      "wis": 15,
+      "cha": 12,
+      "ac": 10,
+      "hp": 12,
+      "max_hp": 12
+    },
+    "inventory": ["Book", "Quill"],
+    "triggers": [],
+    "hp": 12,
+    "max_hp": 12,
+    "conditions": [],
+    "voice_profile": {
+      "voice_id": "scholar_tmpl",
+      "source_type": "preset",
+      "reference_audio": "core/audio/voice_seeds/scholar.wav",
+      "preset_name": "scholar",
+      "exaggeration": 0.2,
+      "speed_factor": 1.05,
+      "cfg_weight": 0.5,
+      "language": "en",
+      "pitch_description": "Precise, articulate"
+    },
+    "dialogue_lines": {
+      "greeting": ["The archive is open for research."],
+      "lore": ["I have found references in the ancient texts."],
+      "farewell": ["Be careful with this knowledge."]
+    }
+  }
+}

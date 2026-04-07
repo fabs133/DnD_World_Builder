@@ -45,6 +45,20 @@ class AttackAction(Action):
         if getattr(self.target, "hp", 0) <= 0:
             self.execution_log.append("Target is already dead")
             return False
+
+        # Range check (skipped when positions aren't set)
+        actor_pos = getattr(self.actor, "position", None)
+        target_pos = getattr(self.target, "position", None)
+        if actor_pos is not None and target_pos is not None:
+            dx = abs(actor_pos[0] - target_pos[0])
+            dy = abs(actor_pos[1] - target_pos[1])
+            distance_ft = max(dx, dy) * 5  # Chebyshev distance, 5ft per tile
+            if distance_ft > self.weapon_range:
+                self.execution_log.append(
+                    f"Target is {distance_ft}ft away (range: {self.weapon_range}ft)"
+                )
+                return False
+
         return True
 
     def execute(self, game_state) -> dict:
@@ -52,15 +66,34 @@ class AttackAction(Action):
         target_name = self.target.name
         target_ac = getattr(self.target, "armor_class", 10)
 
-        attack_roll = self._rng.randint(1, 20) + self.to_hit_bonus
+        # Roll attack — check for dodge (disadvantage) and advantage
+        roll1 = self._rng.randint(1, 20)
+        if getattr(self.target, "dodging", False):
+            roll2 = self._rng.randint(1, 20)
+            natural = min(roll1, roll2)
+            self.execution_log.append(
+                f"Target is dodging — disadvantage (rolls: {roll1}, {roll2})"
+            )
+        elif getattr(self.actor, "has_advantage", False):
+            roll2 = self._rng.randint(1, 20)
+            natural = max(roll1, roll2)
+            self.execution_log.append(
+                f"Attacker has advantage (rolls: {roll1}, {roll2})"
+            )
+        else:
+            natural = roll1
+        attack_roll = natural + self.to_hit_bonus
         self.execution_log.append(
             f"{actor_name} rolls {attack_roll} vs AC {target_ac}"
         )
 
         if attack_roll >= target_ac:
-            damage = self._roll_damage()
+            damage, individual_dice = self._roll_damage_detailed()
             old_hp = getattr(self.target, "hp", 0)
-            self.target.hp = max(0, old_hp - damage)
+            if hasattr(self.target, "take_damage"):
+                self.target.take_damage(damage)
+            else:
+                self.target.hp = max(0, old_hp - damage)
             self.execution_log.append(
                 f"{actor_name} hits {target_name} for {damage} damage "
                 f"({old_hp} -> {self.target.hp} HP)"
@@ -69,6 +102,23 @@ class AttackAction(Action):
                 f"[Attack] {actor_name} hits {target_name}: "
                 f"{damage} damage ({old_hp}->{self.target.hp})"
             )
+
+            # Fire ON_DAMAGE event for trigger system
+            world = getattr(self, "_world", None)
+            if world:
+                from core.gameCreation.event_bus import EventBus
+                from core.events import TRIGGER_ON_DAMAGE
+                EventBus.emit(TRIGGER_ON_DAMAGE, {
+                    "entity": self.actor,
+                    "target": self.target,
+                    "damage": damage,
+                    "damage_type": "weapon",
+                    "position": getattr(self.target, "position", None),
+                    "world": world,
+                })
+
+            self._emit_attack_resolved(
+                True, attack_roll, natural, target_ac, damage, individual_dice)
             return {
                 "action": "attack",
                 "hit": True,
@@ -80,6 +130,7 @@ class AttackAction(Action):
         else:
             self.execution_log.append(f"{actor_name} misses {target_name}")
             app_logger.info(f"[Attack] {actor_name} misses {target_name}")
+            self._emit_attack_resolved(False, attack_roll, natural, target_ac)
             return {
                 "action": "attack",
                 "hit": False,
@@ -89,8 +140,35 @@ class AttackAction(Action):
                 "target_hp": getattr(self.target, "hp", 0),
             }
 
+    def _emit_attack_resolved(self, hit: bool, attack_roll: int,
+                               natural: int, target_ac: int,
+                               damage: int = 0, individual_dice: list | None = None):
+        """Emit attack_resolved event for the encounter strip UI."""
+        try:
+            from core.gameCreation.event_bus import EventBus
+            EventBus.emit("attack_resolved", {
+                "attacker": self.actor,
+                "defender": self.target,
+                "attack_roll": attack_roll,
+                "natural_roll": natural,
+                "target_ac": target_ac,
+                "hit": hit,
+                "damage_expr": self.damage_expr,
+                "damage_total": damage,
+                "damage_type": "weapon",
+                "is_critical": natural == 20,
+                "individual_dice": individual_dice or [],
+            })
+        except Exception:
+            pass
+
     def _roll_damage(self) -> int:
         """Roll damage dice using the instance's seeded RNG."""
+        total, _ = self._roll_damage_detailed()
+        return total
+
+    def _roll_damage_detailed(self) -> tuple[int, list[int]]:
+        """Roll damage dice, returning (total, individual_rolls)."""
         match = re.match(r"(\d*)d(\d+)([+-]?\d*)", self.damage_expr.replace(" ", ""))
         if not match:
             raise ValueError(f"Invalid dice expression: {self.damage_expr}")
@@ -98,4 +176,4 @@ class AttackAction(Action):
         dice_sides = int(match.group(2))
         modifier = int(match.group(3)) if match.group(3) else 0
         rolls = [self._rng.randint(1, dice_sides) for _ in range(num_dice)]
-        return sum(rolls) + modifier
+        return sum(rolls) + modifier, rolls

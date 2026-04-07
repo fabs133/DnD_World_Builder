@@ -3,8 +3,8 @@ import pytest
 from network.transport import InMemoryServer, InMemoryClient
 from network.session_host import SessionHost
 from network.protocol import (
-    Message, MessageType, PROTOCOL_VERSION,
-    make_hello, make_claim_entity, make_chat,
+    Message, MessageType, PROTOCOL_VERSION, CRITICAL_TYPES,
+    make_hello, make_claim_entity, make_chat, make_ack,
 )
 from models.game_master import Gamemaster
 from models.entities.game_entity import GameEntity
@@ -33,6 +33,29 @@ async def _connect_client(server, player_name="Alice"):
     welcome = Message.from_json(await asyncio.wait_for(conn.recv(), timeout=2.0))
     full_state = Message.from_json(await asyncio.wait_for(conn.recv(), timeout=2.0))
     return conn, welcome, full_state
+
+
+async def _recv_type(conn, target_type, timeout=5.0):
+    """Read messages, auto-ACKing critical ones, skipping PING/PONG/ACK."""
+    _SKIP = {MessageType.PING, MessageType.PONG, MessageType.ACK}
+    deadline = asyncio.get_event_loop().time() + timeout
+    while True:
+        remaining = deadline - asyncio.get_event_loop().time()
+        if remaining <= 0:
+            raise asyncio.TimeoutError(f"Timed out waiting for {target_type}")
+        raw = await asyncio.wait_for(conn.recv(), timeout=remaining)
+        msg = Message.from_json(raw)
+        # Auto-ACK so the host's request() doesn't stall
+        if msg.type in CRITICAL_TYPES and msg.seq:
+            try:
+                await conn.send(make_ack(msg.seq).to_json())
+            except ConnectionError:
+                pass
+        if msg.type == target_type:
+            return msg
+        if msg.type in _SKIP:
+            continue
+        return msg
 
 
 class TestHandshake:
@@ -129,17 +152,16 @@ class TestEntityClaiming:
             await host.start()
 
             conn, welcome, _ = await _connect_client(server)
-            listen_task = asyncio.ensure_future(self._drain(conn))
 
             await conn.send(make_claim_entity("Hero").to_json())
-            raw = await asyncio.wait_for(conn.recv(), timeout=2.0)
-            claimed = Message.from_json(raw)
+            # Give the async handler time to process and broadcast
+            await asyncio.sleep(0.2)
+            claimed = await _recv_type(conn, MessageType.ENTITY_CLAIMED, timeout=5.0)
 
             assert claimed.type == MessageType.ENTITY_CLAIMED
             assert claimed.payload["entity_id"] == "Hero"
             assert claimed.payload["player_id"] == welcome.payload["player_id"]
 
-            listen_task.cancel()
             await host.stop()
 
         event_loop.run_until_complete(_test())

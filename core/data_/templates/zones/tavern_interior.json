@@ -1,0 +1,41 @@
+{
+  "template_id": "tavern_interior",
+  "name": "Tavern Interior",
+  "tags": ["tavern", "indoor", "rest"],
+  "description": "A cozy tavern with entrance, main hall, and back room.",
+  "zones_data": [
+    {
+      "zone_id": "tavern_entrance",
+      "label": "Entrance",
+      "description": "Heavy doors open into the warmth of the tavern.",
+      "background_image": null,
+      "connections": ["tavern_main_hall"],
+      "locked": false,
+      "lock_dc": 15,
+      "tags": ["indoor", "tavern"],
+      "encounter_template_id": null
+    },
+    {
+      "zone_id": "tavern_main_hall",
+      "label": "Main Hall",
+      "description": "A smoky common room with a roaring fire and rough-hewn tables.",
+      "background_image": null,
+      "connections": ["tavern_entrance", "tavern_back_room"],
+      "locked": false,
+      "lock_dc": 15,
+      "tags": ["indoor", "tavern"],
+      "encounter_template_id": null
+    },
+    {
+      "zone_id": "tavern_back_room",
+      "label": "Back Room",
+      "description": "A cramped storeroom with barrels and supplies.",
+      "background_image": null,
+      "connections": ["tavern_main_hall"],
+      "locked": false,
+      "lock_dc": 15,
+      "tags": ["indoor", "storage"],
+      "encounter_template_id": null
+    }
+  ]
+}

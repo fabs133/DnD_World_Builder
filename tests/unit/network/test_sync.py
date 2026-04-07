@@ -61,7 +61,7 @@ class TestSerializeEntity:
         data = serialize_entity(e)
         assert data["name"] == "Goblin"
         assert data["entity_type"] == "enemy"
-        assert data["stats"] == {"hp": 5}
+        assert data["stats"]["hp"] == 5
         assert data["position"] == [1, 2]
 
     def test_entity_without_position(self):

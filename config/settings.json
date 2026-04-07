@@ -7,8 +7,9 @@
     "last_profile_used": null,
     "config_version": 3,
     "recent_files": [],
-    "show_tutorial": true,
+    "show_tutorial": false,
     "multiplayer_default_port": 8765,
     "multiplayer_player_name": "",
-    "multiplayer_last_host": ""
+    "multiplayer_last_host": "",
+    "ui_theme": "tome"
 }

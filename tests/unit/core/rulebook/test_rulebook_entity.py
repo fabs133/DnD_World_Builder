@@ -115,6 +115,10 @@ def test_to_game_entity_preserves_fields():
     # name/type/stats
     assert ge.name == re.name
     assert ge.entity_type == re.entity_type
-    assert ge.stats == re.stats
+    # Stats are normalized and include defaults for core combat stats
+    from models.entities.game_entity import _normalize_stats
+    expected = _normalize_stats(re.stats)
+    for key, val in expected.items():
+        assert ge.stats[key] == val
     # In this implementation, abilities are used as inventory:
     assert ge.inventory == re.abilities

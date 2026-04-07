@@ -1,0 +1,411 @@
+# ══════════════════════════════════════════════════════════════════════
+# Blighted Crossing — Difficulty 3 (Top-center)
+# The corrupted bridge zone. Heavily blighted. Lieutenant: Rotfather Vael.
+# ══════════════════════════════════════════════════════════════════════
+
+biome:
+  id: "blighted_crossing"
+  name: "The Blighted Crossing"
+  description: >
+    Where the King's Road once crossed the Ashwater River on a grand
+    stone bridge, the blight has transformed the landscape beyond
+    recognition. The riverbed runs with black ichor. The bridge still
+    stands, but it's grown — fused with corrupted vegetation into a
+    living structure of stone and thorns. Rotfather Vael, a once-noble
+    treant warped by the Crown, guards the direct approach to the citadel.
+  biome_type: "corrupted"
+  difficulty: 3
+  grid_size: [20, 20]
+  grid_offset: [0, 20]
+  ambient_audio: "dungeon"
+  terrain_default: "GRASS"
+
+  assets:
+    background:
+      needed: true
+      prompt: >
+        corrupted fantasy bridge over a black river, massive stone bridge
+        overgrown with dark thorny vines, dead trees with glowing green
+        veins, black water flowing beneath, green blight corruption
+        everywhere, oppressive dark sky with green aurora, the silhouette
+        of a dark fortress in the far background, wide cinematic shot,
+        painterly illustration, masterpiece
+      output: "assets/backgrounds/blighted_crossing.png"
+      status: "pending"
+
+    terrain_texture:
+      needed: true
+      terrain_type: "GRASS"
+      prompt: >
+        corrupted blighted ground, dark blackened grass with glowing
+        green veins, top down battle map style, painted, fantasy
+        illustration
+      output: "assets/terrain/blighted_ground.png"
+      status: "pending"
+
+
+zones:
+  - id: "south_approach"
+    label: "Southern Approach"
+    description: >
+      The old King's Road is barely recognizable. Cobblestones have been
+      heaved apart by thorny roots. The corruption is visible in every
+      blade of grass — a sickly green glow pulses through the earth.
+    terrain: "GRASS"
+    tiles: [[14, 8], [14, 9], [14, 10], [15, 8], [15, 9], [15, 10], [16, 8], [16, 9]]
+    tags: []
+    ambient_audio: "dungeon"
+    background:
+      needed: true
+      prompt: >
+        corrupted road with cobblestones heaved apart by thorny roots,
+        sickly green glow pulsing through earth, dead grass, dark sky with
+        green aurora, painterly high fantasy, wide shot, corrupted atmosphere
+      output: "assets/backgrounds/zones/blighted_crossing_south_approach.png"
+      status: "pending"
+
+  - id: "black_riverbed"
+    label: "The Black River"
+    description: >
+      The Ashwater River now runs thick with dark corruption. The water
+      is opaque and viscous. Things move beneath the surface. Do not
+      touch the water.
+    terrain: "WATER"
+    tiles: [[10, 3], [10, 4], [10, 5], [10, 6], [10, 13], [10, 14], [10, 15], [10, 16], [11, 3], [11, 4], [11, 5], [11, 13], [11, 14], [11, 15]]
+    tags: []
+    ambient_audio: "dungeon"
+    background:
+      needed: true
+      prompt: >
+        river of thick black opaque corruption, viscous dark water flowing
+        slowly, things moving beneath surface, dead vegetation on banks,
+        sickly green reflections, painterly high fantasy, wide shot, toxic
+        atmosphere
+      output: "assets/backgrounds/zones/blighted_crossing_black_riverbed.png"
+      status: "pending"
+
+  - id: "living_bridge"
+    label: "The Living Bridge"
+    description: >
+      The stone bridge has been consumed by enormous thorned vines.
+      The structure pulses with green light, as if alive. Blight
+      shamblers patrol its length — barely recognizable as the soldiers
+      they once were.
+    terrain: "FLOOR"
+    tiles: [[9, 8], [9, 9], [9, 10], [9, 11], [10, 8], [10, 9], [10, 10], [10, 11]]
+    tags: []
+    ambient_audio: "dungeon"
+    background:
+      needed: true
+      prompt: >
+        ancient stone bridge consumed by enormous thorned vines, structure
+        pulsing with green light as if alive, dark thorns everywhere, bridge
+        spanning black river, painterly high fantasy, wide shot, organic
+        horror atmosphere
+      output: "assets/backgrounds/zones/blighted_crossing_living_bridge.png"
+      status: "pending"
+
+  - id: "rotfather_grove"
+    label: "Rotfather's Grove"
+    description: >
+      At the north end of the bridge, a massive corrupted treant has
+      rooted itself. Once the guardian spirit of the Ashwater forests,
+      Rotfather Vael was the first living thing the Crown consumed.
+      His roots extend deep into the earth, spreading blight to the
+      surrounding biomes.
+    terrain: "GRASS"
+    tiles: [[4, 8], [4, 9], [4, 10], [4, 11], [5, 8], [5, 9], [5, 10], [5, 11]]
+    tags: []
+    ambient_audio: "dungeon"
+    background:
+      needed: true
+      prompt: >
+        grove at north end of bridge, massive ancient tree with blackened
+        bark split with glowing green corruption, enormous gnarled roots
+        spreading across ground, sickly green eyes in trunk face, painterly
+        high fantasy, wide shot, boss arena atmosphere
+      output: "assets/backgrounds/zones/blighted_crossing_rotfather_grove.png"
+      status: "pending"
+
+  - id: "north_gate"
+    label: "North Gate"
+    description: >
+      Beyond Rotfather Vael, the road leads directly to the Obsidian
+      Citadel. The fortress is visible now — a black spire against a
+      sky of perpetual green lightning. There's no turning back.
+    terrain: "FLOOR"
+    tiles: [[1, 9], [1, 10], [2, 9], [2, 10]]
+    tags: []
+    ambient_audio: "dungeon"
+    background:
+      needed: true
+      prompt: >
+        road leading to visible obsidian citadel in distance, black spire
+        against sky of perpetual green lightning, no turning back atmosphere,
+        corruption everywhere, painterly high fantasy, wide shot, ominous
+        finality
+      output: "assets/backgrounds/zones/blighted_crossing_north_gate.png"
+      status: "pending"
+
+
+terrain_overrides:
+  - terrain: "WALL"
+    tiles: [[8, 7], [8, 12], [9, 7], [9, 12], [10, 7], [10, 12], [11, 7], [11, 12]]
+  - terrain: "SWAMP"
+    tiles: [[12, 5], [12, 6], [12, 13], [12, 14], [9, 3], [9, 4], [9, 14], [9, 15]]
+
+
+entities:
+
+  - name: "Blight Shambler"
+    entity_type: "enemy"
+    zone: "living_bridge"
+    count: 4
+    position: [[9, 8], [9, 10], [10, 9], [10, 11]]
+    stats:
+      str: 15
+      dex: 8
+      con: 16
+      int: 2
+      wis: 6
+      cha: 3
+      ac: 10
+      hp: 28
+      max_hp: 28
+      speed: 20
+    inventory: []
+    portraits:
+      needed: true
+      style: "creature"
+      prompt_base: >
+        blighted shambler creature, former human soldier consumed by
+        plant corruption, bark and thorns growing through rusted armor,
+        glowing green vines replacing limbs, hollow eye sockets with
+        green light, shambling posture, front-facing, painterly high
+        fantasy, dark corrupted background with green glow
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/blight_shambler_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "darker green lighting, more shadow on face, slower posture"
+          denoise: 0.25
+          output: "assets/portraits/enemies/blight_shambler_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "dark murky green shadows, desaturated, drooping forward"
+          denoise: 0.35
+          output: "assets/portraits/enemies/blight_shambler_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "very dark, nearly black with faint green, collapsing"
+          denoise: 0.45
+          output: "assets/portraits/enemies/blight_shambler_critical.png"
+          status: "pending"
+    voice: null
+    dialogue: null
+
+  - name: "Thornlash Vine"
+    entity_type: "enemy"
+    zone: "south_approach"
+    count: 3
+    position: [[14, 8], [15, 9], [16, 9]]
+    stats:
+      str: 16
+      dex: 12
+      con: 14
+      int: 1
+      wis: 8
+      cha: 1
+      ac: 12
+      hp: 20
+      max_hp: 20
+      speed: 10
+    inventory: []
+    portraits:
+      needed: true
+      style: "creature"
+      prompt_base: >
+        animated carnivorous vine plant, thick dark thorny tendrils
+        emerging from corrupted ground, glowing green veins, barbed tips
+        dripping with sap, a central bulb with tooth-like thorns,
+        front-facing, painterly high fantasy, dark forest floor background
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/thornlash_vine_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "green veins dimming, central bulb wilting and drooping"
+          denoise: 0.55
+          output: "assets/portraits/enemies/thornlash_vine_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "green veins mostly dark, bulb withering brown"
+          denoise: 0.65
+          output: "assets/portraits/enemies/thornlash_vine_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "green veins dead, bulb deflated and rotting"
+          denoise: 0.75
+          output: "assets/portraits/enemies/thornlash_vine_critical.png"
+          status: "pending"
+    voice: null
+    dialogue: null
+
+  - name: "Rotfather Vael"
+    entity_type: "enemy"
+    zone: "rotfather_grove"
+    count: 1
+    position: [[5, 9]]
+    stats:
+      str: 22
+      dex: 6
+      con: 22
+      int: 10
+      wis: 14
+      cha: 12
+      ac: 16
+      hp: 78
+      max_hp: 78
+      speed: 20
+    inventory: []
+    portraits:
+      needed: true
+      style: "creature"
+      prompt_base: >
+        massive corrupted treant, ancient tree come to life, bark
+        blackened and split with glowing green corruption, enormous
+        gnarled limbs like arms, hollow face in the trunk with glowing
+        green eyes weeping sap, thorny crown of dead branches, roots
+        spreading across the ground, towering and terrifying,
+        front-facing, painterly high fantasy, dark corrupted forest
+        background with green blight glow
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/rotfather_vael_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "darker green lighting, sap dripping, more shadow on face"
+          denoise: 0.25
+          output: "assets/portraits/enemies/rotfather_vael_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "dark murky shadows, desaturated green, face barely visible"
+          denoise: 0.35
+          output: "assets/portraits/enemies/rotfather_vael_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "very dark, nearly black, green glow almost extinguished"
+          denoise: 0.45
+          output: "assets/portraits/enemies/rotfather_vael_critical.png"
+          status: "pending"
+    voice:
+      preset: "creepy_whisper"
+      reference_audio: "core/audio/voice_seeds/creepy_whisper.wav"
+      exaggeration: 0.7
+      speed: 0.7
+    dialogue:
+      greeting:
+        - "I... remember... green. Before the green was... wrong."
+      combat:
+        - "THE ROOTS... HOLD... ALL..."
+        - "I was... the forest... now the forest... is ME..."
+        - "You cannot... cut... what has already... grown... through everything..."
+        - "The Crown... feeds... and I... spread..."
+      lore:
+        - "Once... I protected... the river. The trees. The animals."
+        - "Then the green light came... and it was... so warm... so wrong..."
+
+    voice_lines:
+      needed: true
+      status: "pending"
+      output_dir: "assets/voice/rotfather_vael/"
+
+  # ── Objects ──
+
+  - name: "Corrupted Rune Stone"
+    entity_type: "object"
+    zone: "south_approach"
+    count: 1
+    position: [[15, 10]]
+    stats: {}
+    inventory: []
+    tags: ["readable"]
+    portraits:
+      needed: false
+    voice: null
+    dialogue:
+      lore:
+        - "A road marker, barely legible beneath the corruption: 'Ashenmere — 2 leagues north. By order of King Aldric III.' The kingdom's name has been scratched out and replaced with a crude crown symbol."
+
+
+triggers:
+  - label: "thornlash_ambush"
+    zone: "south_approach"
+    tile: [14, 9]
+    event_type: "ENTER_TILE"
+    condition:
+      type: "SkillCheck"
+      skill: "Nature"
+      dc: 14
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: "You recognize the carnivorous vines hidden among the corrupted vegetation and approach carefully."
+    next_trigger:
+      label: "thornlash_surprise"
+      event_type: "ENTER_TILE"
+      condition:
+        type: "AlwaysTrue"
+      reaction:
+        type: "AlertGamemaster"
+        args:
+          message: "Thorned vines erupt from the ground, lashing at you with barbed tendrils!"
+
+  - label: "rotfather_awakens"
+    zone: "rotfather_grove"
+    tile: [4, 9]
+    event_type: "ENTER_TILE"
+    condition:
+      type: "AlwaysTrue"
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: >
+          The ground trembles. Roots thick as pillars burst from the earth.
+          The massive shape you mistook for a dead tree opens its eyes —
+          twin points of sickly green light in a face of blackened bark.
+          Rotfather Vael rises, and the entire bridge shudders with him.
+          "I... remember... green. Before the green was... wrong."
+
+
+quests:
+  - id: "fell_the_rotfather"
+    name: "Roots of Corruption"
+    type: "main"
+    giver: null
+    zone: "rotfather_grove"
+    description: >
+      Rotfather Vael, the corrupted guardian of the Ashwater, blocks the
+      direct path to the Obsidian Citadel. His roots spread the blight
+      to surrounding biomes. Destroying him won't stop the corruption,
+      but it will slow its spread and open the way forward.
+    objectives:
+      - "Cross the Living Bridge"
+      - "Defeat Rotfather Vael"
+      - "Open the path to the Obsidian Citadel"
+    reward:
+      items: ["Heartwood Shard"]
+      xp: 500
+    difficulty: 3
+
+
+connections:
+  north: null
+  south: "biome_sunken_swamp"
+  east: "biome_frozen_wastes"
+  west: "biome_mountain_pass"
+  border_tiles:
+    south: [[19, 8], [19, 9], [19, 10]]
+    east: [[9, 19], [10, 19], [11, 19]]
+    west: [[9, 0], [10, 0], [11, 0]]

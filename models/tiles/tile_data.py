@@ -3,6 +3,7 @@ from typing import List, Tuple, Optional
 from enum import Enum
 from models.entities.game_entity import GameEntity  # Ensure this has to_dict/from_dict implemented
 from core.gameCreation.trigger import Trigger  # Ensure this has to_dict/from_dict implemented
+from models.tiles.tile_zone import TileZone
 
 class TerrainType(Enum):
     """
@@ -28,6 +29,8 @@ class TerrainType(Enum):
     MOUNTAIN = "mountain"
     FLOOR = "floor"
     WALL = "wall"
+    SAND = "sand"
+    SWAMP = "swamp"
     CUSTOM = "custom"
 
 class TileTag(Enum):
@@ -92,6 +95,35 @@ class TileData:
     background_image: Optional[str] = None
     ambient_audio: Optional[str] = None
     movement_cost: int = 5
+    elevation: int = 0
+    zones: List[TileZone] = field(default_factory=list)
+    zone_id: Optional[str] = None
+    # Optional override for the tile classifier. When set, bypasses the
+    # heuristic and forces this tile into a specific prompt-builder path.
+    # Valid values: "narrative" | "riddle" | "boss" | "pack" | "transit"
+    tile_type: Optional[str] = None
+    # Narrator-authored scene description used as a prompt anchor when
+    # generating a background image for this tile.
+    narrator_intro: Optional[str] = None
+    # Large background landmarks anchored to this tile's LEFT or RIGHT edge.
+    # Each entry is a dict:
+    #   {"name": str, "description": str, "anchor": "left"|"right",
+    #    "propagate": bool}  (propagate defaults to True)
+    # Used by the prompt composer to create visual continuity with the
+    # neighbouring tile on the opposite edge.
+    edge_structures: List[dict] = field(default_factory=list)
+
+    @property
+    def has_zones(self) -> bool:
+        """True if the tile has spatial sub-divisions."""
+        return len(self.zones) > 0
+
+    def get_zone(self) -> Optional[str]:
+        """Return the encounter zone for this tile.
+
+        Falls back to *user_label* when *zone_id* is not set.
+        """
+        return self.zone_id or self.user_label or None
 
     def is_occupied(self) -> bool:
         """
@@ -184,6 +216,18 @@ class TileData:
             data["ambient_audio"] = self.ambient_audio
         if self.movement_cost != 5:
             data["movement_cost"] = self.movement_cost
+        if self.elevation != 0:
+            data["elevation"] = self.elevation
+        if self.zones:
+            data["zones"] = [z.to_dict() for z in self.zones]
+        if self.zone_id:
+            data["zone_id"] = self.zone_id
+        if self.tile_type:
+            data["tile_type"] = self.tile_type
+        if self.narrator_intro:
+            data["narrator_intro"] = self.narrator_intro
+        if self.edge_structures:
+            data["edge_structures"] = list(self.edge_structures)
         return data
 
     @classmethod
@@ -222,4 +266,10 @@ class TileData:
             background_image=data.get("background_image"),
             ambient_audio=data.get("ambient_audio"),
             movement_cost=data.get("movement_cost", 5),
+            elevation=data.get("elevation", 0),
+            zones=[TileZone.from_dict(z) for z in data.get("zones", [])],
+            zone_id=data.get("zone_id"),
+            tile_type=data.get("tile_type"),
+            narrator_intro=data.get("narrator_intro"),
+            edge_structures=list(data.get("edge_structures", [])),
         )

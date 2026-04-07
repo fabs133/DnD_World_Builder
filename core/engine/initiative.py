@@ -6,6 +6,8 @@ import random
 from dataclasses import dataclass
 from typing import Any
 
+from core.constants import INITIATIVE_TIEBREAKER_RANGE
+
 
 @dataclass
 class InitiativeEntry:
@@ -36,7 +38,7 @@ class InitiativeTracker:
         for entity in entities:
             dex_mod = _get_dex_modifier(entity)
             roll = self._rng.randint(1, 20) + dex_mod
-            tiebreaker = self._rng.randint(1, 1000)
+            tiebreaker = self._rng.randint(1, INITIATIVE_TIEBREAKER_RANGE)
             self._entries.append(InitiativeEntry(
                 entity_name=entity.name,
                 roll=roll,
@@ -53,7 +55,7 @@ class InitiativeTracker:
         """Add an entity mid-combat."""
         dex_mod = _get_dex_modifier(entity)
         roll = roll_override if roll_override is not None else (self._rng.randint(1, 20) + dex_mod)
-        tiebreaker = self._rng.randint(1, 1000)
+        tiebreaker = self._rng.randint(1, INITIATIVE_TIEBREAKER_RANGE)
         entry = InitiativeEntry(
             entity_name=entity.name,
             roll=roll,
@@ -117,7 +119,7 @@ class InitiativeTracker:
 def _get_dex_modifier(entity) -> int:
     """Extract Dexterity modifier from an entity."""
     stats = getattr(entity, "stats", {})
-    dex = stats.get("Dexterity", stats.get("dexterity", stats.get("DEX", 10)))
+    dex = stats.get("Dexterity", 10)
     if isinstance(dex, dict):
         dex = dex.get("score", dex.get("value", 10))
     return (int(dex) - 10) // 2

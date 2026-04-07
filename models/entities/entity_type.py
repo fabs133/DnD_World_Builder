@@ -1,15 +1,24 @@
 from enum import Enum
 
-class EntityType(Enum):
-    """
-    Enumeration of possible entity types in the DnD project.
 
-    :cvar PLAYER: Represents a player entity.
-    :cvar ENEMY: Represents an enemy entity.
-    :cvar NPC: Represents a non-player character entity.
-    :cvar OBJECT: Represents an object entity.
+class EntityType(str, Enum):
     """
+    Entity types in the DnD World Builder.
+
+    Inherits from ``str`` for backward compatibility with existing
+    string comparisons like ``entity_type == "player"``.
+    """
+
+    def __str__(self) -> str:
+        return self.value
+
     PLAYER = "player"
     ENEMY = "enemy"
     NPC = "npc"
+    MONSTER = "monster"
+    HOSTILE = "hostile"
+    ALLY = "ally"
+    COMPANION = "companion"
     OBJECT = "object"
+    ITEM = "item"
+    TRAP = "trap"

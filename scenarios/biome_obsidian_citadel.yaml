@@ -1,0 +1,636 @@
+# ══════════════════════════════════════════════════════════════════════
+# Obsidian Citadel — Difficulty 5 (Center)
+# The boss fortress. Traps, undead knights, and the Dark Sovereign.
+# ══════════════════════════════════════════════════════════════════════
+
+biome:
+  id: "obsidian_citadel"
+  name: "The Obsidian Citadel"
+  description: >
+    At the heart of the Shattered Realms stands a fortress of black
+    volcanic glass, impossibly tall, wreathed in perpetual green
+    lightning. This was once Castle Ashenmere, seat of King Aldric III.
+    Now it serves as the throne of the Dark Sovereign — Lord Castellan
+    Morvain, corrupted beyond recognition by the artifact he unearthed
+    in the castle's deepest vault. The Crown of Fractures has remade
+    him and the castle alike. The walls breathe. The corridors shift.
+    The dead walk the halls in mockery of the court they once served.
+  biome_type: "castle"
+  difficulty: 5
+  grid_size: [20, 20]
+  grid_offset: [20, 20]
+  ambient_audio: "dungeon"
+  terrain_default: "FLOOR"
+
+  assets:
+    background:
+      needed: true
+      prompt: >
+        dark fantasy obsidian fortress interior, massive gothic throne room
+        with impossibly high ceilings, black volcanic glass walls with
+        glowing green veins pulsing, green lightning visible through
+        shattered stained glass windows, iron chandeliers with green
+        ghostly flames, a dark throne at the far end, oppressive and
+        magnificent, wide cinematic shot, painterly illustration, masterpiece
+      output: "assets/backgrounds/obsidian_citadel.png"
+      status: "pending"
+
+    terrain_texture:
+      needed: true
+      terrain_type: "FLOOR"
+      prompt: >
+        section of a fantasy RPG game map, dark obsidian stone floor,
+        polished black glass with faint green glow in cracks, top down
+        view, painterly, hand painted style
+      output: "assets/terrain/obsidian_floor.png"
+      status: "pending"
+
+
+zones:
+  - id: "gatehouse"
+    label: "The Gatehouse"
+    description: >
+      The main gate hangs open — not from damage, but as invitation.
+      The Dark Sovereign wants you to enter. The iron portcullis has
+      been twisted into a grinning face.
+    terrain: "FLOOR"
+    tiles: [[17, 9], [17, 10], [17, 11], [18, 9], [18, 10], [18, 11]]
+    tags: []
+    ambient_audio: "dungeon"
+    background:
+      needed: true
+      prompt: >
+        massive obsidian fortress gate standing open as invitation, iron
+        portcullis twisted into grinning face shape, black volcanic glass
+        walls, green veins pulsing, painterly high fantasy, wide shot,
+        dread invitation atmosphere
+      output: "assets/backgrounds/zones/obsidian_citadel_gatehouse.png"
+      status: "pending"
+
+  - id: "great_hall"
+    label: "The Great Hall"
+    description: >
+      Tattered banners of the old kingdom still hang from the walls,
+      rotted and stained. A long table is set for a feast that was
+      never eaten. The plates are covered in mold. Fallen knights
+      patrol the hall in rusted armor, their movements mechanical.
+    terrain: "FLOOR"
+    tiles: [[12, 7], [12, 8], [12, 9], [12, 10], [12, 11], [12, 12], [13, 7], [13, 8], [13, 9], [13, 10], [13, 11], [13, 12]]
+    tags: []
+    ambient_audio: "dungeon"
+    background:
+      needed: true
+      prompt: >
+        vast gothic great hall with tattered kingdom banners, long feast
+        table with moldy plates, iron chandeliers with ghostly green flames,
+        black stone walls, painterly high fantasy, wide interior shot,
+        haunted grandeur
+      output: "assets/backgrounds/zones/obsidian_citadel_great_hall.png"
+      status: "pending"
+
+  - id: "trapped_corridor"
+    label: "The Trapped Corridor"
+    description: >
+      A narrow passage lined with pressure plates and dart tubes.
+      Deserter Kael warned about this — the main hall is a deathtrap.
+      The side corridor is safer. Slightly.
+    terrain: "FLOOR"
+    tiles: [[9, 4], [9, 5], [9, 6], [10, 4], [10, 5], [10, 6]]
+    tags: []
+    ambient_audio: "dungeon"
+    background:
+      needed: true
+      prompt: >
+        narrow dark corridor with visible pressure plates on floor, dart
+        tube holes in walls, obsidian walls with green veins, dim torchlight,
+        danger ahead, painterly high fantasy, wide interior shot, tense
+        atmosphere
+      output: "assets/backgrounds/zones/obsidian_citadel_trapped_corridor.png"
+      status: "pending"
+
+  - id: "war_chapel"
+    label: "The War Chapel"
+    description: >
+      A small chapel deep in the citadel where the old wards still
+      hold — barely. The altar glows with faint golden light. This is
+      the last safe rest point before the throne room. Ancient prayers
+      are carved into every surface.
+    terrain: "FLOOR"
+    tiles: [[7, 13], [7, 14], [7, 15], [8, 13], [8, 14], [8, 15]]
+    tags: []
+    ambient_audio: "night"
+    background:
+      needed: true
+      prompt: >
+        small chapel with warm golden light amid darkness, ancient ward
+        prayers carved on every surface, altar glowing with protective magic,
+        last safe haven, painterly high fantasy, wide interior shot,
+        sanctuary atmosphere
+      output: "assets/backgrounds/zones/obsidian_citadel_war_chapel.png"
+      status: "pending"
+
+  - id: "throne_room"
+    label: "The Throne Room"
+    description: >
+      A vast circular chamber of black glass. The Crown of Fractures
+      sits on the brow of Lord Castellan Morvain, who sits upon the
+      twisted remains of King Aldric's throne. Green lightning arcs
+      between crystal pillars that ring the room. The air itself
+      tastes of iron and ozone. This is where it ends.
+    terrain: "FLOOR"
+    tiles: [[2, 8], [2, 9], [2, 10], [2, 11], [3, 8], [3, 9], [3, 10], [3, 11], [4, 8], [4, 9], [4, 10], [4, 11]]
+    tags: []
+    ambient_audio: "combat_tension"
+    background:
+      needed: true
+      prompt: >
+        vast circular chamber of black volcanic glass, twisted iron throne at
+        far end, green lightning arcing between crystal pillars, shattered
+        stained glass windows, crown of fractures glowing, painterly high
+        fantasy, epic wide shot, final confrontation atmosphere
+      output: "assets/backgrounds/zones/obsidian_citadel_throne_room.png"
+      status: "pending"
+
+
+terrain_overrides:
+  - terrain: "WALL"
+    tiles: [[6, 3], [6, 4], [6, 5], [6, 6], [6, 13], [6, 14], [6, 15], [6, 16], [11, 3], [11, 4], [11, 5], [11, 13], [11, 14], [11, 15], [15, 5], [15, 6], [15, 13], [15, 14]]
+  - terrain: "MOUNTAIN"
+    tiles: [[14, 4], [14, 5], [8, 7], [8, 8]]
+
+
+entities:
+
+  - name: "Fallen Knight"
+    entity_type: "enemy"
+    zone: "great_hall"
+    count: 4
+    position: [[12, 8], [12, 11], [13, 7], [13, 12]]
+    stats:
+      str: 16
+      dex: 10
+      con: 14
+      int: 6
+      wis: 8
+      cha: 5
+      ac: 16
+      hp: 30
+      max_hp: 30
+      speed: 25
+    inventory: ["Rusted Longsword", "Battered Shield"]
+    portraits:
+      needed: true
+      style: "humanoid"
+      prompt_base: >
+        undead fallen knight, rusted dented black plate armor with
+        faded kingdom insignia, glowing pale green light from eye
+        slits in the visor, tattered dark cape, spectral green aura,
+        mechanical stance, holding rusted sword, bust shot, painterly
+        high fantasy, dark gothic hall background
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/fallen_knight_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "green visor glow dimmer, armor dented and cracked"
+          denoise: 0.55
+          output: "assets/portraits/enemies/fallen_knight_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "green visor barely glowing, armor shattered open"
+          denoise: 0.65
+          output: "assets/portraits/enemies/fallen_knight_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "visor dark, armor destroyed, skeleton visible"
+          denoise: 0.75
+          output: "assets/portraits/enemies/fallen_knight_critical.png"
+          status: "pending"
+    voice: null
+    dialogue: null
+
+  - name: "Crown Wraith"
+    entity_type: "enemy"
+    zone: "throne_room"
+    count: 2
+    position: [[3, 8], [3, 11]]
+    stats:
+      str: 6
+      dex: 18
+      con: 14
+      int: 12
+      wis: 14
+      cha: 14
+      ac: 15
+      hp: 36
+      max_hp: 36
+      speed: 50
+    inventory: []
+    portraits:
+      needed: true
+      style: "creature"
+      prompt_base: >
+        spectral wraith in tattered royal robes, ghostly translucent
+        form with a broken crown hovering above its head, hollow
+        screaming face, clawed spectral hands reaching forward,
+        green ethereal flames trailing from its body, front-facing,
+        painterly high fantasy, dark throne room with green lightning
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/crown_wraith_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "form flickering, green flames dimmer, face distorting"
+          denoise: 0.60
+          output: "assets/portraits/enemies/crown_wraith_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "form fading, green flames dying, face breaking apart"
+          denoise: 0.70
+          output: "assets/portraits/enemies/crown_wraith_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "almost invisible, green flames gone, face dissolved"
+          denoise: 0.80
+          output: "assets/portraits/enemies/crown_wraith_critical.png"
+          status: "pending"
+    voice: null
+    dialogue:
+      combat:
+        - "The Crown... will not... be removed..."
+        - "We serve... forever..."
+
+  # ── THE BOSS ──
+
+  - name: "Lord Castellan Morvain"
+    entity_type: "enemy"
+    zone: "throne_room"
+    count: 1
+    position: [[2, 10]]
+    stats:
+      str: 20
+      dex: 14
+      con: 20
+      int: 16
+      wis: 14
+      cha: 20
+      ac: 19
+      hp: 120
+      max_hp: 120
+      speed: 30
+    inventory: ["Crown of Fractures", "Sovereign's Blade"]
+
+    portraits:
+      needed: true
+      style: "humanoid"
+      prompt_base: >
+        dark lord villain on a throne, ornate black plate armor with
+        intricate gold filigree and green glowing runes, a jagged crown
+        of dark metal and green crystal on his brow, pale gaunt face
+        with sunken eyes blazing with green light, high sharp cheekbones,
+        thin cruel lips, white hair swept back, one hand resting on
+        a black sword, imposing regal presence, bust shot, painterly
+        high fantasy, dramatic green lightning from above, dark moody
+        background
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/lord_morvain_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "Crown flickering, green eyes blazing with rage, blood on cheek"
+          denoise: 0.55
+          output: "assets/portraits/enemies/lord_morvain_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "Crown pulsing weakly, green eyes panicked, blood on face"
+          denoise: 0.65
+          output: "assets/portraits/enemies/lord_morvain_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "Crown cracking, green fading from eyes, human terror visible"
+          denoise: 0.75
+          output: "assets/portraits/enemies/lord_morvain_critical.png"
+          status: "pending"
+
+    voice:
+      preset: "warlord"
+      reference_audio: "core/audio/voice_seeds/warlord.wav"
+      exaggeration: 0.9
+      speed: 0.9
+
+    dialogue:
+      greeting:
+        - "Ah. You've come at last. I wondered how long it would take."
+        - "Do you know what it cost me to build this? Everything. And I would pay it again."
+      combat:
+        - "THE CROWN IS MINE! THE REALM IS MINE! ALL OF IT!"
+        - "I was a SERVANT! A castellan! Now I am a SOVEREIGN!"
+        - "You cannot kill what the Crown sustains!"
+        - "Torven was a fool! A useful fool, but a fool! I am what he could NEVER be!"
+        - "KNEEL! Kneel before the true ruler of these shattered lands!"
+        - "Do you feel it? The Crown's power? It could be yours too. Just... stop... fighting..."
+      lore:
+        - "I found it in the deepest vault. The king's ancestors had sealed it there. They were wise to fear it."
+        - "But they were also weak. The Crown doesn't corrupt — it reveals. It shows you what you truly are."
+        - "Aldric was a good king. But even good kings die. The Crown... the Crown endures."
+
+    voice_lines:
+      needed: true
+      status: "pending"
+      output_dir: "assets/voice/lord_morvain/"
+
+
+  # ── NPCs ──
+
+  - name: "Deserter Kael"
+    entity_type: "npc"
+    zone: "gatehouse"
+    count: 1
+    position: [[17, 10]]
+    stats:
+      str: 12
+      dex: 14
+      con: 12
+      int: 11
+      wis: 13
+      cha: 10
+      ac: 13
+      hp: 16
+      max_hp: 22
+      speed: 30
+    inventory: ["Shortsword", "Rope"]
+
+    portraits:
+      needed: true
+      style: "humanoid"
+      prompt_base: >
+        nervous human male soldier deserter, dented mismatched armor
+        pieces over dirty clothes, unshaven stubble, shifty darting
+        eyes, bandaged left arm, dirty face, guilty haunted expression,
+        crouching as if hiding, bust shot, painterly high fantasy,
+        dim torchlight, dark moody background
+      health_states:
+        healthy:
+          output: "assets/portraits/npcs/deserter_kael.png"
+          status: "pending"
+
+    voice:
+      preset: "roguish_trickster"
+      reference_audio: "core/audio/voice_seeds/roguish_trickster.wav"
+      exaggeration: 0.6
+      speed: 1.1
+
+    dialogue:
+      greeting:
+        - "Don't — don't attack! I'm not with them anymore!"
+        - "Thank the gods, living people. Real, breathing, living people."
+      quest:
+        - "I was guild muscle. Torven's men. We brought supplies to the citadel for months."
+        - "But what's in there... it's not natural. Morvain isn't a man anymore. He's... something else."
+        - "The main hall is patrolled by fallen knights. They never stop. Never rest."
+        - "But the side corridor — the trapped corridor — it's dangerous, but the traps are mechanical. Avoidable."
+        - "Past that, there's a war chapel. The old wards still hold there. You can rest safely."
+        - "The throne room is beyond the chapel. That's where Morvain waits. With the Crown."
+        - "One more thing. The Crown — I don't think destroying Morvain is enough. You have to break the Crown itself."
+      lore:
+        - "Torven — that's the guild master — he's been feeding resources to Morvain. Money, soldiers, materials."
+        - "Nobody knows why. Fear, probably. Or promises. The Crown can show you things. Things you want to see."
+        - "There were others like me. Soldiers who realized what we were part of. Most didn't make it out."
+        - "The fallen knights? They were Ashenmere's royal guard. Good men. The Crown took them."
+        - "Morvain talks to the Crown. I've heard him. Late at night, whispering to it like it's alive."
+        - "Maybe it is."
+      farewell:
+        - "I'm going south. Far south. Don't follow me."
+        - "Good luck. You'll need it. And... I'm sorry. For my part in this."
+
+    voice_lines:
+      needed: true
+      status: "pending"
+      output_dir: "assets/voice/deserter_kael/"
+
+  - name: "Ghost of King Aldric"
+    entity_type: "npc"
+    zone: "war_chapel"
+    count: 1
+    position: [[7, 14]]
+    stats:
+      str: 1
+      dex: 1
+      con: 1
+      int: 18
+      wis: 20
+      cha: 18
+      ac: 20
+      hp: 1
+      max_hp: 1
+      speed: 0
+    inventory: []
+
+    portraits:
+      needed: true
+      style: "humanoid"
+      prompt_base: >
+        translucent ghost of a noble king, faint golden glow, regal
+        bearing even in death, ornate but faded royal robes, a crown
+        of light hovering where a physical crown should be, kind wise
+        sad eyes, dignified elderly face with a well-trimmed white
+        beard, reaching out one transparent hand, bust shot, painterly
+        high fantasy, soft golden chapel candlelight, dark moody background
+      health_states:
+        healthy:
+          output: "assets/portraits/npcs/ghost_king_aldric.png"
+          status: "pending"
+
+    voice:
+      preset: "narrator"
+      reference_audio: "core/audio/voice_seeds/narrator.wav"
+      exaggeration: 0.3
+      speed: 0.85
+
+    dialogue:
+      greeting:
+        - "At last... someone with the strength to listen."
+        - "I am — was — Aldric. Third of my name. This was my castle. My kingdom."
+      quest:
+        - "The Crown of Fractures cannot be destroyed by sword or spell alone."
+        - "It must be removed from Morvain's brow while he lives. Only then, when it has no host..."
+        - "Strike it against the throne. The throne is bonded to the bloodline. My bloodline."
+        - "The impact will shatter the Crown. And the blight... will end."
+        - "But Morvain will fight to keep it. The Crown won't let him surrender."
+        - "You must weaken him until the Crown's grip falters. Look for the moment of doubt in his eyes."
+      lore:
+        - "My ancestors sealed the Crown in the deepest vault for good reason."
+        - "It is not evil. Not exactly. It is a mirror that shows you the worst version of yourself — and makes it real."
+        - "Morvain was my most trusted advisor. Loyal, brilliant, dedicated."
+        - "The Crown showed him a version of himself with power. With control. With everything he secretly wanted."
+        - "He couldn't resist. Nobody can, not for long. That's why it must be broken."
+        - "When the Crown breaks, the blight will recede. The dead will rest. The ice will thaw."
+        - "And Morvain... Morvain will remember what he was. That may be the cruelest part."
+      farewell:
+        - "I cannot leave this chapel. The wards hold me here as much as they protect you."
+        - "End this. Not for me — for him. For everyone the Crown has consumed."
+
+    voice_lines:
+      needed: true
+      status: "pending"
+      output_dir: "assets/voice/ghost_king_aldric/"
+
+
+  # ── Objects ──
+
+  - name: "Ancient Sword"
+    entity_type: "object"
+    zone: "war_chapel"
+    count: 1
+    position: [[8, 13]]
+    stats: {}
+    inventory: []
+    tags: ["item"]
+    portraits:
+      needed: true
+      style: "object"
+      prompt_base: >
+        an ornate longsword with glowing golden runes on blade, royal
+        crest pommel, radiant holy weapon, fantasy weapon, digital
+        painting, dark background, concept art
+      health_states:
+        healthy:
+          output: "assets/items/ancient_sword.png"
+          status: "pending"
+    voice: null
+    dialogue:
+      lore:
+        - "A finely crafted longsword rests in a stone alcove. It glows faintly with warm golden light — the opposite of the Crown's sickly green. The inscription reads: 'By Right and Duty.'"
+
+  - name: "Crown of Fractures"
+    entity_type: "object"
+    zone: "throne_room"
+    count: 1
+    position: [[2, 9]]
+    stats: {}
+    inventory: []
+    tags: ["quest_item"]
+    portraits:
+      needed: true
+      style: "object"
+      prompt_base: >
+        a dark jagged crown made of black metal and fractured green
+        crystal, sickly green glow, wisps of dark energy, evil artifact,
+        fantasy item, digital painting, dark background, concept art
+      health_states:
+        healthy:
+          output: "assets/items/crown_of_fractures.png"
+          status: "pending"
+    voice: null
+    dialogue:
+      lore:
+        - "The Crown of Fractures pulses with a heartbeat that isn't its own. Looking at it directly makes your vision swim. It whispers promises in a language you almost understand."
+
+
+triggers:
+  - label: "citadel_entrance"
+    zone: "gatehouse"
+    tile: [17, 9]
+    event_type: "ENTER_TILE"
+    condition:
+      type: "AlwaysTrue"
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: >
+          The Obsidian Citadel looms above you, its black walls drinking
+          the light. The gate stands open like a mouth. From inside,
+          a voice echoes — not shouting, not whispering, but speaking
+          at exactly the volume needed to reach you: 'Come in. I've
+          been waiting.'
+
+  - label: "corridor_trap_1"
+    zone: "trapped_corridor"
+    tile: [9, 5]
+    event_type: "ENTER_TILE"
+    condition:
+      type: "SkillCheck"
+      skill: "Perception"
+      dc: 15
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: "You spot pressure plates in the floor tiles and step over them carefully."
+    next_trigger:
+      label: "corridor_dart_trap"
+      event_type: "ENTER_TILE"
+      condition:
+        type: "AlwaysTrue"
+      reaction:
+        type: "ApplyDamage"
+        args:
+          damage: 8
+          damage_type: "piercing"
+          message: "Poison darts fire from hidden tubes in the walls! The tips burn where they graze your skin."
+
+  - label: "chapel_sanctuary"
+    zone: "war_chapel"
+    tile: [7, 13]
+    event_type: "ENTER_TILE"
+    condition:
+      type: "AlwaysTrue"
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: >
+          Golden light. After everything — the black glass, the green
+          corruption, the dead walking — golden light. The war chapel's
+          ancient wards still hold. You feel the blight's presence recede
+          from your mind like a tide pulling back. A translucent figure
+          materializes at the altar. A king, long dead, with kind sad eyes.
+
+  - label: "throne_room_final"
+    zone: "throne_room"
+    tile: [2, 8]
+    event_type: "ENTER_TILE"
+    condition:
+      type: "AlwaysTrue"
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: >
+          The doors slam open before you touch them. Green lightning arcs
+          across the vast circular chamber. On a throne of twisted black
+          iron, a figure in ornate dark armor sits with terrible stillness.
+          The Crown of Fractures burns on his brow, its green light
+          illuminating a face that was once noble, now hollowed by power
+          and madness. Lord Castellan Morvain, the Dark Sovereign, rises
+          slowly from his throne. "Ah. You've come at last. I wondered
+          how long it would take."
+
+
+quests:
+  - id: "shatter_the_crown"
+    name: "Shatter the Crown"
+    type: "world"
+    giver: "Ghost of King Aldric"
+    zone: "war_chapel"
+    description: >
+      King Aldric's ghost reveals the Crown of Fractures can only be
+      destroyed by removing it from Morvain and striking it against
+      the bonded throne. Defeat the Dark Sovereign, seize the Crown,
+      and end the blight forever.
+    objectives:
+      - "Defeat Lord Castellan Morvain"
+      - "Remove the Crown of Fractures"
+      - "Strike the Crown against the throne to shatter it"
+    reward:
+      xp: 1000
+    difficulty: 5
+
+
+connections:
+  north: "biome_blighted_crossing"
+  south: "biome_sunken_swamp"
+  east: "biome_scorched_sands"
+  west: "biome_dark_forest"
+  border_tiles:
+    north: [[0, 8], [0, 9], [0, 10]]
+    south: [[19, 8], [19, 9], [19, 10]]
+    east: [[9, 19], [10, 19], [11, 19]]
+    west: [[9, 0], [10, 0], [11, 0]]

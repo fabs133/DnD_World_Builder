@@ -582,3 +582,46 @@ class CanReachTile(Specification):
             "type": "CanReachTile",
             "distance": self.distance,
         }
+
+
+class ElevationTraversable(Specification):
+    """Check if an entity can traverse between two elevations.
+
+    Candidate: dict or object with ``from_elevation`` and ``to_elevation``.
+    Context: optional ``has_climb_speed``, ``has_fly_speed``.
+    """
+
+    @property
+    def rule_id(self) -> str:
+        return "elevation_traversable"
+
+    def is_satisfied_by(self, candidate: Any, context: dict[str, Any] | None = None) -> SpecResult:
+        context = context or {}
+        from_elev = getattr(candidate, "from_elevation", 0) if not isinstance(candidate, dict) else candidate.get("from_elevation", 0)
+        to_elev = getattr(candidate, "to_elevation", 0) if not isinstance(candidate, dict) else candidate.get("to_elevation", 0)
+
+        from models.combat.elevation import evaluate_traversal, TraversalType
+        info = evaluate_traversal(
+            from_elev, to_elev,
+            has_climb_speed=context.get("has_climb_speed", False),
+            has_fly_speed=context.get("has_fly_speed", False),
+        )
+
+        passed = info.traversal_type != TraversalType.IMPASSABLE
+        return SpecResult(
+            rule_id=self.rule_id,
+            passed=passed,
+            message=info.description,
+            suggested_fix="Use Dash or find an alternate route" if not passed else None,
+            tags=frozenset({"elevation"}),
+            data={
+                "traversal_type": info.traversal_type.value,
+                "cost_multiplier": info.movement_cost_multiplier,
+                "requires_check": info.requires_check,
+                "check_dc": info.check_dc,
+                "fall_damage_dice": info.fall_damage_dice,
+            },
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {"type": "ElevationTraversable"}

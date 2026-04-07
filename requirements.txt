@@ -5,8 +5,12 @@ idna==3.10
 PyQt5==5.15.11
 PyQt5-Qt5>=5.15.2
 PyQt5_sip>=12.15
-qt-material>=2.14
+# qt-material removed — replaced by core/theme_engine.py (ThemeEngine)
 requests==2.32.4
 urllib3==2.4.0
 aiohttp>=3.9.0
 pyyaml>=6.0
+# Voice generation (optional — features degrade gracefully without it)
+# pip install chatterbox-tts torch torchaudio
+# chatterbox-tts>=0.1.0
+sounddevice>=0.4.6  # optional: voice recording from microphone

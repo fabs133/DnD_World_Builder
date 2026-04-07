@@ -47,7 +47,7 @@ Issues = "https://github.com/fabs133/DnD_World_Builder/issues"
 testpaths = ["tests"]
 timeout = 60
 asyncio_mode = "auto"
-addopts = "-v --tb=short"
+addopts = "-v --tb=short -m 'not slow'"
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
 ]

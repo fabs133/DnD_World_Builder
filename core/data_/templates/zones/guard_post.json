@@ -1,0 +1,19 @@
+{
+  "template_id": "guard_post",
+  "name": "Guard Post",
+  "tags": ["military", "indoor"],
+  "description": "A sturdy guard station with a captain's desk.",
+  "zones_data": [
+    {
+      "zone_id": "guard_post_main",
+      "label": "Guard Post",
+      "description": "A stone building with weapon racks and a large regional map.",
+      "background_image": null,
+      "connections": [],
+      "locked": false,
+      "lock_dc": 15,
+      "tags": ["indoor", "military"],
+      "encounter_template_id": null
+    }
+  ]
+}

@@ -71,10 +71,14 @@ class TestAdapter(InputAdapter):
         available_actions: list[str],
     ) -> Action:
         if self._action_index >= len(self._actions):
-            raise IndexError(
-                f"TestAdapter ran out of scripted actions at index {self._action_index} "
-                f"for entity {entity_name}"
-            )
+            # Out of scripted actions — end the turn gracefully.
+            # This supports multi-action turns where the loop asks for
+            # more actions than the test scripted.
+            from core.engine.actions.end_turn_action import EndTurnAction
+
+            class _Stub:
+                name = entity_name
+            return EndTurnAction(_Stub())
         action = self._actions[self._action_index]
         self._action_index += 1
         return action

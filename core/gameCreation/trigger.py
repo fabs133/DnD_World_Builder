@@ -87,7 +87,9 @@ class Trigger:
         if is_skill:
             stats = event_data.get("character_stats", {})
             passed = self.condition.attempt(stats)
-            # damage reactions invert on a pass
+            # D&D semantics: failing a save means the reaction fires.
+            # For ApplyDamage, "success" here means "the reaction activates"
+            # (i.e. the character *failed* their save and takes damage).
             success = not passed if isinstance(self.reaction, ApplyDamage) else passed
         else:
             success = bool(self.condition(event_data))
@@ -131,9 +133,12 @@ class Trigger:
         return {
             "event_type": self.event_type,
             "label": self.label,
+            "cooldown": self.cooldown,
+            "source": self.source,
+            "flags": self.flags,
             "next_trigger": self.next_trigger.to_dict() if self.next_trigger else None,
             "condition": self._serialize_component(self.condition),
-            "reaction": self._serialize_component(self.reaction)
+            "reaction": self._serialize_component(self.reaction),
         }
 
     @classmethod
@@ -154,7 +159,10 @@ class Trigger:
             condition=cond,
             reaction=react,
             label=data.get("label"),
-            next_trigger=next_trigger
+            source=data.get("source"),
+            flags=data.get("flags"),
+            cooldown=data.get("cooldown"),
+            next_trigger=next_trigger,
         )
 
     @staticmethod
@@ -212,7 +220,9 @@ class Trigger:
         if data["type"] == "function":
             return global_trigger_registry.get_function(data["name"])
         elif data["type"] == "SkillCheck":
-            return SkillCheck(skill_name=data["skill"], dc=data["dc"])
+            # Support both flat and nested (args) formats
+            args = data.get("args", data)
+            return SkillCheck(skill_name=args.get("skill", ""), dc=args.get("dc", 10))
         else:
             cls_ = registry.get_class(data["type"])
             if not cls_:

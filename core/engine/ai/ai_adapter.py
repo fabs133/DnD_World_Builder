@@ -12,6 +12,9 @@ from core.engine.input_adapter import InputAdapter
 from core.engine.game_state import GameState
 from core.engine.ai.ollama_client import OllamaClient
 from core.engine.ai.action_parser import ActionParser, ParseError
+from core.engine.ai.combat_utils import (
+    are_allies, find_weakest_target, get_actor, get_personality,
+)
 from core.engine.actions.end_turn_action import EndTurnAction
 from models.flow.action.action import Action
 from models.ai.personality import EntityPersonality
@@ -151,8 +154,14 @@ class AIAdapter(InputAdapter):
 
         app_logger.warning(
             f"[AI] {entity_name} failed all {self._max_retries} attempts, "
-            f"falling back to EndTurnAction"
+            f"falling back to first available action"
         )
+        # Pick the first available action rather than wasting the turn
+        if available_actions:
+            from core.engine.ai.heuristic_adapter import HeuristicAIAdapter
+            return self._get_fallback().choose_action(
+                entity_name, game_state, available_actions,
+            )
         return EndTurnAction(actor)
 
     def choose_target(
@@ -253,24 +262,11 @@ class AIAdapter(InputAdapter):
 
     def _get_actor(self, entity_name: str) -> Any:
         """Get the entity reference."""
-        if entity_name in self._entities_by_name:
-            return self._entities_by_name[entity_name]
-
-        class _Stub:
-            name = entity_name
-            entity_type = "creature"
-            hp = 10
-            max_hp = 10
-            position = (0, 0)
-            personality = None
-        return _Stub()
+        return get_actor(entity_name, self._entities_by_name)
 
     def _get_personality(self, actor: Any) -> EntityPersonality:
         """Get personality from actor or use default."""
-        personality = getattr(actor, "personality", None)
-        if personality is not None:
-            return personality
-        return self._default_personality
+        return get_personality(actor, self._default_personality)
 
     def _get_or_create_memory(self, entity_name: str) -> CombatMemory:
         """Get or create combat memory for entity."""
@@ -286,7 +282,7 @@ class AIAdapter(InputAdapter):
         enemies = []
 
         actor = self._get_actor(actor_name)
-        actor_type = getattr(actor, "entity_type", "").lower()
+        actor_type = getattr(actor, "entity_type", "")
 
         for entity_snap in game_state.entities:
             if entity_snap.name == actor_name:
@@ -316,15 +312,7 @@ class AIAdapter(InputAdapter):
 
     def _are_allies(self, type_a: str, type_b: str) -> bool:
         """Check if two entity types are allied."""
-        player_types = {"player", "ally", "companion"}
-        enemy_types = {"enemy", "monster", "hostile"}
-        
-        a_is_player = type_a in player_types
-        b_is_player = type_b in player_types
-        a_is_enemy = type_a in enemy_types
-        b_is_enemy = type_b in enemy_types
-        
-        return (a_is_player and b_is_player) or (a_is_enemy and b_is_enemy)
+        return are_allies(type_a, type_b)
 
     def _build_action_options(self, action_names: list[str]) -> list[ActionOption]:
         """Convert action name strings to ActionOption objects."""
@@ -384,15 +372,7 @@ class AIAdapter(InputAdapter):
         self, valid_targets: list[str], game_state: GameState
     ) -> str:
         """Find the target with lowest HP."""
-        weakest = valid_targets[0]
-        lowest_hp = float("inf")
-
-        for entity_snap in game_state.entities:
-            if entity_snap.name in valid_targets and entity_snap.hp < lowest_hp:
-                lowest_hp = entity_snap.hp
-                weakest = entity_snap.name
-
-        return weakest
+        return find_weakest_target(valid_targets, game_state)
 
     def _position_toward_enemies(
         self,
@@ -407,8 +387,8 @@ class AIAdapter(InputAdapter):
             if e.entity_type.lower() in {"enemy", "monster", "hostile"} and e.is_alive
         ]
 
-        if not enemy_positions:
-            return valid_positions[0]
+        if not enemy_positions or not valid_positions:
+            return valid_positions[0] if valid_positions else (0, 0)
 
         # Find nearest enemy
         actor = self._get_actor(actor_name)
@@ -438,8 +418,8 @@ class AIAdapter(InputAdapter):
             if e.entity_type.lower() in {"enemy", "monster", "hostile"} and e.is_alive
         ]
 
-        if not enemy_positions:
-            return valid_positions[0]
+        if not enemy_positions or not valid_positions:
+            return valid_positions[0] if valid_positions else (0, 0)
 
         # Find position that maximizes minimum distance to any enemy
         def min_enemy_distance(pos):

@@ -81,6 +81,34 @@ class MediaManager:
 
         return dest.relative_to(self.workspace).as_posix()
 
+    IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp", ".gif", ".webp"}
+    AUDIO_EXTENSIONS = {".wav", ".mp3", ".ogg"}
+
+    def list_images(self):
+        """Return relative paths of all image files in media/images/.
+
+        :return: Sorted list of relative paths (e.g. ``media/images/tavern.png``).
+        :rtype: list[str]
+        """
+        return self._list_dir(self.images_dir, self.IMAGE_EXTENSIONS)
+
+    def list_audio(self):
+        """Return relative paths of all audio files in media/audio/.
+
+        :return: Sorted list of relative paths (e.g. ``media/audio/ambience.wav``).
+        :rtype: list[str]
+        """
+        return self._list_dir(self.audio_dir, self.AUDIO_EXTENSIONS)
+
+    def _list_dir(self, directory, extensions):
+        if not directory.is_dir():
+            return []
+        results = []
+        for f in sorted(directory.iterdir()):
+            if f.is_file() and f.suffix.lower() in extensions:
+                results.append(f.relative_to(self.workspace).as_posix())
+        return results
+
     @staticmethod
     def _files_identical(a, b):
         """

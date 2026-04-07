@@ -35,7 +35,8 @@ class _EntityEditPanel(QWidget):
         # Portrait
         self._image_path = None
         self.image_label = QLabel()
-        self.image_label.setFixedSize(100, 100)
+        self.image_label.setMinimumSize(80, 80)
+        self.image_label.setMaximumSize(160, 160)
         self.image_label.setAlignment(Qt.AlignCenter)
         self.image_label.setStyleSheet("border: 1px solid #ccc; background: #f5f5f5;")
         img_btn = QPushButton("Image...")
@@ -64,6 +65,18 @@ class _EntityEditPanel(QWidget):
         self.inventory_box.setPlaceholderText("One item per line…")
         self.inventory_box.textChanged.connect(self._mark_dirty)
         self.form.addRow("Inventory:", self.inventory_box)
+
+        # Voice settings
+        from ui.voice.voice_settings_widget import VoiceSettingsWidget
+        self._voice_widget = VoiceSettingsWidget()
+        self._voice_widget.profile_changed.connect(self._mark_dirty)
+        voice_toggle = QPushButton("Voice Settings")
+        voice_toggle.setCheckable(True)
+        voice_toggle.setStyleSheet("font-size: 11px; padding: 3px;")
+        self._voice_widget.hide()
+        voice_toggle.toggled.connect(self._voice_widget.setVisible)
+        self.form.addRow(voice_toggle)
+        self.form.addRow(self._voice_widget)
 
         # Action buttons
         btn_row = QHBoxLayout()
@@ -106,6 +119,20 @@ class _EntityEditPanel(QWidget):
         self.inventory_box.blockSignals(False)
 
         self._update_image_preview()
+
+        # Load voice profile if entity has one
+        vp = getattr(entity, "voice_profile", None)
+        if vp and hasattr(vp, "exaggeration"):
+            self._voice_widget.set_profile(vp)
+        # Set preview text from entity's first dialogue line
+        dialogue = getattr(entity, "dialogue_lines", {})
+        first_line = ""
+        for lines in dialogue.values():
+            if lines:
+                first_line = lines[0]
+                break
+        self._voice_widget.set_preview_text(first_line or f"I am {entity.name}.")
+
         self.setVisible(True)
 
     def has_unsaved_changes(self) -> bool:
@@ -124,6 +151,8 @@ class _EntityEditPanel(QWidget):
         self._entity.inventory = self.inventory_box.toPlainText().splitlines()
         if self._image_path is not None:
             self._entity.image_path = self._image_path
+        # Save voice profile
+        self._entity.voice_profile = self._voice_widget.get_profile()
         self._dirty = False
         app_logger.info(f"[EntitiesPanel] Saved entity '{self._entity.name}'")
 
@@ -291,7 +320,8 @@ class EntitiesPanel(QWidget):
         self._refresh_list()
 
         from core.gameCreation.event_bus import EventBus
-        EventBus.emit("entity_removed", {
+        from core.events import ENTITY_REMOVED
+        EventBus.emit(ENTITY_REMOVED, {
             "position": self._tile_data.position if self._tile_data else None,
             "entity_name": entity_name,
         })
@@ -314,7 +344,8 @@ class EntitiesPanel(QWidget):
                 self._refresh_list()
 
                 from core.gameCreation.event_bus import EventBus
-                EventBus.emit("entity_added", {
+                from core.events import ENTITY_ADDED
+                EventBus.emit(ENTITY_ADDED, {
                     "position": self._tile_data.position,
                     "entity_name": entity.name,
                 })
@@ -332,7 +363,8 @@ class EntitiesPanel(QWidget):
                     self._refresh_list()
 
                     from core.gameCreation.event_bus import EventBus
-                    EventBus.emit("entity_added", {
+                    from core.events import ENTITY_ADDED
+                    EventBus.emit(ENTITY_ADDED, {
                         "position": self._tile_data.position,
                         "entity_name": entity.name,
                     })

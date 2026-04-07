@@ -253,6 +253,114 @@ class TestChooseTarget:
         assert adapter.choose_target("Goblin", state, []) == ""
 
 
+class TestPathfinderMovement:
+    """Tests for pathfinder-aware multi-tile movement."""
+
+    def _make_grid(self, width=6, height=6):
+        from models.world.world_tile_manager import WorldTileManager
+        return WorldTileManager(width, height, tile_type="square")
+
+    def test_moves_multiple_tiles_with_pathfinder(self):
+        """AI moves >1 tile when pathfinder + speed allow."""
+        tm = self._make_grid()
+        goblin = SimpleEntity("Goblin", "enemy", hp=7, max_hp=7, position=(5, 0))
+        fighter = SimpleEntity("Fighter", "player", hp=20, max_hp=20, position=(0, 0))
+
+        adapter = HeuristicAIAdapter(
+            entities_by_name={"Goblin": goblin, "Fighter": fighter},
+            rng=random.Random(42),
+            tile_map=tm,
+        )
+
+        state = _make_state([
+            _snap("Goblin", "enemy", 7, 7, (5, 0)),
+            _snap("Fighter", "player", 20, 20, (0, 0)),
+        ], width=6, height=6)
+
+        action = adapter.choose_action("Goblin", state, ["ATTACK", "MOVE", "END_TURN"])
+        assert isinstance(action, MoveAction)
+        # Should move more than 1 tile toward Fighter
+        tx, ty = action.target_position
+        dist_from_start = abs(tx - 5) + abs(ty - 0)
+        assert dist_from_start > 1, f"Expected multi-tile move, got {action.target_position}"
+
+    def test_moves_around_wall_with_pathfinder(self):
+        """AI routes around blocking tiles instead of getting stuck."""
+        tm = self._make_grid()
+        # Wall at row 0, cols 1-4 (leaving (0,0) and (5,0) open)
+        for x in range(1, 5):
+            tm.set_terrain_config(x, 0, blocking=True)
+
+        goblin = SimpleEntity("Goblin", "enemy", hp=7, max_hp=7, position=(5, 0))
+        fighter = SimpleEntity("Fighter", "player", hp=20, max_hp=20, position=(0, 0))
+
+        adapter = HeuristicAIAdapter(
+            entities_by_name={"Goblin": goblin, "Fighter": fighter},
+            rng=random.Random(42),
+            tile_map=tm,
+        )
+
+        state = _make_state([
+            _snap("Goblin", "enemy", 7, 7, (5, 0)),
+            _snap("Fighter", "player", 20, 20, (0, 0)),
+        ], width=6, height=6)
+
+        action = adapter.choose_action("Goblin", state, ["ATTACK", "MOVE", "END_TURN"])
+        assert isinstance(action, MoveAction)
+        # Must have moved (not stuck)
+        assert action.target_position != (5, 0)
+
+    def test_flee_uses_reachable_tiles(self):
+        """Fleeing entity uses full speed budget to maximize distance."""
+        tm = self._make_grid()
+        cowardly = EntityPersonality(Alignment.CHAOTIC_EVIL)
+        cowardly._custom_weights = TacticalWeights(flee_threshold=0.5)
+
+        goblin = SimpleEntity("Goblin", "enemy", hp=2, max_hp=10, position=(1, 0))
+        goblin.personality = cowardly
+        fighter = SimpleEntity("Fighter", "player", hp=20, max_hp=20, position=(0, 0))
+
+        adapter = HeuristicAIAdapter(
+            entities_by_name={"Goblin": goblin, "Fighter": fighter},
+            rng=random.Random(42),
+            tile_map=tm,
+        )
+
+        state = _make_state([
+            _snap("Goblin", "enemy", 2, 10, (1, 0)),
+            _snap("Fighter", "player", 20, 20, (0, 0)),
+        ], width=6, height=6)
+
+        action = adapter.choose_action("Goblin", state, ["ATTACK", "MOVE", "END_TURN"])
+        assert isinstance(action, MoveAction)
+        tx, ty = action.target_position
+        # Should flee far away (more than 1 tile) from Fighter at (0,0)
+        flee_dist = abs(tx - 0) + abs(ty - 0)
+        assert flee_dist > 2, f"Expected multi-tile flee, got {action.target_position}"
+
+    def test_falls_back_to_simple_without_tile_map(self):
+        """Without tile_map, behavior unchanged (1-tile steps)."""
+        goblin = SimpleEntity("Goblin", "enemy", hp=7, max_hp=7, position=(4, 4))
+        fighter = SimpleEntity("Fighter", "player", hp=20, max_hp=20, position=(0, 0))
+
+        adapter = HeuristicAIAdapter(
+            entities_by_name={"Goblin": goblin, "Fighter": fighter},
+            rng=random.Random(42),
+            # No tile_map
+        )
+
+        state = _make_state([
+            _snap("Goblin", "enemy", 7, 7, (4, 4)),
+            _snap("Fighter", "player", 20, 20, (0, 0)),
+        ])
+
+        action = adapter.choose_action("Goblin", state, ["ATTACK", "MOVE", "END_TURN"])
+        assert isinstance(action, MoveAction)
+        # 1-tile step: at most 1 tile away from (4,4)
+        tx, ty = action.target_position
+        assert max(abs(tx - 4), abs(ty - 4)) <= 1
+
+
 class TestChooseMovement:
     def test_aggressive_moves_toward(self):
         aggressive = EntityPersonality(Alignment.CHAOTIC_EVIL)

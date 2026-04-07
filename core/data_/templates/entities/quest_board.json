@@ -1,0 +1,20 @@
+{
+  "template_id": "quest_board",
+  "name": "Quest Board",
+  "category": "object",
+  "tags": ["interactive", "quest"],
+  "description": "A notice board with posted quests.",
+  "entity_data": {
+    "name": "Quest Board",
+    "entity_type": "object",
+    "stats": {},
+    "inventory": [],
+    "triggers": [],
+    "hp": 999,
+    "max_hp": 999,
+    "conditions": [],
+    "dialogue_lines": {
+      "lore": ["(Several bounty notices are pinned to the board.)"]
+    }
+  }
+}

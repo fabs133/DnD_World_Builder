@@ -49,13 +49,13 @@ class Enemy(GameEntity):
 
         See class docstring for parameter details.
         """
-        super().__init__(name, "enemy")
+        super().__init__(name, "enemy", stats=stats)
         self.name = name  # String
-        self.armor_class = armor_class  # Integer
-        self.hp = hp  # Integer
-        self.stats = stats  # Dictionary: { "Strength": 10, "Dexterity": 12, ... }
         self.saving_throws = saving_throws  # Dictionary: { "Strength": 2, "Dexterity": 4, ...}
         self.attacks = attacks  # List of attack dictionaries: { "name": "Bite", "damage": "1d6+2 piercing", "to_hit": 4 }
+        # Set combat stats via properties (writes to self.stats)
+        self.armor_class = armor_class  # Integer
+        self.hp = hp  # Integer
         self.speed = speed  # Integer
         self.resistances = resistances  # List of strings (e.g., ["fire", "cold"])
         self.immunities = immunities  # List of strings (e.g., ["poison"])

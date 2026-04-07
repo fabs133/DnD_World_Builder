@@ -106,14 +106,22 @@ class ScenarioLoader:
             positions = terrain_cfg.get("positions", [])
             cost = terrain_cfg.get("movement_cost")
             blocking = terrain_cfg.get("blocking", False)
-            # Convert movement_cost multiplier to feet (base is 5ft per tile)
-            feet_cost = (cost * 5) if cost is not None else None
+            # movement_cost is already in feet (default tile = 5ft)
+            feet_cost = cost
             for pos in positions:
                 gm.world_tile_manager.set_terrain_config(
                     pos[0], pos[1],
                     movement_cost=feet_cost,
                     blocking=blocking,
                 )
+
+            # Parse trigger if present in terrain config
+            trigger_cfg = terrain_cfg.get("trigger")
+            if trigger_cfg:
+                trigger = _create_terrain_trigger(terrain_name, trigger_cfg)
+                if trigger:
+                    for pos in positions:
+                        _attach_trigger_to_tile(gm, trigger, pos)
 
         # 3. Parse optional rules section
         ruleset = _parse_ruleset(self._data.get("rules"))
@@ -199,6 +207,19 @@ def _create_entity(cfg: dict) -> BehavioralEntity:
         personality.flaw = cfg["flaw"]
 
     entity.personality = personality
+
+    # Extract portrait paths from YAML health_states
+    portraits_cfg = cfg.get("portraits", {})
+    if isinstance(portraits_cfg, dict) and portraits_cfg.get("needed"):
+        health_states = portraits_cfg.get("health_states", {})
+        for state_name, state_cfg in health_states.items():
+            if isinstance(state_cfg, dict):
+                output_path = state_cfg.get("output")
+                if output_path:
+                    entity.portraits[state_name] = output_path
+        if "healthy" in entity.portraits:
+            entity.image_path = entity.portraits["healthy"]
+
     return entity
 
 
@@ -226,3 +247,56 @@ def _create_adapters(
         return adapters
 
     raise ValueError(f"Unknown mode: {mode!r}. Use 'mock' or 'ollama'.")
+
+
+def _create_terrain_trigger(terrain_name: str, cfg: dict):
+    """Create a Trigger from a terrain YAML trigger config.
+
+    :param terrain_name: Name of the terrain section (e.g. ``"trap"``).
+    :param cfg: Trigger config dict from YAML.
+    :returns: A Trigger instance, or None if config is invalid.
+    """
+    from core.gameCreation.trigger import Trigger
+    from models.flow.condition.condition_list import AlwaysTrue
+    from models.flow.reaction.reactions_list import ApplyDamage
+
+    event_type = cfg.get("event_type", "ENTER_TILE")
+    # Normalize aliases
+    event_map = {"entity_enters": "ENTER_TILE", "on_damage": "ON_DAMAGE"}
+    event_type = event_map.get(event_type, event_type.upper())
+
+    condition = AlwaysTrue()
+
+    damage = cfg.get("damage")
+    if damage:
+        damage_type = cfg.get("effect", "trap")
+        # Store dice expression so it's rolled fresh each time the trap fires
+        reaction = ApplyDamage(damage_type=damage_type, damage_expr=damage)
+    else:
+        return None
+
+    return Trigger(
+        event_type=event_type,
+        condition=condition,
+        reaction=reaction,
+        label=f"terrain_{terrain_name}_trap",
+        source=terrain_name,
+    )
+
+
+def _attach_trigger_to_tile(gm, trigger, pos):
+    """Place a trap entity hosting a trigger at the given position.
+
+    :param gm: The Gamemaster instance.
+    :param trigger: The Trigger to attach.
+    :param pos: ``[x, y]`` position.
+    """
+    from models.entities.game_entity import GameEntity
+
+    trap_name = f"trap_{pos[0]}_{pos[1]}"
+    trap = GameEntity(name=trap_name, entity_type="trap", stats={})
+    trap.position = (pos[0], pos[1])
+    trap.hp = 1  # traps don't die
+    trap.max_hp = 1
+    trap.register_trigger(trigger)
+    gm.world_tile_manager.place_entity(trap, pos[0], pos[1])

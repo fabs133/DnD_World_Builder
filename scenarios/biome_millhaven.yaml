@@ -1,0 +1,601 @@
+# ══════════════════════════════════════════════════════════════════════
+# Millhaven — Player Spawn Town (Difficulty 1)
+# The last safe settlement. Quest hub, exposition, and supply point.
+# ══════════════════════════════════════════════════════════════════════
+
+biome:
+  id: "millhaven"
+  name: "Millhaven"
+  description: >
+    A small frontier town clinging to the edge of the Shattered Realms.
+    Once a prosperous waystation on the north road, Millhaven now serves
+    as the last bastion of civilization before the corrupted lands.
+    Refugees trickle in daily. The mill wheel still turns, but the grain
+    it grinds comes from ever-shrinking fields.
+  biome_type: "town"
+  difficulty: 1
+  grid_size: [20, 20]
+  grid_offset: [40, 0]                  # Bottom-left of 3x3 world
+  ambient_audio: "tavern"
+  terrain_default: "FLOOR"
+
+  assets:
+    background:
+      needed: true
+      prompt: >
+        medieval frontier town at dusk, warm lantern light from windows,
+        cobblestone streets, wooden buildings with thatched roofs, a water mill
+        by a stream, mountains in the far distance, smoke from chimneys,
+        cozy but with an edge of unease, wide cinematic shot, painterly
+        illustration, warm and cool contrast
+      output: "assets/backgrounds/millhaven.png"
+      status: "pending"
+
+    terrain_texture:
+      needed: true
+      terrain_type: "FLOOR"
+      prompt: >
+        section of a fantasy RPG game map, cobblestone street, worn
+        grey stones with moss in cracks, top down view, painterly,
+        hand painted style
+      output: "assets/terrain/cobblestone.png"
+      status: "pending"
+
+
+# ─── ZONES ───────────────────────────────────────────────────────────
+
+zones:
+  - id: "south_gate"
+    label: "South Gate"
+    description: "The main road enters through a timber palisade. Two bored guards lean on their spears."
+    terrain: "FLOOR"
+    tiles: [[17, 9], [17, 10], [18, 9], [18, 10]]  # Claude Code: fill tile positions
+    tags: []
+    ambient_audio: "tavern"
+    background:
+      needed: true
+      prompt: >
+        timber palisade gate at dusk, two guard posts, lantern light warming
+        the wooden walls, cobblestone road passing through, frontier town
+        entrance, painterly high fantasy, wide shot, dark moody atmosphere
+      output: "assets/backgrounds/zones/millhaven_south_gate.png"
+      status: "pending"
+
+  - id: "town_square"
+    label: "Town Square"
+    description: >
+      The heart of Millhaven. A weathered notice board stands beside a stone well.
+      Market stalls line the edges, half of them empty. A faded banner reads
+      'Millhaven Harvest Festival' — it looks years old.
+    terrain: "FLOOR"
+    tiles: [[9, 8], [9, 9], [9, 10], [10, 8], [10, 9], [10, 10]]  # Claude Code: fill
+    tags: []
+    ambient_audio: "tavern"
+    background:
+      needed: true
+      prompt: >
+        medieval town square at dusk, stone well in center, weathered notice
+        board, empty market stalls, cobblestone ground, warm lantern glow
+        from buildings, painterly high fantasy, wide shot, dark moody atmosphere
+      output: "assets/backgrounds/zones/millhaven_town_square.png"
+      status: "pending"
+
+  - id: "crossed_antlers"
+    label: "The Crossed Antlers"
+    description: >
+      The town's only tavern. Smoke-stained beams, mismatched furniture, and
+      a fire that's always burning. The barkeep, Brenna, runs the place with
+      an iron will and a soft heart. Most news passes through here.
+    terrain: "FLOOR"
+    tiles: [[7, 6], [7, 7], [7, 8], [8, 6], [8, 7], [8, 8]]  # Claude Code: fill
+    tags: []
+    ambient_audio: "tavern"
+    background:
+      needed: true
+      prompt: >
+        medieval tavern interior, smoke-stained wooden beams, large stone
+        fireplace with roaring fire, mismatched wooden tables and chairs,
+        tankards on bar, warm orange lighting, painterly high fantasy,
+        wide interior shot
+      output: "assets/backgrounds/zones/millhaven_crossed_antlers.png"
+      status: "pending"
+
+  - id: "blacksmith"
+    label: "Durin's Forge"
+    description: >
+      The ring of hammer on steel echoes across the square. Durin is the only
+      smith left — the others fled south months ago. He works day and night
+      repairing weapons for anyone willing to push north.
+    terrain: "FLOOR"
+    tiles: [[7, 12], [7, 13], [7, 14], [8, 12], [8, 13], [8, 14]]  # Claude Code: fill
+    tags: []
+    ambient_audio: "tavern"
+    background:
+      needed: true
+      prompt: >
+        dwarven blacksmith forge interior, glowing orange anvil, hammers and
+        tongs on walls, sparks flying, leather apron hanging, hot coals in
+        forge, painterly high fantasy, warm orange lighting, wide interior shot
+      output: "assets/backgrounds/zones/millhaven_blacksmith.png"
+      status: "pending"
+
+  - id: "chapel"
+    label: "Chapel of the Dawn"
+    description: >
+      A small stone chapel with a cracked bell tower. Sister Maren tends to
+      the wounded refugees here. The wards carved into the doorframe still
+      glow faintly — old magic, from before the Shattering.
+    terrain: "FLOOR"
+    tiles: [[4, 14], [4, 15], [4, 16], [5, 14], [5, 15], [5, 16]]  # Claude Code: fill
+    tags: []
+    ambient_audio: "night"
+    background:
+      needed: true
+      prompt: >
+        small stone chapel interior, cracked stained glass window, wooden
+        pews, altar with faint golden glow, carved ward symbols on doorframe,
+        candle light, painterly high fantasy, soft warm lighting, wide
+        interior shot
+      output: "assets/backgrounds/zones/millhaven_chapel.png"
+      status: "pending"
+
+  - id: "north_road"
+    label: "North Road"
+    description: >
+      The road out of town. Beyond the last lantern post, the world changes.
+      The grass is darker. The birdsong stops. Travelers who go north
+      don't always come back.
+    terrain: "GRASS"
+    tiles: [[0, 9], [0, 10], [1, 9], [1, 10], [2, 9], [2, 10]]  # Claude Code: fill
+    tags: []
+    ambient_audio: "forest"
+    background:
+      needed: true
+      prompt: >
+        dirt road leading into darkness beyond last lantern post, grass
+        turning darker ahead, ominous tree line in distance, dusk sky,
+        edge of civilization, painterly high fantasy, wide shot, dark
+        moody atmosphere
+      output: "assets/backgrounds/zones/millhaven_north_road.png"
+      status: "pending"
+
+
+# ─── TERRAIN OVERRIDES ──────────────────────────────────────────────
+
+terrain_overrides:
+  # Stream running through town (feeds the mill)
+  - terrain: "WATER"
+    tiles: [[12, 3], [12, 4], [12, 5], [12, 6], [12, 7], [12, 8]]  # Claude Code: fill — horizontal stream
+  # Palisade walls around town perimeter
+  - terrain: "WALL"
+    tiles: [[15, 4], [15, 5], [15, 6], [15, 7], [15, 8], [15, 11], [15, 12], [15, 13], [15, 14], [15, 15], [16, 4], [16, 15]]  # Claude Code: fill — town border
+  # Grass outside town walls
+  - terrain: "GRASS"
+    tiles: [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 15], [0, 16], [0, 17], [0, 18], [0, 19], [19, 0], [19, 1], [19, 2], [19, 3], [19, 16], [19, 17], [19, 18], [19, 19]]  # Claude Code: fill — outside perimeter
+
+
+# ─── ENTITIES ────────────────────────────────────────────────────────
+
+entities:
+
+  # ── NPCs ──
+
+  - name: "Brenna the Barkeep"
+    entity_type: "npc"
+    zone: "crossed_antlers"
+    count: 1
+    position: [[8, 7]]                  # Claude Code: fill
+    stats:
+      str: 12
+      dex: 10
+      con: 14
+      int: 13
+      wis: 14
+      cha: 16
+      ac: 10
+      hp: 18
+      max_hp: 18
+      speed: 30
+    inventory: []
+    tags: ["shopkeeper"]
+
+    portraits:
+      needed: true
+      style: "humanoid"
+      prompt_base: >
+        middle-aged human woman barkeep, strong arms, warm brown eyes,
+        ruddy cheeks, dark hair pulled back in a practical bun, white
+        apron over a brown dress, holding a tankard, confident friendly
+        expression, bust shot, painterly high fantasy, warm tavern
+        lighting, dark moody background
+      health_states:
+        healthy:
+          output: "assets/portraits/npcs/brenna_barkeep.png"
+          status: "pending"
+
+    voice:
+      preset: "barkeep"
+      reference_audio: "core/audio/voice_seeds/barkeep.wav"
+      exaggeration: 0.5
+      speed: 1.0
+
+    dialogue:
+      greeting:
+        - "Well now, fresh faces! [chuckle] Sit down before you fall down."
+        - "Ale's warm, stew's hot, and the roof doesn't leak. Much."
+      quest:
+        - "You look like the fighting type. Good. We need that."
+        - "Three roads lead out of Millhaven. North into the forest, east to the swamp, and west up the pass."
+        - "Nobody's come back from the north in weeks. Whatever's up there, it's getting worse."
+        - "If you're heading out, talk to Durin about gear. And say a prayer at Sister Maren's chapel. Can't hurt."
+      lore:
+        - "Used to be a proper kingdom here. The Crown held it all together."
+        - "Then that fool Morvain found the artifact. Or it found him. Hard to say which."
+        - "The blight started slow. Bad harvests. Animals going wrong. Then the land itself started changing."
+        - "We get refugees from every direction now. Each one tells a worse story than the last."
+        - "There's a man in the citadel at the center of it all. Calls himself the Dark Sovereign."
+        - "Torven — that's the guild master — he's been funneling resources to Morvain for months. Nobody knows why."
+      farewell:
+        - "Don't die out there. [chuckle] I hate wasting good ale on memorials."
+        - "Come back in one piece and the first round's on me."
+
+    voice_lines:
+      needed: true
+      status: "pending"
+      output_dir: "assets/voice/brenna_barkeep/"
+
+
+  - name: "Durin the Smith"
+    entity_type: "npc"
+    zone: "blacksmith"
+    count: 1
+    position: [[7, 13]]                 # Claude Code: fill
+    stats:
+      str: 16
+      dex: 10
+      con: 16
+      int: 12
+      wis: 11
+      cha: 8
+      ac: 12
+      hp: 22
+      max_hp: 22
+      speed: 30
+    inventory: ["Warhammer", "Smith's Apron"]
+    tags: ["merchant"]
+
+    portraits:
+      needed: true
+      style: "humanoid"
+      prompt_base: >
+        dwarf male blacksmith, broad shoulders, thick braided red beard,
+        soot-stained face, leather apron over bare muscular arms, burn
+        scars on forearms, serious focused expression, holding tongs,
+        bust shot, painterly high fantasy, forge glow orange lighting,
+        dark moody background
+      health_states:
+        healthy:
+          output: "assets/portraits/npcs/durin_smith.png"
+          status: "pending"
+
+    voice:
+      preset: "grizzled_veteran"
+      reference_audio: "core/audio/voice_seeds/grizzled_veteran.wav"
+      exaggeration: 0.3
+      speed: 0.9
+
+    dialogue:
+      greeting:
+        - "Speak up or move on. [cough] I've got orders to fill."
+        - "Another batch of would-be heroes, eh? At least you're armed."
+      quest:
+        - "My steel's good, but it won't cut through the blight."
+        - "There's an old forge in the crystal caves to the east. Dwarven make. Real dwarven make."
+        - "Bring me star-iron from that forge and I'll make you something that'll actually hurt whatever's in that citadel."
+        - "Fair warning — the caves are crawling with things that used to be rocks."
+      lore:
+        - "I've been sharpening blades for soldiers, guards, adventurers. None of them come back for a second sharpening."
+        - "The metal's been acting strange. Blades rust overnight. Iron weeps in the forge."
+        - "Whatever that artifact is doing, it's poisoning everything. Even the earth."
+      trade:
+        - "What do you need? I've got swords, shields, and stubbornness. All three are sturdy."
+      farewell:
+        - "Keep your blade dry and your shield up."
+        - "Don't come back dead. I've got your order to finish."
+
+    voice_lines:
+      needed: true
+      status: "pending"
+      output_dir: "assets/voice/durin_smith/"
+
+
+  - name: "Sister Maren"
+    entity_type: "npc"
+    zone: "chapel"
+    count: 1
+    position: [[4, 15]]                 # Claude Code: fill
+    stats:
+      str: 8
+      dex: 10
+      con: 12
+      int: 14
+      wis: 18
+      cha: 15
+      ac: 10
+      hp: 16
+      max_hp: 16
+      speed: 30
+    inventory: ["Holy Symbol of Dawn", "Healing Poultice"]
+
+    portraits:
+      needed: true
+      style: "humanoid"
+      prompt_base: >
+        elderly human woman priestess, silver hair in a simple braid,
+        white and gold robes now worn and patched, gentle wise eyes
+        with crow's feet, a faint golden glow around her hands,
+        serene but weary expression, bust shot, painterly high fantasy,
+        soft warm candlelight, dark moody background
+      health_states:
+        healthy:
+          output: "assets/portraits/npcs/sister_maren.png"
+          status: "pending"
+
+    voice:
+      preset: "mystic_elder"
+      reference_audio: "core/audio/voice_seeds/mystic_elder.wav"
+      exaggeration: 0.4
+      speed: 0.85
+
+    dialogue:
+      greeting:
+        - "Come in, child. The Dawn's light still reaches here, even if it struggles."
+        - "You're hurt. Or you will be soon. Either way, sit."
+      quest:
+        - "The wards on this chapel are failing. Every week they grow dimmer."
+        - "I need dawn lotus flowers. They grow in the frozen wastes to the northeast."
+        - "The ice preserves them perfectly, but the cold preserves other things too."
+        - "Bring me dawn lotus and I can restore the wards — and bless your weapons against the blight."
+      lore:
+        - "The Shattering wasn't just the land breaking. The veil between this world and the next grew thin."
+        - "The dead don't rest easy near the swamp. I've heard the reports. Corpses walking."
+        - "Whatever Morvain found in that citadel, it predates the kingdom. Predates the gods, maybe."
+        - "There were five wards protecting the realm. Four have fallen. This chapel holds the last."
+      farewell:
+        - "Dawn comes. It always comes. Remember that when the dark closes in."
+        - "The light goes with you, whether you feel it or not."
+
+    voice_lines:
+      needed: true
+      status: "pending"
+      output_dir: "assets/voice/sister_maren/"
+
+
+  - name: "Old Gerrik"
+    entity_type: "npc"
+    zone: "town_square"
+    count: 1
+    position: [[10, 9]]                 # Claude Code: fill
+    stats:
+      str: 8
+      dex: 8
+      con: 10
+      int: 11
+      wis: 16
+      cha: 12
+      ac: 10
+      hp: 8
+      max_hp: 8
+      speed: 25
+    inventory: []
+
+    portraits:
+      needed: true
+      style: "humanoid"
+      prompt_base: >
+        very old human male peasant farmer, deeply lined weathered face,
+        thin white hair under a floppy hat, patched brown coat,
+        leaning on a gnarled walking stick, rheumy but sharp eyes,
+        weary knowing expression, bust shot, painterly high fantasy,
+        overcast daylight, dark moody background
+      health_states:
+        healthy:
+          output: "assets/portraits/npcs/old_gerrik.png"
+          status: "pending"
+
+    voice:
+      preset: "grizzled_veteran"
+      reference_audio: "core/audio/voice_seeds/grizzled_veteran.wav"
+      exaggeration: 0.3
+      speed: 0.8
+
+    dialogue:
+      greeting:
+        - "[cough] Eh? More strangers. Town's full of 'em these days."
+        - "You've got that look. The hero look. I've seen it before."
+      lore:
+        - "[cough] I remember when you could walk to the citadel in a day. Pleasant road, wildflowers."
+        - "Morvain wasn't always mad, you know. He was the king's castellan. Good man. Then he found that crown."
+        - "First sign was the animals. Wolves with bark growing through their fur. Spiders big as dogs."
+        - "The Crossing used to be a bridge over the Ashwater. Now the whole riverbed is black."
+        - "There's a hermit up on the mountain pass. Harlen. He was the king's cartographer. Might still have maps."
+        - "If you're going to the citadel, go through the Crossing. It's the only direct route. Everything else is a longer way around."
+      farewell:
+        - "I'll be here. Not like I've got anywhere else to go."
+        - "Watch for the green glow. When you see that, you're in the thick of it."
+
+    voice_lines:
+      needed: true
+      status: "pending"
+      output_dir: "assets/voice/old_gerrik/"
+
+
+  - name: "Captain Thessa"
+    entity_type: "npc"
+    zone: "south_gate"
+    count: 1
+    position: [[17, 10]]                # Claude Code: fill
+    stats:
+      str: 15
+      dex: 13
+      con: 14
+      int: 12
+      wis: 14
+      cha: 11
+      ac: 16
+      hp: 28
+      max_hp: 28
+      speed: 30
+    inventory: ["Longsword", "Shield", "Chain Mail"]
+
+    portraits:
+      needed: true
+      style: "humanoid"
+      prompt_base: >
+        human female guard captain, practical plate armor with town
+        militia insignia, short dark hair, stern vigilant eyes, a scar
+        across her left eyebrow, jaw set with determination, hand
+        resting on sword hilt, bust shot, painterly high fantasy,
+        overcast daylight, dark moody background
+      health_states:
+        healthy:
+          output: "assets/portraits/npcs/captain_thessa.png"
+          status: "pending"
+
+    voice:
+      preset: "grizzled_veteran"
+      reference_audio: "core/audio/voice_seeds/grizzled_veteran.wav"
+      exaggeration: 0.4
+      speed: 1.0
+
+    dialogue:
+      greeting:
+        - "State your business. We don't get travelers anymore — just refugees and fools."
+        - "You're armed. Good. We could use armed."
+      quest:
+        - "I sent a patrol into the swamp three days ago. Five soldiers. None returned."
+        - "I can't spare anyone else. But if you're heading that way..."
+        - "Find my soldiers. If they're alive, bring them back. If not... bring back their insignias. Their families deserve to know."
+      lore:
+        - "I've got twelve guards left. Twelve, for a town of three hundred."
+        - "Things come out of the dark now. Twisted things. We lost two guards last week."
+        - "The kingdom's gone. There's no reinforcements coming. This is it."
+      farewell:
+        - "Stay sharp out there. And if you see my patrol... do right by them."
+
+    voice_lines:
+      needed: true
+      status: "pending"
+      output_dir: "assets/voice/captain_thessa/"
+
+
+  # ── Objects ──
+
+  - name: "Notice Board"
+    entity_type: "object"
+    zone: "town_square"
+    count: 1
+    position: [[9, 8]]                  # Claude Code: fill
+    stats: {}
+    inventory: []
+    tags: ["readable"]
+    portraits:
+      needed: false
+    voice: null
+    dialogue:
+      lore:
+        - "WANTED: Information on the disappearance of the King's Road patrol. See Captain Thessa."
+        - "WARNING: Do not drink water from streams north of town. Boil everything."
+        - "REWARD: 50 gold for proof of wolf den clearance. Livestock losses are unsustainable."
+        - "NOTICE: The road to Ashenmere is closed indefinitely. All traffic diverted."
+      search:
+        - "Pinned beneath the notices, a hand-drawn map shows the three routes out of town. North to the forest, east through the swamp, west up the mountain pass."
+
+
+# ─── TRIGGERS ────────────────────────────────────────────────────────
+
+triggers:
+  - label: "millhaven_welcome"
+    zone: "town_square"
+    tile: [9, 9]                        # Claude Code: fill
+    event_type: "ENTER_TILE"
+    condition:
+      type: "AlwaysTrue"
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: >
+          You arrive in Millhaven as the sun dips behind the mountains.
+          Lanterns flicker to life along the main street. The smell of
+          woodsmoke and stew drifts from a tavern ahead. A weathered
+          notice board stands in the town square beside a stone well.
+          This is the last safe place before the Shattered Realms.
+
+
+# ─── QUESTS ──────────────────────────────────────────────────────────
+
+quests:
+  - id: "lost_patrol"
+    name: "The Lost Patrol"
+    type: "side"
+    giver: "Captain Thessa"
+    zone: "south_gate"
+    description: >
+      Captain Thessa's patrol went into the Sunken Swamp three days ago
+      and hasn't returned. Find the soldiers or recover their insignias.
+    objectives:
+      - "Travel to the Sunken Swamp"
+      - "Find the lost patrol or their insignias"
+      - "Return to Captain Thessa"
+    reward:
+      items: ["Militia Signet Ring"]
+      xp: 200
+    difficulty: 2
+
+  - id: "star_iron"
+    name: "The Old Forge"
+    type: "side"
+    giver: "Durin the Smith"
+    zone: "blacksmith"
+    description: >
+      Durin needs star-iron from an ancient dwarven forge in the Crystal
+      Caves. With it, he can craft weapons capable of cutting through
+      the blight's corruption.
+    objectives:
+      - "Find the ancient forge in the Crystal Caves"
+      - "Retrieve star-iron ingots"
+      - "Return to Durin's Forge"
+    reward:
+      items: ["Blight-Forged Longsword"]
+      xp: 250
+    difficulty: 2
+
+  - id: "dawn_lotus"
+    name: "Fading Wards"
+    type: "side"
+    giver: "Sister Maren"
+    zone: "chapel"
+    description: >
+      The protective wards on Millhaven's chapel are failing. Sister Maren
+      needs dawn lotus flowers from the Frozen Wastes to restore them and
+      bless the party's weapons against the blight.
+    objectives:
+      - "Travel to the Frozen Wastes"
+      - "Collect 3 Dawn Lotus flowers"
+      - "Return to Sister Maren at the Chapel"
+    reward:
+      items: ["Blessing of Dawn"]
+      xp: 200
+    difficulty: 2
+
+
+# ─── CONNECTIONS ─────────────────────────────────────────────────────
+
+connections:
+  north: "biome_dark_forest"
+  south: null
+  east: "biome_sunken_swamp"
+  west: null
+  border_tiles:
+    north: [[0, 9], [0, 10]]            # Claude Code: fill
+    east: [[9, 19], [10, 19], [11, 19]]  # Claude Code: fill

@@ -8,6 +8,7 @@ from ui.panels.core_values_panel import CoreValuesPanel
 from ui.panels.entities_panel import EntitiesPanel
 from ui.panels.trigger_panel import TriggerPanel
 from ui.panels.color_mode_dialog import ColorModeDialog
+from ui.panels.template_browser_panel import TemplateBrowserPanel
 
 
 class TileSidePanel(QWidget):
@@ -24,6 +25,7 @@ class TileSidePanel(QWidget):
     _STACK_CORE = 1
     _STACK_ENTITIES = 2
     _STACK_TRIGGERS = 3
+    _STACK_TEMPLATES = 4
 
     def __init__(self, main_window, parent=None):
         super().__init__(parent)
@@ -51,8 +53,9 @@ class TileSidePanel(QWidget):
         self._core_btn = self._make_view_btn("Core Values", 1)
         self._entities_btn = self._make_view_btn("Entities", 2)
         self._triggers_btn = self._make_view_btn("Triggers", 3)
+        self._templates_btn = self._make_view_btn("Templates", 4)
 
-        for btn in (self._core_btn, self._entities_btn, self._triggers_btn):
+        for btn in (self._core_btn, self._entities_btn, self._triggers_btn, self._templates_btn):
             icon_bar.addWidget(btn)
 
         self._color_btn = QToolButton()
@@ -81,12 +84,16 @@ class TileSidePanel(QWidget):
         self.trigger_panel = TriggerPanel()
         self.stack.addWidget(self.trigger_panel)    # 3
 
+        self.template_panel = TemplateBrowserPanel()
+        self.stack.addWidget(self.template_panel)   # 4
+
         layout.addWidget(self.stack)
 
         # Wire view buttons
         self._core_btn.clicked.connect(lambda: self._switch_to(self._STACK_CORE))
         self._entities_btn.clicked.connect(lambda: self._switch_to(self._STACK_ENTITIES))
         self._triggers_btn.clicked.connect(lambda: self._switch_to(self._STACK_TRIGGERS))
+        self._templates_btn.clicked.connect(lambda: self._switch_to(self._STACK_TEMPLATES))
 
     # ------------------------------------------------------------------
     # Public API

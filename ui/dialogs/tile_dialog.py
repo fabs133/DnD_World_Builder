@@ -125,6 +125,11 @@ class TileDialog(QDialog):
         self.label_input = QLineEdit(tile_data.user_label or "")
         layout.addRow("User Label:", self.label_input)
 
+        # --- ENCOUNTER ZONE ---
+        self.zone_id_input = QLineEdit(tile_data.zone_id or "")
+        self.zone_id_input.setPlaceholderText("e.g. Guard Post, Main Hall")
+        layout.addRow("Encounter Zone:", self.zone_id_input)
+
         # --- NOTE ---
         self.note_input = QTextEdit(tile_data.note or "")
         layout.addRow("Note:", self.note_input)
@@ -151,7 +156,11 @@ class TileDialog(QDialog):
         self.bg_image_label = QLabel()
         self.bg_image_label.setFixedSize(100, 100)
         self.bg_image_label.setAlignment(Qt.AlignCenter)
-        self.bg_image_label.setStyleSheet("border: 1px solid #ccc; background: #f5f5f5;")
+        from core import theme_palette as tp
+        self.bg_image_label.setStyleSheet(
+            f"border: 1px solid {tp.get_themed('border_secondary')}; "
+            f"background: {tp.get_themed('bg_secondary')};"
+        )
         self._update_bg_image_preview()
 
         bg_btn = QPushButton("Choose Image...")
@@ -246,6 +255,7 @@ class TileDialog(QDialog):
         td.terrain = TerrainType[self.terrain_input.currentText()]
         td.tags = [tag for tag, cb in self.tag_checkboxes.items() if cb.isChecked()]
         td.user_label = self.label_input.text()
+        td.zone_id = self.zone_id_input.text().strip() or None
         td.note = self.note_input.toPlainText()
         td.overlay_color = self.overlay_input.text()
         td.background_image = self._background_image_path

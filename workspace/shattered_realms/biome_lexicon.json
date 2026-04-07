@@ -1,0 +1,144 @@
+{
+  "_comment": "Seed biome lexicon for shattered_realms. The biome_layout section maps (row, col) grid blocks to biome IDs and is used by the runner as the authoritative source for biome hint derivation (robust against background_image edits).",
+  "biome_layout": {
+    "block_size": 20,
+    "blocks": [
+      {"rows": [0, 19],  "cols": [0, 19],  "biome": "mountain_pass"},
+      {"rows": [0, 19],  "cols": [20, 39], "biome": "blighted_crossing"},
+      {"rows": [0, 19],  "cols": [40, 59], "biome": "frozen_wastes"},
+      {"rows": [20, 39], "cols": [0, 19],  "biome": "dark_forest"},
+      {"rows": [20, 39], "cols": [20, 39], "biome": "obsidian_citadel"},
+      {"rows": [20, 39], "cols": [40, 59], "biome": "scorched_sands"},
+      {"rows": [40, 59], "cols": [0, 19],  "biome": "millhaven"},
+      {"rows": [40, 59], "cols": [20, 39], "biome": "sunken_swamp"},
+      {"rows": [40, 59], "cols": [40, 59], "biome": "crystal_caves"}
+    ]
+  },
+  "mountain_pass": {
+    "palette": "storm grey, slate, rust red, bruised violet",
+    "mood": "windswept, desolate, echoing",
+    "silhouettes": [
+      "distant silhouette of a stone watchtower perched on a cliff",
+      "a mountain goat on a narrow ledge far above",
+      "the skeletal remains of a fallen traveler half-buried in scree",
+      "a lone raven circling in the cold wind"
+    ],
+    "landmarks": [
+      "a crumbling stone bridge spanning a chasm",
+      "weather-carved rocks shaped like ancient faces",
+      "a frost-rimed cairn marking a forgotten grave"
+    ]
+  },
+  "blighted_crossing": {
+    "palette": "sickly yellow-green, peat brown, ash grey",
+    "mood": "tainted, oppressive, watchful",
+    "silhouettes": [
+      "twisted figures shuffling in the middle distance",
+      "a gnarled tree with eye-like knots in its bark",
+      "a crow with too many feathers perched on a rotten post"
+    ],
+    "landmarks": [
+      "a blackened shrine overgrown with pulsing fungus",
+      "a half-sunken wagon bleeding a dark, oily sap",
+      "cracked flagstones leaking pale mist"
+    ]
+  },
+  "frozen_wastes": {
+    "palette": "glacial blue, silver white, charcoal shadow",
+    "mood": "hushed, brittle, ancient",
+    "silhouettes": [
+      "the silhouette of a frost wraith drifting at the edge of sight",
+      "a frozen mammoth half-exposed in a wall of ice",
+      "auroras flickering behind distant jagged peaks"
+    ],
+    "landmarks": [
+      "shards of black obsidian jutting through the snow",
+      "a tattered banner frozen mid-flap on a buried spear",
+      "the hollowed ribs of some great beast encased in ice"
+    ]
+  },
+  "dark_forest": {
+    "palette": "mossy green, slate, muted amber",
+    "mood": "hushed, damp, ancient",
+    "silhouettes": [
+      "distant silhouette of a lean wolf with sickly green eyes",
+      "a weathered druid in moss-stained robes at the edge of the clearing",
+      "a will-o-wisp drifting between the trunks"
+    ],
+    "landmarks": [
+      "a crumbling stone obelisk half-buried in roots",
+      "a rusted iron lantern hanging from a low branch",
+      "a ring of pale mushrooms around a sunken stone"
+    ]
+  },
+  "obsidian_citadel": {
+    "palette": "volcanic black, ember orange, tarnished gold",
+    "mood": "tyrannical, watchful, feverish",
+    "silhouettes": [
+      "a hooded figure on a high parapet silhouetted against a red sky",
+      "a carrion bird perched on a cracked gargoyle",
+      "the outline of an armoured sentinel at the far end of the hall"
+    ],
+    "landmarks": [
+      "a soot-stained brazier smouldering with unnatural flame",
+      "a towering obsidian statue of a crowned warlord",
+      "a chained iron gate scarred with claw marks"
+    ]
+  },
+  "scorched_sands": {
+    "palette": "bleached bone white, copper red, dusk violet",
+    "mood": "vast, pitiless, shimmering",
+    "silhouettes": [
+      "a hunched figure wrapped in sun-bleached rags at the horizon",
+      "a vulture circling above a distant ruin",
+      "the outline of a giant scorpion cresting a dune"
+    ],
+    "landmarks": [
+      "the bleached bones of a massive serpent half-sunken in sand",
+      "a toppled sandstone obelisk carved with forgotten glyphs",
+      "a cracked well of blackened stone"
+    ]
+  },
+  "millhaven": {
+    "palette": "warm lantern yellow, walnut brown, hearth red",
+    "mood": "lived-in, cautious, weary",
+    "silhouettes": [
+      "a lantern-bearing villager hurrying down a side street",
+      "a cat watching from an upstairs window",
+      "a hooded stranger leaning against a shuttered stall"
+    ],
+    "landmarks": [
+      "a sagging wooden inn with a creaking sign",
+      "a cracked stone well with a rusted iron chain",
+      "a covered wagon with a broken wheel"
+    ]
+  },
+  "sunken_swamp": {
+    "palette": "bog green, peat black, sulphur yellow",
+    "mood": "humid, suffocating, reptilian",
+    "silhouettes": [
+      "the eyes of something enormous just above the waterline",
+      "a lizardfolk scout wading between reeds",
+      "a swarm of dragonflies above a patch of still water"
+    ],
+    "landmarks": [
+      "a half-submerged stone altar wrapped in vines",
+      "a rotten wooden walkway sinking into the muck",
+      "the jawbone of a great crocodile bleaching on a mudbank"
+    ]
+  },
+  "crystal_caves": {
+    "palette": "prismatic blue, violet, pale mineral white",
+    "mood": "hushed, otherworldly, alive",
+    "silhouettes": [
+      "a glimmering crystal spider picking its way across a stalactite",
+      "a robed figure holding a glowing shard in cupped hands",
+      "bats wheeling through a shaft of crystalline light"
+    ],
+    "landmarks": [
+      "a cluster of resonant crystals humming faintly",
+      "a frozen waterfall of translucent stone",
+      "an ancient rune carved into a column of quartz"
+    ]
+  }
+}

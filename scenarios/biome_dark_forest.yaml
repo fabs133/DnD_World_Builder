@@ -1,0 +1,420 @@
+# ══════════════════════════════════════════════════════════════════════
+# DnD World Builder — Biome Block Schema Specification
+# ══════════════════════════════════════════════════════════════════════
+#
+# A biome block is a self-contained section of the world map.
+# Multiple blocks are stitched together into the full scenario grid.
+#
+# This schema serves THREE purposes:
+#   1. GAME DATA   — compiles to map.json tile/entity/trigger data
+#   2. ASSET LIST   — declares what pictures/voices need generating
+#   3. DESIGN DOC   — human-readable scenario design reference
+#
+# File naming: biome_{id}.yaml  (e.g. biome_dark_forest.yaml)
+# One file per block. A world definition file lists all blocks + layout.
+#
+# ══════════════════════════════════════════════════════════════════════
+
+biome:
+  id: "dark_forest"
+  name: "The Blighted Weald"
+  description: >
+    A once-thriving forest now corrupted by the Crown's influence.
+    Twisted trees claw at a perpetually overcast sky. The deeper
+    you venture, the more the blight has consumed.
+  biome_type: "forest"
+  difficulty: 2
+  grid_size: [20, 20]
+  grid_offset: [20, 0]
+  ambient_audio: "forest"
+  terrain_default: "GRASS"
+
+  assets:
+    background:
+      needed: true
+      prompt: >
+        dark fantasy forest, twisted corrupted trees, overcast sky,
+        green blight glowing on bark, fog between trunks, ominous atmosphere,
+        wide cinematic shot, painterly illustration, masterpiece
+      output: "assets/backgrounds/dark_forest.png"
+      status: "pending"
+
+    terrain_texture:
+      needed: true
+      terrain_type: "GRASS"
+      prompt: >
+        dark corrupted forest floor, dark grass with dead leaves and
+        thorns, top down battle map style, painted, fantasy illustration
+      output: "assets/terrain/blighted_grass.png"
+      status: "pending"
+
+
+zones:
+  - id: "forest_edge"
+    label: "Forest Edge"
+    description: "The boundary between safety and wilderness"
+    terrain: "GRASS"
+    tiles: [[5, 0], [5, 1], [5, 2], [5, 3], [6, 0], [6, 1], [6, 2], [6, 3]]
+    tags: []
+    ambient_audio: "forest"
+    background:
+      needed: true
+      prompt: >
+        boundary between open grassland and twisted corrupted forest, dark
+        trees with thorny bark, overcast sky, path leading into gloom,
+        painterly high fantasy, wide shot, dark moody atmosphere
+      output: "assets/backgrounds/zones/dark_forest_forest_edge.png"
+      status: "pending"
+
+  - id: "wolf_den"
+    label: "Wolf Den"
+    description: "A clearing littered with bones and torn cloth"
+    terrain: "GRASS"
+    tiles: [[8, 2], [8, 3], [9, 2], [9, 3]]
+    tags: []
+    ambient_audio: "forest"
+    background:
+      needed: true
+      prompt: >
+        forest clearing littered with bones and torn cloth, dark undergrowth,
+        claw marks on trees, den entrance in fallen logs, green blight glow
+        on bark, painterly high fantasy, wide shot, dark moody atmosphere
+      output: "assets/backgrounds/zones/dark_forest_wolf_den.png"
+      status: "pending"
+
+  - id: "spider_hollow"
+    label: "Spider Hollow"
+    description: "Thick webs stretch between dead trees. The ground crunches."
+    terrain: "GRASS"
+    tiles: [[12, 5], [12, 6], [13, 5], [13, 6], [13, 7]]
+    tags: []
+    ambient_audio: "cave"
+    background:
+      needed: true
+      prompt: >
+        dead trees covered in thick white webs, dark forest canopy, web
+        tunnels between trunks, ground covered in web and debris, eerie
+        silence, painterly high fantasy, wide shot, dark moody atmosphere
+      output: "assets/backgrounds/zones/dark_forest_spider_hollow.png"
+      status: "pending"
+
+  - id: "druid_clearing"
+    label: "Druid's Clearing"
+    description: "A circle of standing stones. The blight hasn't reached here — yet."
+    terrain: "GRASS"
+    tiles: [[10, 8], [10, 9], [11, 8], [11, 9]]
+    tags: []
+    ambient_audio: "night"
+    background:
+      needed: true
+      prompt: >
+        circle of ancient standing stones in a forest clearing, green moss,
+        peaceful atmosphere, faint magical glow on stones, one patch of
+        healthy grass, painterly high fantasy, wide shot, mystical atmosphere
+      output: "assets/backgrounds/zones/dark_forest_druid_clearing.png"
+      status: "pending"
+
+
+terrain_overrides:
+  - terrain: "WATER"
+    tiles: [[7, 4], [8, 4], [9, 4], [10, 4], [11, 4], [12, 4]]
+  - terrain: "MOUNTAIN"
+    tiles: [[11, 6], [11, 7]]
+  - terrain: "WALL"
+    tiles: [[14, 5], [14, 6], [14, 7]]
+    overlay_color: "#2a3a1a"
+
+
+entities:
+  - name: "Blighted Wolf"
+    entity_type: "enemy"
+    zone: "wolf_den"
+    count: 3
+    position: [[8, 2], [8, 3], [9, 2]]
+    stats:
+      str: 14
+      dex: 14
+      con: 12
+      int: 3
+      wis: 12
+      cha: 6
+      ac: 13
+      hp: 22
+      max_hp: 22
+      speed: 40
+    inventory: []
+    portraits:
+      needed: true
+      style: "creature"
+      prompt_base: >
+        corrupted wolf, glowing sickly green eyes, dark matted fur
+        with thorny bark growths, snarling muzzle, front-facing,
+        painterly high fantasy, dark moody background
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/blighted_wolf_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "darker lighting, slight red tint, more aggressive snarl"
+          denoise: 0.25
+          output: "assets/portraits/enemies/blighted_wolf_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "dark red shadows, desaturated colors, pained expression"
+          denoise: 0.350
+          output: "assets/portraits/enemies/blighted_wolf_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "very dark, harsh red highlights, nearly black, eyes closing"
+          denoise: 0.450
+          output: "assets/portraits/enemies/blighted_wolf_critical.png"
+          status: "pending"
+    voice: null
+    dialogue: null
+
+  - name: "Giant Spider"
+    entity_type: "enemy"
+    zone: "spider_hollow"
+    count: 2
+    position: [[12, 5], [13, 6]]
+    stats:
+      str: 14
+      dex: 16
+      con: 12
+      int: 2
+      wis: 11
+      cha: 4
+      ac: 14
+      hp: 26
+      max_hp: 26
+      speed: 30
+    inventory: []
+    portraits:
+      needed: true
+      style: "creature"
+      prompt_base: >
+        massive dark spider, black chitinous carapace, multiple glowing
+        red eyes, venomous fangs, web strands, front-facing,
+        painterly high fantasy, dark moody background
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/giant_spider_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "darker overall, slight red tint on carapace"
+          denoise: 0.25
+          output: "assets/portraits/enemies/giant_spider_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "dark red shadows, desaturated, legs curling inward"
+          denoise: 0.35
+          output: "assets/portraits/enemies/giant_spider_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "very dark, deep red and black, barely visible in shadow"
+          denoise: 0.450
+          output: "assets/portraits/enemies/giant_spider_critical.png"
+          status: "pending"
+    voice: null
+    dialogue: null
+
+  - name: "Elara the Herbalist"
+    entity_type: "npc"
+    zone: "druid_clearing"
+    count: 1
+    position: [[10, 9]]
+    stats:
+      str: 8
+      dex: 12
+      con: 10
+      int: 15
+      wis: 16
+      cha: 13
+      ac: 11
+      hp: 14
+      max_hp: 14
+      speed: 30
+    inventory: ["Healing Herb Pouch", "Staff of the Wild"]
+    portraits:
+      needed: true
+      style: "humanoid"
+      prompt_base: >
+        half-elf female druid, wild braided auburn hair with leaves woven in,
+        green robes, kind but worried eyes, freckled face, wooden staff,
+        bust shot, painterly high fantasy, dark moody background
+      health_states:
+        healthy:
+          output: "assets/portraits/npcs/elara_herbalist.png"
+          status: "pending"
+    voice:
+      preset: "ethereal"
+      reference_audio: "core/audio/voice_seeds/ethereal.wav"
+      exaggeration: 0.5
+      speed: 0.9
+    dialogue:
+      greeting:
+        - "The forest whispers of your coming. Not all of it is pleased."
+        - "You carry no blight. That's... rare, these days."
+      quest:
+        - "I can brew a potion to resist the Crown's corruption."
+        - "But I need moonpetal blossoms. They only grow near the spider nests."
+        - "Bring me three, and I'll arm you against whatever waits at the heart."
+      lore:
+        - "The blight started two seasons ago. First the animals changed."
+        - "Then the trees. Now even the river tastes wrong."
+        - "An old druid circle lies deeper in. If the wards still hold..."
+      farewell:
+        - "Step carefully. The forest remembers where you walk."
+    voice_lines:
+      needed: true
+      status: "pending"
+      output_dir: "assets/voice/elara_herbalist/"
+
+  - name: "Moonpetal Blossom"
+    entity_type: "object"
+    zone: "spider_hollow"
+    count: 3
+    position: [[12, 6], [13, 5], [13, 7]]
+    stats: {}
+    inventory: []
+    tags: ["item", "quest_item"]
+    portraits:
+      needed: true
+      style: "object"
+      prompt_base: >
+        a glowing silver-blue flower with translucent petals, moonlit
+        shimmer, fantasy flower, digital painting, dark background,
+        concept art
+      health_states:
+        healthy:
+          output: "assets/items/moonpetal_blossom.png"
+          status: "pending"
+    voice: null
+    dialogue:
+      lore:
+        - "A delicate flower that glows with faint moonlight. Its petals shimmer with an inner luminescence."
+
+  - name: "Ruined Shrine"
+    entity_type: "object"
+    zone: "forest_edge"
+    count: 1
+    position: [[6, 1]]
+    stats: {}
+    inventory: []
+    tags: ["readable", "searchable"]
+    portraits:
+      needed: false
+    voice: null
+    dialogue:
+      lore:
+        - "A moss-covered shrine to a forgotten forest spirit. The carved face has been defaced by claw marks."
+      search:
+        - "Hidden behind loose stones, you find a crude map scratched into bark. It shows a path to a clearing deeper in the woods."
+
+
+triggers:
+  - label: "wolf_ambush"
+    zone: "wolf_den"
+    tile: [8, 2]
+    event_type: "ENTER_TILE"
+    condition:
+      type: "AlwaysTrue"
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: "The wolves emerge from the undergrowth, snarling!"
+
+  - label: "spider_web_trap"
+    zone: "spider_hollow"
+    tile: [12, 5]
+    event_type: "ENTER_TILE"
+    condition:
+      type: "SkillCheck"
+      skill: "Perception"
+      dc: 14
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: "You spot the web trap just in time!"
+    next_trigger:
+      label: "spider_web_snare"
+      event_type: "ENTER_TILE"
+      condition:
+        type: "AlwaysTrue"
+      reaction:
+        type: "ApplyDamage"
+        args:
+          damage: 4
+          damage_type: "piercing"
+          message: "You stumble into a hidden web! Barbed strands cut into your skin."
+
+  - label: "shrine_discovery"
+    zone: "forest_edge"
+    tile: [6, 1]
+    event_type: "ENTER_TILE"
+    condition:
+      type: "AlwaysTrue"
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: "You discover a ruined shrine overgrown with moss."
+
+
+quests:
+  - id: "moonpetal_gathering"
+    name: "The Herbalist's Request"
+    type: "side"
+    giver: "Elara the Herbalist"
+    zone: "druid_clearing"
+    description: >
+      Elara needs three Moonpetal Blossoms from the spider nests
+      to brew a potion of blight resistance.
+    objectives:
+      - "Collect 3 Moonpetal Blossoms from Spider Hollow"
+      - "Return to Elara in the Druid's Clearing"
+    reward:
+      items: ["Potion of Blight Resistance"]
+      xp: 150
+    difficulty: 2
+
+  - id: "clear_wolf_den"
+    name: "Thin the Pack"
+    type: "side"
+    giver: null
+    zone: "wolf_den"
+    description: >
+      The blighted wolves have made their den too close to the path.
+      Clear them out to secure the route deeper into the forest.
+    objectives:
+      - "Defeat the Blighted Wolves in the Wolf Den"
+    reward:
+      xp: 100
+    difficulty: 1
+
+
+connections:
+  north: null
+  south: "biome_millhaven"
+  east: "biome_blighted_crossing"
+  west: null
+  border_tiles:
+    south: [[19, 8], [19, 9], [19, 10]]
+    east:  [[9, 19], [10, 19], [11, 19]]
+
+
+_generation_summary:
+  portraits:
+    total: 8
+    pending: 8
+    generated: 0
+    reviewed: 0
+  voice_lines:
+    total: 12
+    pending: 12
+    generated: 0
+  backgrounds:
+    total: 1
+    pending: 1
+  terrain_textures:
+    total: 1
+    pending: 1

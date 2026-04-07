@@ -2,6 +2,14 @@
 import asyncio
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
+from core.events import (
+    COMBAT_ENDED, COMBAT_GRID_READY, COMBAT_STARTED, CONDITION_APPLIED,
+    CONDITION_REMOVED, ENTITY_ADDED, ENTITY_DAMAGED, ENTITY_DIED,
+    ENTITY_HEALED, ENTITY_MOVED, ENTITY_REMOVED, INITIATIVE_ROLLED,
+    PLAYER_ENTERED_ZONE, PLAYER_LEFT_ZONE, ROUND_STARTED,
+    TILE_MODIFIED, TILE_TERRAIN_CHANGED, TRIGGER_FIRED, TURN_ENDED,
+    TURN_STARTED,
+)
 from network.event_bridge import EventBridge, TurnBridge, SYNC_EVENTS
 from core.gameCreation.event_bus import EventBus
 
@@ -213,12 +221,14 @@ class TestSyncEvents:
     def test_all_expected_events_present(self):
         """Verify SYNC_EVENTS contains the expected event types."""
         expected = {
-            "entity_moved", "entity_added", "entity_removed",
-            "entity_damaged", "entity_healed", "entity_died",
-            "tile_modified", "tile_terrain_changed",
-            "combat_started", "combat_ended",
-            "turn_started", "turn_ended", "round_started",
-            "condition_applied", "condition_removed",
-            "trigger_fired",
+            ENTITY_MOVED, ENTITY_ADDED, ENTITY_REMOVED,
+            ENTITY_DAMAGED, ENTITY_HEALED, ENTITY_DIED,
+            TILE_MODIFIED, TILE_TERRAIN_CHANGED,
+            COMBAT_STARTED, COMBAT_ENDED,
+            TURN_STARTED, TURN_ENDED, ROUND_STARTED,
+            CONDITION_APPLIED, CONDITION_REMOVED,
+            TRIGGER_FIRED,
+            PLAYER_ENTERED_ZONE, PLAYER_LEFT_ZONE,
+            COMBAT_GRID_READY, INITIATIVE_ROLLED,
         }
         assert SYNC_EVENTS == expected

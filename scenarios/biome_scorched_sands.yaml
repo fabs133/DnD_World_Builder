@@ -1,0 +1,418 @@
+# ══════════════════════════════════════════════════════════════════════
+# Scorched Sands — Difficulty 3 (Middle-right)
+# Desert created by the artifact's heat. Fire elementals, nomad NPC.
+# ══════════════════════════════════════════════════════════════════════
+
+biome:
+  id: "scorched_sands"
+  name: "The Scorched Sands"
+  description: >
+    Where fertile farmland once stood, the Crown's power has baked the
+    earth into a cracked wasteland of glass and ash. Heat shimmers
+    distort the horizon. Fire elementals roam freely, drawn to the
+    energy pulsing from the citadel. A nomad tribe has adapted to
+    survive here, guarding knowledge of safe passages.
+  biome_type: "desert"
+  difficulty: 3
+  grid_size: [20, 20]
+  grid_offset: [20, 40]
+  ambient_audio: "night"
+  terrain_default: "SAND"
+
+  assets:
+    background:
+      needed: true
+      prompt: >
+        scorched fantasy desert, cracked earth and black glass formations,
+        extreme heat shimmer, distant volcanic vents with orange glow,
+        bleached animal bones half-buried in sand, dark ominous sky with
+        amber-red horizon, desolate and hostile, wide cinematic shot,
+        painterly illustration, masterpiece
+      output: "assets/backgrounds/scorched_sands.png"
+      status: "pending"
+
+    terrain_texture:
+      needed: true
+      terrain_type: "SAND"
+      prompt: >
+        scorched desert sand, golden brown sand with dark cracked earth,
+        top down battle map style, painted, fantasy illustration
+      output: "assets/terrain/scorched_sand.png"
+      status: "pending"
+
+
+zones:
+  - id: "glass_fields"
+    label: "Glass Fields"
+    description: >
+      The sand has been melted and re-solidified into treacherous fields
+      of razor-sharp glass. Every step risks cutting through boot leather.
+    terrain: "SAND"
+    tiles: [[14, 3], [14, 4], [14, 5], [14, 6], [15, 3], [15, 4], [15, 5], [15, 6]]
+    tags: []
+    ambient_audio: "night"
+    background:
+      needed: true
+      prompt: >
+        scorched desert with fields of razor-sharp volcanic glass, heat
+        shimmer distorting horizon, cracked black earth between glass
+        formations, bleached bones half-buried, painterly high fantasy,
+        wide shot, hostile atmosphere
+      output: "assets/backgrounds/zones/scorched_sands_glass_fields.png"
+      status: "pending"
+
+  - id: "ember_canyon"
+    label: "Ember Canyon"
+    description: >
+      A rift in the earth that glows orange from below. The heat is
+      unbearable. Fire elementals dance along the canyon edges like
+      living bonfires.
+    terrain: "SAND"
+    tiles: [[8, 8], [8, 9], [8, 10], [9, 8], [9, 9], [9, 10], [10, 8], [10, 9]]
+    tags: []
+    ambient_audio: "dungeon"
+    background:
+      needed: true
+      prompt: >
+        deep rift in desert earth glowing orange from below, volcanic vents
+        along edges, extreme heat distortion, fire dancing along canyon rim,
+        painterly high fantasy, wide shot, infernal atmosphere
+      output: "assets/backgrounds/zones/scorched_sands_ember_canyon.png"
+      status: "pending"
+
+  - id: "oasis_camp"
+    label: "Hidden Oasis"
+    description: >
+      A cluster of date palms around a spring that somehow still flows
+      clean. The Sandwalker nomads have made their last camp here,
+      sheltered by ancient standing stones that pre-date the kingdom.
+    terrain: "GRASS"
+    tiles: [[5, 3], [5, 4], [5, 5], [6, 3], [6, 4], [6, 5]]
+    tags: []
+    ambient_audio: "tavern"
+    background:
+      needed: true
+      prompt: >
+        cluster of date palms around clean spring, ancient standing stones
+        protecting the water, nomad tents in earth tones, desert oasis,
+        relief from heat, painterly high fantasy, wide shot, warm peaceful
+        atmosphere
+      output: "assets/backgrounds/zones/scorched_sands_oasis_camp.png"
+      status: "pending"
+
+  - id: "emberlord_sanctum"
+    label: "Emberlord's Sanctum"
+    description: >
+      A ring of volcanic vents surrounds a platform of black obsidian.
+      Emberlord Azrak holds court here — a fire elemental grown enormous
+      on the Crown's power, and one of the Sovereign's lieutenants.
+    terrain: "FLOOR"
+    tiles: [[2, 12], [2, 13], [2, 14], [2, 15], [3, 12], [3, 13], [3, 14], [3, 15]]
+    tags: []
+    ambient_audio: "dungeon"
+    background:
+      needed: true
+      prompt: >
+        ring of volcanic vents surrounding platform of black obsidian,
+        white-hot heat, molten rock dripping, oppressive power radiating,
+        dark sky with amber glow, painterly high fantasy, wide shot, boss
+        arena atmosphere
+      output: "assets/backgrounds/zones/scorched_sands_emberlord_sanctum.png"
+      status: "pending"
+
+
+entities:
+
+  - name: "Fire Scorpion"
+    entity_type: "enemy"
+    zone: "glass_fields"
+    count: 3
+    position: [[14, 3], [15, 5], [14, 6]]
+    stats:
+      str: 14
+      dex: 13
+      con: 14
+      int: 1
+      wis: 10
+      cha: 3
+      ac: 14
+      hp: 24
+      max_hp: 24
+      speed: 35
+    inventory: []
+    portraits:
+      needed: true
+      style: "creature"
+      prompt_base: >
+        giant scorpion with glowing ember cracks along its carapace,
+        tail tip burning with living fire, dark chitinous body with
+        orange-red glow seeping through joints, multiple eyes reflecting
+        flame, front-facing, painterly high fantasy, desert background
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/fire_scorpion_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "darker overall, flames less intense, slight orange-red tint"
+          denoise: 0.25
+          output: "assets/portraits/enemies/fire_scorpion_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "dark red-orange shadows, flames dying down, desaturated"
+          denoise: 0.35
+          output: "assets/portraits/enemies/fire_scorpion_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "very dark, flames nearly out, just dark silhouette with faint glow"
+          denoise: 0.45
+          output: "assets/portraits/enemies/fire_scorpion_critical.png"
+          status: "pending"
+    voice: null
+    dialogue: null
+
+  - name: "Fire Elemental"
+    entity_type: "enemy"
+    zone: "ember_canyon"
+    count: 2
+    position: [[8, 8], [9, 10]]
+    stats:
+      str: 10
+      dex: 17
+      con: 16
+      int: 6
+      wis: 10
+      cha: 7
+      ac: 13
+      hp: 32
+      max_hp: 32
+      speed: 50
+    inventory: []
+    portraits:
+      needed: true
+      style: "creature"
+      prompt_base: >
+        fire elemental, towering humanoid shape made entirely of roaring
+        flames, white-hot core visible in chest, eyes like two intense
+        points of blue-white heat, arms trailing spirals of fire,
+        front-facing, painterly high fantasy, dark smoky background
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/fire_elemental_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "flames orange instead of white, form flickering"
+          denoise: 0.60
+          output: "assets/portraits/enemies/fire_elemental_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "flames reduced to embers, form breaking apart"
+          denoise: 0.70
+          output: "assets/portraits/enemies/fire_elemental_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "just smoldering ash, no flames, barely visible"
+          denoise: 0.80
+          output: "assets/portraits/enemies/fire_elemental_critical.png"
+          status: "pending"
+    voice: null
+    dialogue: null
+
+  - name: "Emberlord Azrak"
+    entity_type: "enemy"
+    zone: "emberlord_sanctum"
+    count: 1
+    position: [[2, 13]]
+    stats:
+      str: 18
+      dex: 15
+      con: 20
+      int: 12
+      wis: 14
+      cha: 16
+      ac: 16
+      hp: 68
+      max_hp: 68
+      speed: 40
+    inventory: []
+    portraits:
+      needed: true
+      style: "creature"
+      prompt_base: >
+        massive fire elemental lord, three times the height of a human,
+        body of molten rock and white-hot flame, crown of solidified
+        magma on its head, eyes burning with intelligent malice, lava
+        dripping from its fists, standing on obsidian platform,
+        front-facing, painterly high fantasy, volcanic background
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/emberlord_azrak_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "magma crown cracking, eyes dimmer, dark fractures on face"
+          denoise: 0.60
+          output: "assets/portraits/enemies/emberlord_azrak_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "crown half destroyed, eyes flickering, face crumbling"
+          denoise: 0.70
+          output: "assets/portraits/enemies/emberlord_azrak_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "crown shattered, eyes extinguished, collapsing to dark rock"
+          denoise: 0.80
+          output: "assets/portraits/enemies/emberlord_azrak_critical.png"
+          status: "pending"
+    voice:
+      preset: "warlord"
+      reference_audio: "core/audio/voice_seeds/warlord.wav"
+      exaggeration: 0.8
+      speed: 0.85
+    dialogue:
+      greeting:
+        - "Flesh. So fragile. So... flammable."
+      combat:
+        - "THE SOVEREIGN'S FIRE BURNS ETERNAL!"
+        - "I am the forge that remakes this world!"
+        - "You will be ASH before you reach the citadel!"
+      lore:
+        - "The Crown feeds me. Every day, more power. Why would I want it to stop?"
+
+  # ── NPCs ──
+
+  - name: "Zahara of the Sand"
+    entity_type: "npc"
+    zone: "oasis_camp"
+    count: 1
+    position: [[5, 4]]
+    stats:
+      str: 12
+      dex: 16
+      con: 14
+      int: 14
+      wis: 15
+      cha: 13
+      ac: 14
+      hp: 24
+      max_hp: 24
+      speed: 35
+    inventory: ["Curved Scimitar", "Waterskin", "Desert Spices"]
+    tags: ["merchant"]
+
+    portraits:
+      needed: true
+      style: "humanoid"
+      prompt_base: >
+        desert nomad woman, dark brown skin, fierce dark eyes lined with
+        kohl, black hair partially covered by a sand-colored headwrap,
+        lightweight layered desert robes in earth tones, beaded necklace
+        with a compass charm, weathered and capable expression, bust
+        shot, painterly high fantasy, warm oasis lighting, dark moody
+        background
+      health_states:
+        healthy:
+          output: "assets/portraits/npcs/zahara_sand.png"
+          status: "pending"
+
+    voice:
+      preset: "young_adventurer"
+      reference_audio: "core/audio/voice_seeds/young_adventurer.wav"
+      exaggeration: 0.5
+      speed: 1.0
+
+    dialogue:
+      greeting:
+        - "You survived the Glass Fields. That earns you water and shade."
+        - "The Sandwalkers welcome those the desert does not swallow."
+      quest:
+        - "Emberlord Azrak guards the eastern approach to the citadel."
+        - "He was not always a monster. Once, he was a guardian spirit of the earth."
+        - "The Crown corrupted him. Turned the guardian into a weapon."
+        - "To reach the citadel from here, you must go through him. There is no other path."
+        - "But I know his weakness. The obsidian platform he stands on — it channels the Crown's power to him."
+        - "Destroy the platform's anchor stones first. Without them, he is just fire. Still dangerous, but mortal."
+      lore:
+        - "This was grassland once. My grandmother remembers green fields, cattle, rain."
+        - "The heat came in a single day. A wave of fire from the citadel. Everything burned."
+        - "We adapted. The Sandwalkers always adapt. But this... this we cannot outlast."
+        - "The standing stones at this oasis are older than the kingdom. They protect us. Without them, even this water would boil."
+      trade:
+        - "Desert spices, waterskins, and fire resistance salve. You'll want all three."
+      farewell:
+        - "May the wind be at your back and the sand beneath your feet be cool."
+        - "If you kill the Emberlord... come back. I want to see green again."
+
+    voice_lines:
+      needed: true
+      status: "pending"
+      output_dir: "assets/voice/zahara_sand/"
+
+
+triggers:
+  - label: "glass_field_hazard"
+    zone: "glass_fields"
+    tile: [14, 4]
+    event_type: "ENTER_TILE"
+    condition:
+      type: "SkillCheck"
+      skill: "Dexterity"
+      dc: 13
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: "You pick your way carefully through the razor-sharp glass without injury."
+    next_trigger:
+      label: "glass_cut"
+      event_type: "ENTER_TILE"
+      condition:
+        type: "AlwaysTrue"
+      reaction:
+        type: "ApplyDamage"
+        args:
+          damage: 4
+          damage_type: "slashing"
+          message: "A hidden shard of volcanic glass slices through your boot. The wound burns."
+
+  - label: "emberlord_challenge"
+    zone: "emberlord_sanctum"
+    tile: [2, 12]
+    event_type: "ENTER_TILE"
+    condition:
+      type: "AlwaysTrue"
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: >
+          The vents roar as you approach. The air itself catches fire.
+          A massive form rises from the obsidian platform — Emberlord
+          Azrak, lieutenant of the Dark Sovereign, wreathed in
+          white-hot flame. The ground cracks beneath his weight.
+
+
+quests:
+  - id: "dethrone_emberlord"
+    name: "Dethrone the Emberlord"
+    type: "main"
+    giver: "Zahara of the Sand"
+    zone: "oasis_camp"
+    description: >
+      Emberlord Azrak blocks the eastern approach to the Obsidian Citadel.
+      Zahara knows his weakness — destroy the anchor stones on his platform
+      to sever his connection to the Crown before engaging him.
+    objectives:
+      - "Reach the Emberlord's Sanctum"
+      - "Destroy the anchor stones (optional — weakens Azrak)"
+      - "Defeat Emberlord Azrak"
+    reward:
+      items: ["Ember Heart"]
+      xp: 500
+    difficulty: 3
+
+
+connections:
+  north: "biome_frozen_wastes"
+  south: null
+  east: null
+  west: "biome_obsidian_citadel"
+  border_tiles:
+    north: [[0, 8], [0, 9], [0, 10]]
+    west: [[9, 0], [10, 0], [11, 0]]

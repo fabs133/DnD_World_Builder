@@ -11,14 +11,17 @@ authoritative source of truth for all game state.
 """
 
 import asyncio
+import time
 import uuid
 import logging
 from network.transport import TransportServer, TransportConnection
 from network.protocol import (
-    Message, MessageType, PROTOCOL_VERSION,
+    Message, MessageType, PROTOCOL_VERSION, CRITICAL_TYPES,
     make_welcome, make_error, make_entity_claimed,
     make_full_state, make_action_result, make_chat, ErrorCode,
+    make_cursor_update, make_draw_stroke,
 )
+from network.reliable_channel import ReliableChannel
 from network.sync import serialize_world, serialize_entity
 
 logger = logging.getLogger(__name__)
@@ -35,11 +38,13 @@ class ConnectedPlayer:
     :type conn: ~network.transport.TransportConnection
     """
 
-    def __init__(self, player_id, player_name, conn):
+    def __init__(self, player_id, player_name, conn, color="#888888"):
         self.player_id = player_id
         self.player_name = player_name
         self.conn = conn
         self.claimed_entity_id = None
+        self.color = color
+        self.channel: ReliableChannel | None = None
 
 
 class SessionHost:
@@ -55,20 +60,41 @@ class SessionHost:
     :type transport: ~network.transport.TransportServer
     """
 
-    def __init__(self, gamemaster, transport: TransportServer):
+    # Fixed color palette for player cursor/draw identification.
+    _PLAYER_COLORS = [
+        "#e74c3c", "#3498db", "#2ecc71", "#f39c12",
+        "#9b59b6", "#1abc9c", "#e67e22", "#e91e63",
+    ]
+
+    def __init__(self, gamemaster, transport: TransportServer, password: str = ""):
         self.gamemaster = gamemaster
         self.transport = transport
         self.session_id = str(uuid.uuid4())[:8]
+        self._password = password  # empty = no password required
         self.players = {}  # player_id -> ConnectedPlayer
         self._entity_claims = {}  # entity_id -> player_id
+        self._entity_index = self._build_entity_index()
         self._seq = 0
+        self._active_draws: dict[str, dict] = {}  # stroke_id -> {payload, expires}
+        self._color_index = 0
         self._message_handlers = {
             MessageType.HELLO: self._handle_hello,
             MessageType.CLAIM_ENTITY: self._handle_claim_entity,
             MessageType.ACTION_REQUEST: self._handle_action_request,
             MessageType.CHAT: self._handle_chat,
             MessageType.DISCONNECT: self._handle_disconnect,
+            MessageType.CURSOR_UPDATE: self._handle_cursor_update,
+            MessageType.DRAW_STROKE: self._handle_draw_stroke,
         }
+
+    def _build_entity_index(self) -> dict:
+        """Build a name→entity lookup dict, warning on duplicates."""
+        index = {}
+        for e in self.gamemaster.game_entities:
+            if e.name in index:
+                logger.warning(f"Duplicate entity name: {e.name}")
+            index[e.name] = e
+        return index
 
     async def start(self):
         """Start the session and begin accepting connections."""
@@ -78,6 +104,9 @@ class SessionHost:
 
     async def stop(self):
         """Stop the session and disconnect all players."""
+        # Notify all players before shutdown
+        goodbye = make_error(ErrorCode.INVALID_MESSAGE, "Host is shutting down")
+        await self.broadcast(goodbye)
         await self.transport.stop()
         logger.info(f"Session {self.session_id} stopped")
 
@@ -115,14 +144,33 @@ class SessionHost:
             await conn.close()
             return
 
+        # Password check (if host has a password set)
+        if self._password:
+            client_password = msg.payload.get("password", "")
+            if client_password != self._password:
+                error = make_error(
+                    ErrorCode.WRONG_PASSWORD,
+                    "Incorrect session password",
+                )
+                await conn.send(error.to_json())
+                await conn.close()
+                logger.warning(
+                    f"Rejected connection from "
+                    f"'{msg.payload.get('player_name', '?')}': wrong password"
+                )
+                return
+
         player_name = msg.payload.get("player_name", "Unknown")
         player_id = str(uuid.uuid4())[:8]
-        player = ConnectedPlayer(player_id, player_name, conn)
+        color = self._PLAYER_COLORS[self._color_index % len(self._PLAYER_COLORS)]
+        self._color_index += 1
+        player = ConnectedPlayer(player_id, player_name, conn, color=color)
         self.players[player_id] = player
 
-        # Send WELCOME
+        # Send WELCOME (includes assigned color for cursor/draw)
         entity_summaries = [serialize_entity(e) for e in self.gamemaster.game_entities]
         welcome = make_welcome(self.session_id, player_id, entity_summaries)
+        welcome.payload["color"] = color
         await conn.send(welcome.to_json())
 
         # Send FULL_STATE
@@ -134,10 +182,47 @@ class SessionHost:
         full_state = make_full_state(world_data, entity_summaries, turn_data)
         await conn.send(full_state.to_json())
 
-        logger.info(f"Player '{player_name}' ({player_id}) connected")
+        # Send active (non-expired) draw strokes so late joiners see them
+        self._prune_expired_draws()
+        for stroke_data in self._active_draws.values():
+            draw_msg = Message(
+                type=MessageType.DRAW_STROKE,
+                payload=stroke_data["payload"],
+            )
+            await conn.send(draw_msg.to_json())
 
-        # Message loop
-        await self._message_loop(player, conn)
+        logger.info(f"Player '{player_name}' ({player_id}) connected (color: {color})")
+
+        # Create reliable channel for this player
+        channel = ReliableChannel(conn, channel_id=player_id)
+        player.channel = channel
+
+        def _on_player_message(msg: Message):
+            handler = self._message_handlers.get(msg.type)
+            if handler:
+                asyncio.ensure_future(handler(player, msg))
+            else:
+                logger.warning(f"Unhandled message type from {player_id}: {msg.type}")
+
+        def _on_player_disconnect():
+            self.players.pop(player_id, None)
+            logger.info(f"Player '{player_name}' disconnected (channel lost)")
+
+        channel.on_message = _on_player_message
+        channel.on_disconnect = _on_player_disconnect
+
+        # Start the channel (listen + heartbeat) and wait until it ends
+        await channel.start()
+        # Wait for channel to die (listen_task completes when connection drops)
+        if channel._listen_task:
+            try:
+                await channel._listen_task
+            except (asyncio.CancelledError, Exception):
+                pass
+
+        # Cleanup
+        self.players.pop(player_id, None)
+        logger.info(f"Player '{player_name}' disconnected")
 
     async def _message_loop(self, player, conn):
         """Read and dispatch messages from a client until disconnect or error.
@@ -170,18 +255,38 @@ class SessionHost:
     async def broadcast(self, msg, exclude=None):
         """Send a message to all connected players.
 
+        Uses the player's :class:`ReliableChannel` when available.
+        Critical messages are sent via ``request()`` (with ACK/retry);
+        non-critical messages use ``fire()`` (best-effort).
+        Players that fail to receive are automatically evicted.
+
         :param msg: The message to broadcast.
         :type msg: ~network.protocol.Message
         :param exclude: Player ID to skip (e.g. the sender).
         :type exclude: str or None
         """
-        data = msg.to_json()
+        to_remove = []
         for pid, player in list(self.players.items()):
-            if pid != exclude:
+            if pid == exclude:
+                continue
+            if player.channel and player.channel.alive:
+                if msg.type in CRITICAL_TYPES:
+                    ok = await player.channel.request(msg)
+                else:
+                    ok = await player.channel.fire(msg)
+                if not ok:
+                    to_remove.append(pid)
+            else:
+                # Fallback for players without a channel (shouldn't happen)
                 try:
-                    await player.conn.send(data)
+                    await player.conn.send(msg.to_json())
                 except ConnectionError:
-                    pass
+                    to_remove.append(pid)
+
+        for pid in to_remove:
+            player = self.players.pop(pid, None)
+            if player:
+                logger.info(f"Evicted unreachable player '{player.player_name}' ({pid})")
 
     async def _handle_hello(self, player, msg):
         """No-op: HELLO is already handled during the handshake."""
@@ -203,10 +308,7 @@ class SessionHost:
             await player.conn.send(error.to_json())
             return
 
-        entity = next(
-            (e for e in self.gamemaster.game_entities if e.name == entity_id),
-            None,
-        )
+        entity = self._entity_index.get(entity_id)
         if not entity:
             error = make_error(
                 ErrorCode.UNKNOWN_ENTITY,
@@ -258,10 +360,7 @@ class SessionHost:
             return
 
         # 3. Look up the entity object
-        entity = next(
-            (e for e in self.gamemaster.game_entities if e.name == entity_id),
-            None,
-        )
+        entity = self._entity_index.get(entity_id)
         if not entity:
             error = make_error(
                 ErrorCode.UNKNOWN_ENTITY,
@@ -319,7 +418,14 @@ class SessionHost:
             await player.conn.send(error.to_json())
             return
 
-        # 7. Send success result to the requesting player
+        # 7. Advance turn if END_TURN action
+        if action_type in ("END_TURN", "ENDTURN", "END"):
+            ts = self.gamemaster.turn_system
+            ts.current_turn = (ts.current_turn + 1) % len(ts.entities)
+            if ts.current_turn == 0:
+                ts.round_number = getattr(ts, "round_number", 1) + 1
+
+        # 8. Send success result to the requesting player
         result_msg = make_action_result(
             success=True,
             result=result_data,
@@ -343,10 +449,7 @@ class SessionHost:
 
         if action_type == "ATTACK":
             target_name = params.get("target")
-            target = next(
-                (e for e in self.gamemaster.game_entities if e.name == target_name),
-                None,
-            )
+            target = self._entity_index.get(target_name)
             if target is None:
                 return None
             return AttackAction(actor, target)
@@ -370,6 +473,37 @@ class SessionHost:
         """Broadcast a CHAT message to all connected players."""
         chat = make_chat(player.player_name, msg.payload.get("message", ""))
         await self.broadcast(chat)
+
+    async def _handle_cursor_update(self, player, msg):
+        """Relay a cursor position update to all other players."""
+        # Inject the player's server-assigned color and identity
+        msg.payload["player_id"] = player.player_id
+        msg.payload["player_name"] = player.player_name
+        msg.payload["color"] = player.color
+        await self.broadcast(msg, exclude=player.player_id)
+
+    async def _handle_draw_stroke(self, player, msg):
+        """Relay a draw stroke to all other players and store for late joiners."""
+        msg.payload["player_id"] = player.player_id
+        msg.payload["color"] = player.color
+
+        # Store with expiry for late-joining players
+        stroke_id = f"{player.player_id}_{self._seq}"
+        self._active_draws[stroke_id] = {
+            "payload": dict(msg.payload),
+            "expires": time.time() + 15.0,
+        }
+        self._seq += 1
+        self._prune_expired_draws()
+
+        await self.broadcast(msg, exclude=player.player_id)
+
+    def _prune_expired_draws(self) -> None:
+        """Remove draw strokes that have passed their expiry time."""
+        now = time.time()
+        expired = [k for k, v in self._active_draws.items() if v["expires"] <= now]
+        for k in expired:
+            del self._active_draws[k]
 
     async def _handle_disconnect(self, player, msg):
         """Close the connection for a disconnecting player."""

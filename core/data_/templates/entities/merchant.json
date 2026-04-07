@@ -1,0 +1,43 @@
+{
+  "template_id": "merchant",
+  "name": "Merchant",
+  "category": "npc",
+  "tags": ["trade", "town"],
+  "description": "A travelling merchant with wares to sell.",
+  "entity_data": {
+    "name": "Merchant",
+    "entity_type": "npc",
+    "stats": {
+      "str": 10,
+      "dex": 12,
+      "con": 10,
+      "int": 13,
+      "wis": 11,
+      "cha": 14,
+      "ac": 12,
+      "hp": 9,
+      "max_hp": 9
+    },
+    "inventory": ["Healing Potion", "Rope (50ft)", "Rations (5 days)"],
+    "triggers": [],
+    "hp": 9,
+    "max_hp": 9,
+    "conditions": [],
+    "voice_profile": {
+      "voice_id": "merchant_tmpl",
+      "source_type": "preset",
+      "reference_audio": "core/audio/voice_seeds/roguish_trickster.wav",
+      "preset_name": "roguish_trickster",
+      "exaggeration": 0.6,
+      "speed_factor": 1.1,
+      "cfg_weight": 0.5,
+      "language": "en",
+      "pitch_description": "Quick, sly voice"
+    },
+    "dialogue_lines": {
+      "greeting": ["Looking for something special?"],
+      "shop": ["I have what you need. For a price."],
+      "farewell": ["Pleasure doing business."]
+    }
+  }
+}

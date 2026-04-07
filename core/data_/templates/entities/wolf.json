@@ -1,0 +1,27 @@
+{
+  "template_id": "wolf",
+  "name": "Wolf",
+  "category": "enemy",
+  "tags": ["beast", "low_cr"],
+  "description": "SRD Wolf. Pack hunter.",
+  "entity_data": {
+    "name": "Wolf",
+    "entity_type": "enemy",
+    "stats": {
+      "str": 12,
+      "dex": 15,
+      "con": 12,
+      "int": 3,
+      "wis": 12,
+      "cha": 6,
+      "ac": 13,
+      "hp": 11,
+      "max_hp": 11
+    },
+    "inventory": [],
+    "triggers": [],
+    "hp": 11,
+    "max_hp": 11,
+    "conditions": []
+  }
+}

@@ -43,11 +43,15 @@ def find_path(
     start: tuple[int, int],
     goal: tuple[int, int],
     tile_map: "WorldTileManager",
+    max_iterations: int = 10_000,
 ) -> list[tuple[int, int]] | None:
     """Return the shortest path from *start* to *goal*, or ``None``.
 
     Uses A* with the tile_map's adjacency, movement cost, and blocking
     queries.  The returned list **includes** *start* and *goal*.
+
+    :param max_iterations: Safety cap to prevent runaway searches on
+        very large or degenerate grids.
     """
     if start == goal:
         return [start]
@@ -64,8 +68,13 @@ def find_path(
 
     came_from: dict[tuple[int, int], tuple[int, int]] = {}
     g_score: dict[tuple[int, int], int] = {start: 0}
+    iterations = 0
 
     while open_set:
+        iterations += 1
+        if iterations > max_iterations:
+            return None  # Safety cap exceeded
+
         _, _, current = heapq.heappop(open_set)
 
         if current == goal:
@@ -137,6 +146,71 @@ def path_cost(
     for x, y in path[1:]:
         total += tile_map.get_movement_cost(x, y)
     return total
+
+
+def reachable_tiles_with_elevation(
+    origin: tuple[int, int],
+    budget: int,
+    tile_map: "WorldTileManager",
+    combat_grid: dict | None = None,
+) -> dict[tuple[int, int], dict]:
+    """Dijkstra flood-fill with elevation cost multipliers.
+
+    Like :func:`reachable_tiles` but applies elevation-based cost
+    modifiers from :func:`models.combat.elevation.evaluate_traversal`.
+
+    Returns ``{coord: {"cost": int, "traversal_type": str}}`` for
+    all reachable tiles within *budget*.
+
+    :param combat_grid: Dict mapping ``(x, y)`` to TileData with elevation.
+        If None, behaves identically to :func:`reachable_tiles`.
+    """
+    from models.combat.elevation import evaluate_traversal, TraversalType
+
+    result: dict[tuple[int, int], dict] = {
+        origin: {"cost": 0, "traversal_type": "flat"},
+    }
+    counter = 0
+    heap: list[tuple[int, int, tuple[int, int]]] = [(0, counter, origin)]
+
+    while heap:
+        cost, _, current = heapq.heappop(heap)
+
+        if cost > result.get(current, {}).get("cost", float("inf")):
+            continue
+
+        for neighbour in tile_map.get_adjacent_tiles(*current):
+            nx, ny = neighbour
+            if tile_map.is_blocking(nx, ny):
+                continue
+
+            base_cost = tile_map.get_movement_cost(nx, ny)
+
+            # Apply elevation cost multiplier
+            traversal_type = "flat"
+            if combat_grid:
+                from_tile = combat_grid.get(current)
+                to_tile = combat_grid.get(neighbour)
+                if from_tile and to_tile:
+                    from_elev = getattr(from_tile, "elevation", 0)
+                    to_elev = getattr(to_tile, "elevation", 0)
+                    info = evaluate_traversal(from_elev, to_elev)
+                    if info.traversal_type == TraversalType.IMPASSABLE:
+                        continue
+                    base_cost = int(base_cost * info.movement_cost_multiplier)
+                    traversal_type = info.traversal_type.value
+
+            new_cost = cost + base_cost
+            if new_cost > budget:
+                continue
+
+            prev = result.get(neighbour, {}).get("cost", float("inf"))
+            if new_cost < prev:
+                result[neighbour] = {"cost": new_cost, "traversal_type": traversal_type}
+                counter += 1
+                heapq.heappush(heap, (new_cost, counter, neighbour))
+
+    return result
 
 
 def _reconstruct(

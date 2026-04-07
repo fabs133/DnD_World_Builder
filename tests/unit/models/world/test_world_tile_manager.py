@@ -73,6 +73,53 @@ def test_move_entity_prints_and_updates_position(caplog):
     assert ent.position == (0, 1)
     assert "Invalid move for Rogue." in caplog.text
 
+def test_move_entity_updates_entities_dict():
+    """After move, entity appears at new position and not at old."""
+    mgr = WorldTileManager(5, 5, tile_type="square")
+    ent = DummyEntity("Goblin")
+    mgr.place_entity(ent, 0, 0)
+    assert ent in mgr.get_entities_at(0, 0)
+
+    mgr.move_entity(ent, 2, 3)
+    assert ent not in mgr.get_entities_at(0, 0)
+    assert ent in mgr.get_entities_at(2, 3)
+    assert ent.position == (2, 3)
+
+
+def test_move_entity_cleans_up_empty_list():
+    """Old position entry is removed when no entities remain."""
+    mgr = WorldTileManager(5, 5, tile_type="square")
+    ent = DummyEntity("Goblin")
+    mgr.place_entity(ent, 1, 1)
+    mgr.move_entity(ent, 2, 2)
+    assert (1, 1) not in mgr.entities
+
+
+def test_move_entity_invalid_tile_no_change():
+    """Moving to invalid tile leaves entity at original position."""
+    mgr = WorldTileManager(5, 5, tile_type="square")
+    ent = DummyEntity("Goblin")
+    mgr.place_entity(ent, 0, 0)
+    mgr.move_entity(ent, 99, 99)
+    assert ent.position == (0, 0)
+    assert ent in mgr.get_entities_at(0, 0)
+
+
+def test_multiple_entities_same_tile_move_one():
+    """Moving one entity off a shared tile doesn't affect the other."""
+    mgr = WorldTileManager(5, 5, tile_type="square")
+    e1 = DummyEntity("A")
+    e2 = DummyEntity("B")
+    mgr.place_entity(e1, 0, 0)
+    mgr.place_entity(e2, 0, 0)
+    assert len(mgr.get_entities_at(0, 0)) == 2
+
+    mgr.move_entity(e1, 1, 1)
+    assert e1 not in mgr.get_entities_at(0, 0)
+    assert e2 in mgr.get_entities_at(0, 0)
+    assert e1 in mgr.get_entities_at(1, 1)
+
+
 def test_display_world(caplog):
     mgr = WorldTileManager(4, 2, tile_type="square")
     with caplog.at_level(logging.DEBUG, logger=app_logger.name):
@@ -82,3 +129,42 @@ def test_display_world(caplog):
     assert len(lines) == 2
     for line in lines:
         assert "[ ][ ][ ][ ]" in line
+
+
+# ── Vision blocking ─────────────────────────────────────────────────
+
+class TestBlocksVision:
+
+    def test_out_of_bounds_blocks_vision(self):
+        mgr = WorldTileManager(3, 3, tile_type="square")
+        assert mgr.blocks_vision(99, 99) is True
+
+    def test_normal_tile_does_not_block(self):
+        mgr = WorldTileManager(3, 3, tile_type="square")
+        assert mgr.blocks_vision(1, 1) is False
+
+    def test_blocks_vision_tag(self):
+        from models.tiles.tile_data import TileTag
+        mgr = WorldTileManager(3, 3, tile_type="square")
+        mgr.tiles[(1, 1)].tags.append(TileTag.BLOCKS_VISION)
+        assert mgr.blocks_vision(1, 1) is True
+
+    def test_blocks_movement_also_blocks_vision(self):
+        from models.tiles.tile_data import TileTag
+        mgr = WorldTileManager(3, 3, tile_type="square")
+        mgr.tiles[(1, 1)].tags.append(TileTag.BLOCKS_MOVEMENT)
+        assert mgr.blocks_vision(1, 1) is True
+
+    def test_wall_terrain_blocks_vision(self):
+        from models.tiles.tile_data import TerrainType
+        mgr = WorldTileManager(3, 3, tile_type="square")
+        mgr.tiles[(1, 1)].terrain = TerrainType.WALL
+        assert mgr.blocks_vision(1, 1) is True
+
+    def test_is_blocking_unchanged(self):
+        """Movement blocking should NOT check BLOCKS_VISION."""
+        from models.tiles.tile_data import TileTag
+        mgr = WorldTileManager(3, 3, tile_type="square")
+        mgr.tiles[(1, 1)].tags.append(TileTag.BLOCKS_VISION)
+        # BLOCKS_VISION only — should NOT block movement
+        assert mgr.is_blocking(1, 1) is False

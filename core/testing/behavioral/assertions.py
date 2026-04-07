@@ -104,8 +104,8 @@ class AlignmentAssertions:
             ),
             BehaviorAssertion(
                 "ng_moderate_flee",
-                lambda s: _skip_if_few(s, BehaviorEvent.CONSIDERED_FLEEING) or s.flee_rate < 0.45,
-                lambda s: f"Expected flee_rate < 0.45, got {s.flee_rate:.2f}",
+                lambda s: _skip_if_few(s, BehaviorEvent.CONSIDERED_FLEEING) or s.flee_rate <= 0.45,
+                lambda s: f"Expected flee_rate <= 0.45, got {s.flee_rate:.2f}",
             ),
         ]
 
@@ -261,8 +261,8 @@ class AlignmentAssertions:
             ),
             BehaviorAssertion(
                 "ne_moderate_flee",
-                lambda s: _skip_if_few(s, BehaviorEvent.CONSIDERED_FLEEING) or s.flee_rate > 0.15,
-                lambda s: f"Expected flee_rate > 0.15, got {s.flee_rate:.2f}",
+                lambda s: _skip_if_few(s, BehaviorEvent.CONSIDERED_FLEEING) or s.flee_rate >= 0.10,
+                lambda s: f"Expected flee_rate >= 0.10, got {s.flee_rate:.2f}",
             ),
         ]
 

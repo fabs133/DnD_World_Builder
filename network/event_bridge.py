@@ -10,6 +10,14 @@ import logging
 import time
 from typing import TYPE_CHECKING
 
+from core.events import (
+    COMBAT_ENDED, COMBAT_GRID_READY, COMBAT_STARTED, CONDITION_APPLIED,
+    CONDITION_REMOVED, ENTITY_ADDED, ENTITY_DAMAGED, ENTITY_DIED,
+    ENTITY_HEALED, ENTITY_MOVED, ENTITY_REMOVED, INITIATIVE_ROLLED,
+    PLAYER_ENTERED_ZONE, PLAYER_LEFT_ZONE, ROUND_STARTED,
+    TILE_MODIFIED, TILE_TERRAIN_CHANGED, TRIGGER_FIRED, TURN_ENDED,
+    TURN_STARTED,
+)
 from core.gameCreation.event_bus import EventBus
 from network.sync import serialize_world, compute_delta
 from network.protocol import make_state_delta, make_turn_change
@@ -22,22 +30,26 @@ logger = logging.getLogger(__name__)
 
 # Events that trigger state sync
 SYNC_EVENTS = frozenset({
-    "entity_moved",
-    "entity_added",
-    "entity_removed",
-    "entity_damaged",
-    "entity_healed",
-    "entity_died",
-    "tile_modified",
-    "tile_terrain_changed",
-    "combat_started",
-    "combat_ended",
-    "turn_started",
-    "turn_ended",
-    "round_started",
-    "condition_applied",
-    "condition_removed",
-    "trigger_fired",
+    ENTITY_MOVED,
+    ENTITY_ADDED,
+    ENTITY_REMOVED,
+    ENTITY_DAMAGED,
+    ENTITY_HEALED,
+    ENTITY_DIED,
+    TILE_MODIFIED,
+    TILE_TERRAIN_CHANGED,
+    COMBAT_STARTED,
+    COMBAT_ENDED,
+    TURN_STARTED,
+    TURN_ENDED,
+    ROUND_STARTED,
+    CONDITION_APPLIED,
+    CONDITION_REMOVED,
+    TRIGGER_FIRED,
+    PLAYER_ENTERED_ZONE,
+    PLAYER_LEFT_ZONE,
+    COMBAT_GRID_READY,
+    INITIATIVE_ROLLED,
 })
 
 
@@ -257,8 +269,8 @@ class TurnBridge:
         except RuntimeError:
             self._loop = asyncio.get_event_loop()
         
-        EventBus.subscribe("turn_started", self._on_turn_started)
-        EventBus.subscribe("round_started", self._on_round_started)
+        EventBus.subscribe(TURN_STARTED, self._on_turn_started)
+        EventBus.subscribe(ROUND_STARTED, self._on_round_started)
         
         logger.info("TurnBridge started")
     
@@ -268,8 +280,8 @@ class TurnBridge:
             return
 
         self._running = False
-        EventBus.unsubscribe("turn_started", self._on_turn_started)
-        EventBus.unsubscribe("round_started", self._on_round_started)
+        EventBus.unsubscribe(TURN_STARTED, self._on_turn_started)
+        EventBus.unsubscribe(ROUND_STARTED, self._on_round_started)
         
         logger.info("TurnBridge stopped")
     

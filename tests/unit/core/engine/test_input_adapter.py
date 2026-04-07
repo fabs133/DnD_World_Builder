@@ -43,13 +43,16 @@ class TestTestAdapter:
         a3 = adapter.choose_action("E", state, ["ATTACK"])
         assert a3.label == "third"
 
-    def test_raises_when_exhausted(self):
+    def test_returns_end_turn_when_exhausted(self):
+        """When scripted actions run out, returns EndTurnAction gracefully."""
+        from core.engine.actions.end_turn_action import EndTurnAction
+
         adapter = TestAdapter(action_sequence=[DummyAction()])
         state = _make_state()
 
         adapter.choose_action("E", state, [])
-        with pytest.raises(IndexError, match="ran out of scripted actions"):
-            adapter.choose_action("E", state, [])
+        fallback = adapter.choose_action("E", state, [])
+        assert isinstance(fallback, EndTurnAction)
 
     def test_replays_targets(self):
         adapter = TestAdapter(target_sequence=["Goblin", "Orc"])

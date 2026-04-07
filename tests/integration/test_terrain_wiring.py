@@ -11,7 +11,7 @@ class TestTerrainWiring:
     """Verify that terrain defined in scenario YAML feeds through to the tile map."""
 
     def test_movement_cost_from_yaml(self, tmp_path):
-        """Scenario YAML with movement_cost:2 produces cost-10 tiles (2 * 5ft)."""
+        """Scenario YAML with movement_cost:2 stores cost directly (no multiplier)."""
         yaml_file = tmp_path / "terrain_test.yaml"
         yaml_file.write_text("""\
 name: "Terrain Test"
@@ -34,8 +34,8 @@ entities:
         session = loader.build_session(mode="mock", seed=42)
         tm = session._gm.world_tile_manager
 
-        assert tm.get_movement_cost(2, 2) == 10  # 2 * 5ft
-        assert tm.get_movement_cost(3, 2) == 10
+        assert tm.get_movement_cost(2, 2) == 2  # stored directly from YAML
+        assert tm.get_movement_cost(3, 2) == 2
         assert tm.get_movement_cost(0, 0) == 5   # default
 
     def test_blocking_from_yaml(self, tmp_path):
@@ -243,7 +243,7 @@ entities:
         assert action.validate(None) is True
 
     def test_difficult_terrain_costs_double(self, tmp_path):
-        """Difficult terrain (cost:2) uses double movement, limiting distance."""
+        """Difficult terrain (cost:10) uses double movement, limiting distance."""
         yaml_file = tmp_path / "move_difficult.yaml"
         yaml_file.write_text("""\
 name: "Difficult Terrain Test"
@@ -253,7 +253,7 @@ max_rounds: 5
 terrain:
   mud:
     positions: [[1, 0], [2, 0], [3, 0]]
-    movement_cost: 2
+    movement_cost: 10
 entities:
   - name: "Fighter"
     type: "player"
@@ -269,11 +269,11 @@ entities:
         fighter = session._gm.game_entities[0]
 
         # Tiles 1-3 cost 10ft each. Path (0,0)->(1,0)->(2,0)->(3,0)->(4,0)
-        # Cost = 10 + 10 + 10 + 5 = 35ft.  Speed = 20ft → too far.
+        # Cost = 10 + 10 + 10 + 5 = 35ft.  Speed = 20ft -> too far.
         action = MoveAction(fighter, (4, 0), world_tile_manager=tm)
         assert action.validate(None) is False
 
         # But moving just 2 tiles into mud: (0,0)->(1,0)->(2,0)
-        # Cost = 10 + 10 = 20ft.  Speed = 20ft → exactly enough.
+        # Cost = 10 + 10 = 20ft.  Speed = 20ft -> exactly enough.
         action2 = MoveAction(fighter, (2, 0), world_tile_manager=tm)
         assert action2.validate(None) is True

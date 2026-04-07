@@ -50,6 +50,14 @@ class BehavioralEntity:
         self.triggers: list = []
         self.inventory: list = []
         self.personality: EntityPersonality | None = None
+        self.portraits: dict[str, str] = {}
+        self.image_path: str | None = None
+
+    @property
+    def hp_percent(self) -> float:
+        if self.max_hp <= 0:
+            return 0.0
+        return self.hp / self.max_hp
 
 
 # ---------------------------------------------------------------------------

@@ -134,9 +134,10 @@ class WebSocketServer(TransportServer):
     :type port: int
     """
 
-    def __init__(self, host="0.0.0.0", port=8765):
+    def __init__(self, host="0.0.0.0", port=8765, ssl_context=None):
         self._host = host
         self._port = port
+        self._ssl_context = ssl_context
         self._handler = None
         self._app = None
         self._runner = None
@@ -149,9 +150,13 @@ class WebSocketServer(TransportServer):
         self._app.router.add_get("/ws", self._handle_ws)
         self._runner = web.AppRunner(self._app)
         await self._runner.setup()
-        self._site = web.TCPSite(self._runner, self._host, self._port)
+        self._site = web.TCPSite(
+            self._runner, self._host, self._port,
+            ssl_context=self._ssl_context,
+        )
         await self._site.start()
-        logger.info(f"WebSocket server listening on {self._host}:{self._port}")
+        scheme = "wss" if self._ssl_context else "ws"
+        logger.info(f"WebSocket server listening on {scheme}://{self._host}:{self._port}/ws")
 
     async def stop(self) -> None:
         """Close all active connections and shut down the HTTP server."""
@@ -200,9 +205,10 @@ class WebSocketClient(TransportClient):
     :type port: int
     """
 
-    def __init__(self, host: str, port: int):
+    def __init__(self, host: str, port: int, ssl: bool = False):
         self._host = host
         self._port = port
+        self._ssl = ssl
         self._session = None
 
     async def connect(self) -> TransportConnection:
@@ -211,9 +217,18 @@ class WebSocketClient(TransportClient):
         :return: A connection object for sending and receiving messages.
         :rtype: WebSocketConnection
         """
-        url = f"http://{self._host}:{self._port}/ws"
-        self._session = aiohttp.ClientSession()
-        ws = await self._session.ws_connect(url)
+        scheme = "https" if self._ssl else "http"
+        url = f"{scheme}://{self._host}:{self._port}/ws"
+        # For self-signed certs, disable verification
+        import ssl as _ssl
+        ssl_ctx = None
+        if self._ssl:
+            ssl_ctx = _ssl.create_default_context()
+            ssl_ctx.check_hostname = False
+            ssl_ctx.verify_mode = _ssl.CERT_NONE
+        connector = aiohttp.TCPConnector(ssl=ssl_ctx) if ssl_ctx else None
+        self._session = aiohttp.ClientSession(connector=connector)
+        ws = await self._session.ws_connect(url, ssl=ssl_ctx)
         conn = WebSocketConnection(ws)
         conn.start_reading()
         return conn

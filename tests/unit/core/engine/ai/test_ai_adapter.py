@@ -87,7 +87,7 @@ class TestAIAdapter:
         assert isinstance(action, EndTurnAction)
         assert mock_client.generate.call_count == 2
 
-    def test_fallback_to_end_turn_on_all_failures(self):
+    def test_fallback_to_heuristic_on_all_failures(self):
         mock_client = MagicMock(spec=OllamaClient)
         mock_client.generate.return_value = "garbage output"
 
@@ -100,8 +100,9 @@ class TestAIAdapter:
         state = _make_state()
         action = adapter.choose_action("Goblin", state, ["ATTACK"])
 
-        # Should fall back to EndTurnAction after 3 failures
-        assert isinstance(action, EndTurnAction)
+        # After all retries fail, delegates to HeuristicAIAdapter
+        # which will pick an action (or EndTurnAction if nothing useful)
+        assert action is not None
         assert mock_client.generate.call_count == 3
 
     def test_fallback_on_connection_error(self):

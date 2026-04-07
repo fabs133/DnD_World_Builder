@@ -145,11 +145,16 @@ class TestMessageValidation:
 
 class TestMessageTypeEnum:
 
-    def test_all_12_types_defined(self):
+    def test_all_types_defined(self):
         expected = {
             "HELLO", "WELCOME", "CLAIM_ENTITY", "ENTITY_CLAIMED",
             "FULL_STATE", "STATE_DELTA", "ACTION_REQUEST", "ACTION_RESULT",
             "TURN_CHANGE", "CHAT", "ERROR", "DISCONNECT",
+            "CURSOR_UPDATE", "DRAW_STROKE",
+            "PING", "PONG", "ACK",
+            "VOICE_CAPABILITY", "VOICE_CHARACTER_ASSIGN",
+            "VOICE_CHARACTER_PROGRESS", "VOICE_CHARACTER_COMPLETE",
+            "VOICE_CACHE_SYNC",
         }
         actual = {t.value for t in MessageType}
         assert actual == expected
@@ -179,6 +184,7 @@ class TestErrorCode:
         expected = {
             "INVALID_MESSAGE", "NOT_YOUR_TURN", "ENTITY_ALREADY_CLAIMED",
             "UNKNOWN_ENTITY", "INVALID_ACTION", "VERSION_MISMATCH",
+            "WRONG_PASSWORD",
         }
         actual = {c.value for c in ErrorCode}
         assert actual == expected

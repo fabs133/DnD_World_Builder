@@ -1,0 +1,485 @@
+# ══════════════════════════════════════════════════════════════════════
+# Sunken Swamp — Difficulty 2 (Bottom-center)
+# Toxic marshland with undead and a reclusive witch. Lost patrol quest.
+# ══════════════════════════════════════════════════════════════════════
+
+biome:
+  id: "sunken_swamp"
+  name: "The Sunken Swamp"
+  description: >
+    What was once the Ashwater river delta has become a fetid expanse of
+    black water and rotting vegetation. Methane bubbles break the surface
+    in eerie silence. The dead do not rest easily here — the blight has
+    seeped into the soil itself, and what lies beneath stirs at the
+    passage of the living.
+  biome_type: "swamp"
+  difficulty: 2
+  grid_size: [20, 20]
+  grid_offset: [40, 20]
+  ambient_audio: "night"
+  terrain_default: "SWAMP"
+
+  assets:
+    background:
+      needed: true
+      prompt: >
+        dark fantasy swamp at night, black still water reflecting a sickly
+        moon, dead twisted trees draped in moss, glowing will-o-wisps
+        floating between the trunks, thick fog, green bioluminescent
+        fungus on logs, oppressive atmosphere, wide cinematic shot,
+        painterly illustration, masterpiece
+      output: "assets/backgrounds/sunken_swamp.png"
+      status: "pending"
+
+    terrain_texture:
+      needed: true
+      terrain_type: "SWAMP"
+      prompt: >
+        dark swamp mud, wet black mud with sickly moss and water puddles,
+        top down battle map style, painted, fantasy illustration
+      output: "assets/terrain/swamp_mud.png"
+      status: "pending"
+
+
+zones:
+  - id: "swamp_edge"
+    label: "Swamp Edge"
+    description: "The ground softens. Your boots sink. The air thickens with the stench of decay."
+    terrain: "SWAMP"
+    tiles: [[16, 0], [16, 1], [16, 2], [16, 3], [17, 0], [17, 1], [17, 2], [17, 3]]
+    tags: []
+    ambient_audio: "night"
+    background:
+      needed: true
+      prompt: >
+        swamp edge where ground turns soft and waterlogged, dead reeds,
+        black still water beginning, fog rolling in, rotting vegetation,
+        painterly high fantasy, wide shot, dark oppressive atmosphere
+      output: "assets/backgrounds/zones/sunken_swamp_swamp_edge.png"
+      status: "pending"
+
+  - id: "drowned_camp"
+    label: "Drowned Camp"
+    description: >
+      Half-submerged tents and scattered equipment. This was Captain Thessa's
+      patrol camp. Something went very wrong here.
+    terrain: "SWAMP"
+    tiles: [[10, 3], [10, 4], [10, 5], [10, 6], [11, 3], [11, 4], [11, 5], [11, 6], [12, 3], [12, 4], [12, 5], [12, 6]]
+    tags: []
+    ambient_audio: "night"
+    background:
+      needed: true
+      prompt: >
+        half-submerged military camp in swamp, tents sinking into black
+        water, scattered equipment, broken militia banner on pole, eerie
+        moonlight, painterly high fantasy, wide shot, dark moody atmosphere
+      output: "assets/backgrounds/zones/sunken_swamp_drowned_camp.png"
+      status: "pending"
+
+  - id: "wisp_hollow"
+    label: "Wisp Hollow"
+    description: >
+      Pale lights drift between the dead trees, beckoning travelers deeper.
+      The ground here is treacherous — hidden sinkholes wait beneath
+      the surface.
+    terrain: "SWAMP"
+    tiles: [[6, 8], [6, 9], [6, 10], [7, 8], [7, 9], [7, 10], [8, 8], [8, 9]]
+    tags: []
+    ambient_audio: "night"
+    background:
+      needed: true
+      prompt: >
+        swamp hollow with pale floating lights drifting between dead trees,
+        treacherous ground with hidden sinkholes, thick fog, bioluminescent
+        fungus, painterly high fantasy, wide shot, eerie atmosphere
+      output: "assets/backgrounds/zones/sunken_swamp_wisp_hollow.png"
+      status: "pending"
+
+  - id: "hag_hut"
+    label: "Nessa's Hut"
+    description: >
+      A crooked shack built on stilts over the water. Dried herbs hang from
+      every beam. Bottles of things you don't want to identify line the
+      shelves. The witch Nessa watches you from behind a curtain of beads.
+    terrain: "FLOOR"
+    tiles: [[5, 14], [5, 15], [5, 16], [6, 14], [6, 15], [6, 16]]
+    tags: []
+    ambient_audio: "cave"
+    background:
+      needed: true
+      prompt: >
+        crooked wooden shack on stilts over dark swamp water, dried herbs
+        hanging from beams, bottles on shelves, bead curtain doorway, dim
+        candlelight inside, painterly high fantasy, wide interior shot
+      output: "assets/backgrounds/zones/sunken_swamp_hag_hut.png"
+      status: "pending"
+
+  - id: "bone_mound"
+    label: "The Bone Mound"
+    description: >
+      A hill of earth and bone rises from the swamp. Something large was
+      buried here long ago, and the blight has been slowly waking it.
+    terrain: "SWAMP"
+    tiles: [[2, 10], [2, 11], [2, 12], [3, 10], [3, 11], [3, 12]]
+    tags: []
+    ambient_audio: "dungeon"
+    background:
+      needed: true
+      prompt: >
+        mound of earth and bone rising from dark swamp, ancient bones
+        protruding, disturbed earth, black water surrounding base, something
+        stirring beneath, painterly high fantasy, wide shot, dark ominous
+        atmosphere
+      output: "assets/backgrounds/zones/sunken_swamp_bone_mound.png"
+      status: "pending"
+
+
+terrain_overrides:
+  - terrain: "WATER"
+    tiles: [[8, 2], [9, 2], [9, 3], [13, 7], [13, 8], [14, 7], [14, 8]]  # Claude Code: deep water channels
+  - terrain: "GRASS"
+    tiles: [[4, 6], [4, 7], [15, 10], [15, 11]]  # Claude Code: small dry islands
+  - terrain: "FLOOR"
+    tiles: [[5, 14], [5, 15], [5, 16], [6, 14], [6, 15], [6, 16]]  # Claude Code: Nessa's hut platform
+
+
+entities:
+
+  # ── Enemies ──
+
+  - name: "Bog Zombie"
+    entity_type: "enemy"
+    zone: "drowned_camp"
+    count: 4
+    position: [[10, 3], [10, 5], [11, 4], [12, 6]]
+    stats:
+      str: 13
+      dex: 6
+      con: 16
+      int: 3
+      wis: 6
+      cha: 5
+      ac: 8
+      hp: 22
+      max_hp: 22
+      speed: 20
+    inventory: []
+    portraits:
+      needed: true
+      style: "creature"
+      prompt_base: >
+        undead zombie rising from swamp mud, waterlogged bloated skin,
+        tattered clothing, hollow glowing green eyes, reaching out with
+        grasping hands, algae and mud covering body, front-facing,
+        painterly high fantasy, dark moody background
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/bog_zombie_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "darker lighting, greenish-red tint, more decay visible"
+          denoise: 0.25
+          output: "assets/portraits/enemies/bog_zombie_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "dark sickly green shadows, desaturated, shambling lower"
+          denoise: 0.350
+          output: "assets/portraits/enemies/bog_zombie_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "very dark, nearly black with faint green, crumbling silhouette"
+          denoise: 0.450
+          output: "assets/portraits/enemies/bog_zombie_critical.png"
+          status: "pending"
+    voice: null
+    dialogue: null
+
+  - name: "Will-o-Wisp"
+    entity_type: "enemy"
+    zone: "wisp_hollow"
+    count: 3
+    position: [[6, 8], [7, 9], [8, 9]]
+    stats:
+      str: 1
+      dex: 18
+      con: 10
+      int: 13
+      wis: 14
+      cha: 11
+      ac: 17
+      hp: 18
+      max_hp: 18
+      speed: 50
+    inventory: []
+    portraits:
+      needed: true
+      style: "creature"
+      prompt_base: >
+        ethereal will-o-wisp, floating orb of pale blue-white light,
+        ghostly trails of mist, faint spectral face visible within the
+        glow, eerie and otherworldly, front-facing,
+        painterly high fantasy, very dark swamp background
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/will_o_wisp_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "orb smaller and dimmer, flickering unstably"
+          denoise: 0.60
+          output: "assets/portraits/enemies/will_o_wisp_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "orb tiny and pulsing, sparking erratically"
+          denoise: 0.70
+          output: "assets/portraits/enemies/will_o_wisp_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "faint dying ember, barely a point of light"
+          denoise: 0.80
+          output: "assets/portraits/enemies/will_o_wisp_critical.png"
+          status: "pending"
+    voice: null
+    dialogue: null
+
+  - name: "Swamp Lurker"
+    entity_type: "enemy"
+    zone: "bone_mound"
+    count: 2
+    position: [[2, 10], [3, 11]]
+    stats:
+      str: 16
+      dex: 10
+      con: 15
+      int: 6
+      wis: 10
+      cha: 5
+      ac: 12
+      hp: 30
+      max_hp: 30
+      speed: 30
+    inventory: []
+    portraits:
+      needed: true
+      style: "creature"
+      prompt_base: >
+        large amphibian swamp creature, mottled green-brown skin, wide
+        flat head with bulging yellow eyes, massive jaw with rows of
+        teeth, webbed clawed hands, hunched posture, dripping with
+        swamp water, front-facing, painterly high fantasy, dark moody background
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/swamp_lurker_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "darker lighting, slight red tint, eyes more narrow"
+          denoise: 0.25
+          output: "assets/portraits/enemies/swamp_lurker_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "dark red-brown shadows, desaturated, hunched lower"
+          denoise: 0.350
+          output: "assets/portraits/enemies/swamp_lurker_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "very dark, nearly black, barely visible, collapsed"
+          denoise: 0.450
+          output: "assets/portraits/enemies/swamp_lurker_critical.png"
+          status: "pending"
+    voice: null
+    dialogue: null
+
+  # ── NPCs ──
+
+  - name: "Nessa the Witch"
+    entity_type: "npc"
+    zone: "hag_hut"
+    count: 1
+    position: [[5, 15]]
+    stats:
+      str: 10
+      dex: 12
+      con: 13
+      int: 18
+      wis: 16
+      cha: 14
+      ac: 13
+      hp: 20
+      max_hp: 20
+      speed: 30
+    inventory: ["Witch's Staff", "Potion of Swamp Breathing"]
+    tags: ["merchant"]
+
+    portraits:
+      needed: true
+      style: "humanoid"
+      prompt_base: >
+        old swamp witch woman, wild grey hair with feathers and bones woven
+        in, sharp clever eyes, hooked nose, weathered dark skin, draped
+        in layers of ragged shawls and bone necklaces, knowing amused
+        smirk, bust shot, painterly high fantasy, dim candlelight,
+        dark moody background
+      health_states:
+        healthy:
+          output: "assets/portraits/npcs/nessa_witch.png"
+          status: "pending"
+
+    voice:
+      preset: "creepy_whisper"
+      reference_audio: "core/audio/voice_seeds/creepy_whisper.wav"
+      exaggeration: 0.6
+      speed: 0.85
+
+    dialogue:
+      greeting:
+        - "Heh. The swamp let you through. It doesn't do that for everyone."
+        - "I knew you were coming. The leeches told me. They tell me everything."
+      quest:
+        - "The dead walk because the blight won't let them sleep. Rude, isn't it?"
+        - "I can brew something to quiet them. But I need a bone from that mound. A specific bone."
+        - "The skull of whatever's buried at the bottom. Bring it, and I'll give you something that keeps the dead... polite."
+        - "Don't worry, it's probably only mostly cursed."
+      lore:
+        - "Oh, the blight. Yes, I've watched it spread. Fascinating, really, in a horrible sort of way."
+        - "The swamp was always a bit... alive. [chuckle] But this is different. The water itself is infected."
+        - "Your lost soldiers are at the drowned camp. Some of them, anyway. The rest are... walking around."
+        - "The Sovereign's power comes from the Crown. Break the Crown, break the spell. Simple. Not easy, but simple."
+        - "There's something under the bone mound that predates the blight. Something older. Best not to wake it all the way."
+      trade:
+        - "Potions, charms, and questionable advice. All reasonably priced."
+      farewell:
+        - "Try not to drown. [chuckle] The paperwork is terrible."
+        - "If the wisps follow you, don't follow them back. That's free advice. You're welcome."
+
+    voice_lines:
+      needed: true
+      status: "pending"
+      output_dir: "assets/voice/nessa_witch/"
+
+
+  # ── Objects ──
+
+  - name: "Patrol Insignia"
+    entity_type: "object"
+    zone: "drowned_camp"
+    count: 3
+    position: [[11, 3], [10, 6], [12, 4]]
+    stats: {}
+    inventory: []
+    tags: ["item", "quest_item"]
+    portraits:
+      needed: true
+      style: "object"
+      prompt_base: >
+        a tarnished bronze military insignia badge with tower emblem,
+        mud stained, fantasy item, digital painting, dark background,
+        concept art,
+        painterly style
+      health_states:
+        healthy:
+          output: "assets/items/patrol_insignia.png"
+          status: "pending"
+    voice: null
+    dialogue:
+      lore:
+        - "A Millhaven militia insignia. The name scratched on the back is barely legible. These soldiers didn't make it."
+
+  - name: "Soldier's Journal"
+    entity_type: "object"
+    zone: "drowned_camp"
+    count: 1
+    position: [[11, 5]]
+    stats: {}
+    inventory: []
+    tags: ["readable"]
+    portraits:
+      needed: false
+    voice: null
+    dialogue:
+      lore:
+        - "The last entry reads: 'Day 2. The dead rose from the water at dusk. Sergeant Holt is gone. We're falling back to higher ground. If anyone finds this—'"
+      search:
+        - "A rough map in the journal shows a path to a hut on stilts deeper in the swamp. Someone has written 'witch — knows things' in the margin."
+
+
+triggers:
+  - label: "swamp_sinkhole"
+    zone: "wisp_hollow"
+    tile: [6, 9]                        # Claude Code: fill
+    event_type: "ENTER_TILE"
+    condition:
+      type: "SkillCheck"
+      skill: "Perception"
+      dc: 13
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: "You spot a sinkhole hidden beneath a mat of dead reeds and step around it."
+    next_trigger:
+      label: "sinkhole_fall"
+      event_type: "ENTER_TILE"
+      condition:
+        type: "AlwaysTrue"
+      reaction:
+        type: "ApplyDamage"
+        args:
+          damage: 6
+          damage_type: "bludgeoning"
+          message: "The ground gives way! You plunge into knee-deep mud and jagged stones."
+
+  - label: "drowned_camp_discovery"
+    zone: "drowned_camp"
+    tile: [10, 4]
+    event_type: "ENTER_TILE"
+    condition:
+      type: "AlwaysTrue"
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: >
+          Half-submerged tents and scattered equipment mark what was clearly
+          a military camp. The Millhaven militia banner hangs limp from a
+          broken pole. As you approach, shapes begin to rise from the black water.
+
+  - label: "bone_mound_rumble"
+    zone: "bone_mound"
+    tile: [2, 11]
+    event_type: "ENTER_TILE"
+    condition:
+      type: "AlwaysTrue"
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: >
+          The mound shudders as you approach. Bones shift and clatter.
+          Something massive stirs beneath the surface, and two lurkers
+          emerge from the waterline, drawn by the disturbance.
+
+
+quests:
+  - id: "quiet_the_dead"
+    name: "Quiet the Dead"
+    type: "side"
+    giver: "Nessa the Witch"
+    zone: "hag_hut"
+    description: >
+      Nessa can brew a tincture to pacify the restless dead, but she needs
+      the skull from whatever ancient creature lies beneath the Bone Mound.
+    objectives:
+      - "Defeat the Swamp Lurkers guarding the Bone Mound"
+      - "Retrieve the Ancient Skull"
+      - "Return to Nessa's Hut"
+    reward:
+      items: ["Tincture of the Still"]
+      xp: 200
+    difficulty: 2
+
+
+connections:
+  north: "biome_blighted_crossing"
+  south: null
+  east: "biome_crystal_caves"
+  west: "biome_millhaven"
+  border_tiles:
+    north: [[0, 8], [0, 9], [0, 10]]
+    east: [[9, 19], [10, 19], [11, 19]]
+    west: [[9, 0], [10, 0], [11, 0]]

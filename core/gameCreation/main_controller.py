@@ -27,7 +27,8 @@ class MainController(QMainWindow):
         # Scenario Overview
         self.scenario_overview = ScenarioOverviewWidget(
             map_loader=self.load_existing_map,
-            settings_manager=self.settings
+            settings_manager=self.settings,
+            back_to_launcher=self._back_to_launcher,
         )
         self.scenario_overview.new_btn.clicked.connect(self.start_new_map)
         self.stack.addWidget(self.scenario_overview)
@@ -50,6 +51,7 @@ class MainController(QMainWindow):
         self.map_editor = MainWindow(self.settings)
         # expose the SettingsManager to the tests
         self.map_editor.settings_manager = self.settings
+        self.map_editor.back_to_menu_requested = self.back_to_overview
         self.map_editor.initialize_default_map()
         self.stack.addWidget(self.map_editor)
         self.stack.setCurrentWidget(self.map_editor)
@@ -75,5 +77,18 @@ class MainController(QMainWindow):
         self.map_editor.settings_manager = self.settings
         self.map_editor.loaded_path = str(map_path)
         self.map_editor.load_map_from_file(str(map_path))
+        self.map_editor.back_to_menu_requested = self.back_to_overview
         self.stack.addWidget(self.map_editor)
         self.stack.setCurrentWidget(self.map_editor)
+
+    def back_to_overview(self):
+        """Return to the scenario overview from the editor."""
+        self.stack.setCurrentWidget(self.scenario_overview)
+
+    def _back_to_launcher(self):
+        """Close this window and re-open the launcher."""
+        from entry_point import LaunchDialog
+        from core.theme_engine import ThemeEngine
+        self._launcher = LaunchDialog(self.settings, ThemeEngine(self.settings))
+        self._launcher.show()
+        self.close()

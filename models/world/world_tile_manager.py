@@ -103,9 +103,9 @@ class WorldTileManager:
         """
         return 0 <= x < self.width and 0 <= y < self.height
 
-    def move_entity(self, entity, new_x, new_y):
+    def move_entity(self, entity, new_x, new_y) -> bool:
         """
-        Move an entity to a new tile if the tile is valid.
+        Move an entity to a new tile, updating position tracking.
 
         :param entity: The entity to move.
         :type entity: GameEntity
@@ -113,12 +113,31 @@ class WorldTileManager:
         :type new_x: int
         :param new_y: New Y-coordinate.
         :type new_y: int
+        :return: ``True`` if the move succeeded, ``False`` if the target tile
+                 is invalid.
         """
-        if self.is_valid_tile(new_x, new_y):
-            entity.position = (new_x, new_y)
-            app_logger.info(f"{entity.name} moved to tile ({new_x}, {new_y})")
-        else:
+        if not self.is_valid_tile(new_x, new_y):
             app_logger.warning(f"Invalid move for {entity.name}.")
+            return False
+
+        old_pos = getattr(entity, "position", None)
+        new_pos = (new_x, new_y)
+
+        # Add to new position FIRST to avoid losing the entity on error
+        self.entities.setdefault(new_pos, []).append(entity)
+        entity.position = new_pos
+
+        # Then remove from old position
+        if old_pos and old_pos in self.entities and old_pos != new_pos:
+            try:
+                self.entities[old_pos].remove(entity)
+            except ValueError:
+                pass
+            if not self.entities[old_pos]:
+                del self.entities[old_pos]
+
+        app_logger.info(f"{entity.name} moved to tile ({new_x}, {new_y})")
+        return True
 
     def get_movement_cost(self, x, y):
         """Return the movement cost (in feet) for the tile at (x, y).
@@ -140,6 +159,25 @@ class WorldTileManager:
         tile = self.tiles.get((x, y))
         if tile is None:
             return True  # Out-of-bounds treated as blocking
+        if TileTag.BLOCKS_MOVEMENT in tile.tags:
+            return True
+        if tile.terrain == TerrainType.WALL:
+            return True
+        return False
+
+    def blocks_vision(self, x, y) -> bool:
+        """Return True if the tile at (x, y) blocks line of sight.
+
+        A tile blocks vision if it has BLOCKS_VISION, BLOCKS_MOVEMENT,
+        or WALL terrain.  Solid walls block both movement and vision.
+        """
+        from models.tiles.tile_data import TileTag, TerrainType
+
+        tile = self.tiles.get((x, y))
+        if tile is None:
+            return True  # Out-of-bounds blocks vision
+        if TileTag.BLOCKS_VISION in tile.tags:
+            return True
         if TileTag.BLOCKS_MOVEMENT in tile.tags:
             return True
         if tile.terrain == TerrainType.WALL:

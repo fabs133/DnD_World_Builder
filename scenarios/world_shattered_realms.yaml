@@ -1,0 +1,327 @@
+# ══════════════════════════════════════════════════════════════════════
+# DnD World Builder — World Definition Schema
+# ══════════════════════════════════════════════════════════════════════
+#
+# The world file defines the scenario's overall structure:
+#   - Which biome blocks exist and where they sit in the grid
+#   - The world quest / main storyline
+#   - Player spawn configuration
+#   - Shared entities (players) that persist across blocks
+#
+# Biome blocks are defined in separate biome_*.yaml files.
+# This file references them by ID and places them on the world grid.
+#
+# ══════════════════════════════════════════════════════════════════════
+
+world:
+  id: "shattered_realms"
+  name: "The Shattered Realms"
+  author: "DnD World Builder Demo"
+  version: "1.0"
+  description: >
+    A once-unified kingdom torn apart by a corrupted artifact.
+    At the center sits the Obsidian Citadel where the Dark Sovereign
+    channels the artifact's power. The surrounding lands have been
+    twisted into hostile biomes, each guarded by a lieutenant.
+    Adventurers arrive at the outer edges and must fight inward.
+
+  grid_size: [3, 3]
+  block_size: [20, 20]
+
+  layout:
+    - ["mountain_pass",  "blighted_crossing", "frozen_wastes"]
+    - ["dark_forest",    "obsidian_citadel",  "scorched_sands"]
+    - ["millhaven",      "sunken_swamp",      "crystal_caves"]
+
+  biome_files:
+    mountain_pass:      "biome_mountain_pass.yaml"
+    blighted_crossing:  "biome_blighted_crossing.yaml"
+    frozen_wastes:      "biome_frozen_wastes.yaml"
+    dark_forest:        "biome_dark_forest.yaml"
+    obsidian_citadel:   "biome_obsidian_citadel.yaml"
+    scorched_sands:     "biome_scorched_sands.yaml"
+    millhaven:          "biome_millhaven.yaml"
+    sunken_swamp:       "biome_sunken_swamp.yaml"
+    crystal_caves:      "biome_crystal_caves.yaml"
+
+  difficulty_map:
+    - [2, 3, 2]
+    - [3, 5, 3]
+    - [1, 2, 2]
+
+
+players:
+  spawn_biome: "millhaven"
+  spawn_zone: "town_square"
+
+  characters:
+    - name: "Fighter"
+      entity_type: "player"
+      stats:
+        str: 16
+        dex: 12
+        con: 14
+        int: 10
+        wis: 12
+        cha: 8
+        ac: 16
+        hp: 34
+        max_hp: 34
+        speed: 30
+      inventory: ["Longsword", "Shield", "Chain Mail"]
+      portraits:
+        needed: true
+        style: "humanoid"
+        prompt_base: >
+          human male warrior, heavy plate armor with scratches and dents,
+          determined face, short brown hair, strong square jaw, stubble,
+          bust shot, painterly high fantasy, dark moody background
+        health_states:
+          healthy:
+            output: "assets/portraits/players/fighter_healthy.png"
+            status: "pending"
+          wounded:
+            prompt_mod: "scratches on cheeks, tired strained expression, sweat on brow, dirt on face"
+            denoise: 0.45
+            output: "assets/portraits/players/fighter_wounded.png"
+            status: "pending"
+          bloodied:
+            prompt_mod: "blood running down face, deep cut on forehead, pained grimace, bruised jaw, red around eyes"
+            denoise: 0.45
+            output: "assets/portraits/players/fighter_bloodied.png"
+            status: "pending"
+          critical:
+            prompt_mod: "covered in blood and dirt, deep gashes on face, swollen shut eye, bruised jaw, exhausted dying expression"
+            denoise: 0.60
+            output: "assets/portraits/players/fighter_critical.png"
+            status: "pending"
+      voice:
+        preset: "grizzled_veteran"
+        reference_audio: "core/audio/voice_seeds/grizzled_veteran.wav"
+      dialogue:
+        combat:
+          - "Hold the line!"
+          - "For the fallen!"
+
+    - name: "Rogue"
+      entity_type: "player"
+      stats:
+        str: 10
+        dex: 16
+        con: 12
+        int: 13
+        wis: 10
+        cha: 14
+        ac: 14
+        hp: 28
+        max_hp: 28
+        speed: 30
+      inventory: ["Shortsword", "Shortbow", "Leather Armor"]
+      portraits:
+        needed: true
+        style: "humanoid"
+        prompt_base: >
+          human female rogue, dark leather armor, deep hood pushed back,
+          sharp cunning eyes, dark auburn braid, angular features, sly smile,
+          bust shot, painterly high fantasy, dark moody background
+        health_states:
+          healthy:
+            output: "assets/portraits/players/rogue_healthy.png"
+            status: "pending"
+          wounded:
+            prompt_mod: "small cut on cheek, wary narrowed eyes, furrowed brow, sweat, disheveled hair strands"
+            denoise: 0.45
+            output: "assets/portraits/players/rogue_wounded.png"
+            status: "pending"
+          bloodied:
+            prompt_mod: "blood on face, grimacing in pain, black eye, split lip, hair messy and loose"
+            denoise: 0.45
+            output: "assets/portraits/players/rogue_bloodied.png"
+            status: "pending"
+          critical:
+            prompt_mod: "face covered in blood, deep cuts across cheek, black swollen eye, matted bloody hair, dying expression"
+            denoise: 0.60
+            output: "assets/portraits/players/rogue_critical.png"
+            status: "pending"
+      voice:
+        preset: "roguish_trickster"
+        reference_audio: "core/audio/voice_seeds/roguish_trickster.wav"
+      dialogue:
+        combat:
+          - "Behind you!"
+          - "Too slow."
+
+    - name: "Wizard"
+      entity_type: "player"
+      stats:
+        str: 8
+        dex: 14
+        con: 12
+        int: 17
+        wis: 13
+        cha: 10
+        ac: 12
+        hp: 22
+        max_hp: 22
+        speed: 30
+      inventory: ["Quarterstaff", "Spellbook"]
+      portraits:
+        needed: true
+        style: "humanoid"
+        prompt_base: >
+          elderly human male wizard, dark blue robes with silver embroidery,
+          long white beard, wise piercing eyes, deep wrinkles, pointed hat,
+          bust shot, painterly high fantasy, dark moody background
+        health_states:
+          healthy:
+            output: "assets/portraits/players/wizard_healthy.png"
+            status: "pending"
+          wounded:
+            prompt_mod: "large bloody cut across forehead, soot and dirt covering face, burned singed beard, exhausted pained eyes"
+            denoise: 0.50
+            output: "assets/portraits/players/wizard_wounded.png"
+            status: "pending"
+          bloodied:
+            prompt_mod: "blood running down face from deep wounds, blackened bruised skin, swollen shut eye, blood matted beard"
+            denoise: 0.55
+            output: "assets/portraits/players/wizard_bloodied.png"
+            status: "pending"
+          critical:
+            prompt_mod: "face destroyed by wounds, blood everywhere, both eyes swollen, broken nose, beard soaked in blood, dying"
+            denoise: 0.70
+            output: "assets/portraits/players/wizard_critical.png"
+            status: "pending"
+      voice:
+        preset: "scholar"
+        reference_audio: "core/audio/voice_seeds/scholar.wav"
+      dialogue:
+        combat:
+          - "By the arcane!"
+          - "Stand back!"
+
+    - name: "Cleric"
+      entity_type: "player"
+      stats:
+        str: 14
+        dex: 10
+        con: 14
+        int: 10
+        wis: 16
+        cha: 12
+        ac: 16
+        hp: 28
+        max_hp: 28
+        speed: 30
+      inventory: ["Mace", "Shield", "Holy Symbol"]
+      portraits:
+        needed: true
+        style: "humanoid"
+        prompt_base: >
+          human female cleric, polished chain mail and white tabard,
+          golden holy symbol pendant, compassionate warm eyes,
+          brown hair tied back, resolute expression,
+          bust shot, painterly high fantasy, dark moody background
+        health_states:
+          healthy:
+            output: "assets/portraits/players/cleric_healthy.png"
+            status: "pending"
+          wounded:
+            prompt_mod: "concerned worried expression, dirt smudges on face, slight frown, weary eyes"
+            denoise: 0.45
+            output: "assets/portraits/players/cleric_wounded.png"
+            status: "pending"
+          bloodied:
+            prompt_mod: "blood on cheek and forehead, strained pained expression, gritting teeth, sweat and grime on face"
+            denoise: 0.45
+            output: "assets/portraits/players/cleric_bloodied.png"
+            status: "pending"
+          critical:
+            prompt_mod: "blood streaked across face, deep gash on cheek, swollen bruised face, eyes half closed, dying expression"
+            denoise: 0.60
+            output: "assets/portraits/players/cleric_critical.png"
+            status: "pending"
+      voice:
+        preset: "mystic_elder"
+        reference_audio: "core/audio/voice_seeds/mystic_elder.wav"
+      dialogue:
+        combat:
+          - "Light guide us!"
+          - "You will not fall today!"
+
+
+world_quest:
+  id: "shatter_the_sovereign"
+  name: "Shatter the Sovereign"
+  description: >
+    Journey to the heart of the Shattered Realms and destroy the
+    corrupted artifact that empowers the Dark Sovereign.
+  objectives:
+    - "Explore the outer biomes and grow stronger"
+    - "Defeat the lieutenants guarding the inner ring"
+    - "Breach the Obsidian Citadel"
+    - "Confront and defeat the Dark Sovereign"
+  boss:
+    name: "The Dark Sovereign"
+    biome: "obsidian_citadel"
+    zone: "throne_room"
+
+
+shared_items:
+  - name: "Longsword"
+    prompt: "close up of a hand gripping a fantasy longsword, focus on the steel blade and leather hilt, detailed weapon, dark moody background, painterly high fantasy"
+    output: "assets/items/longsword.png"
+    status: "pending"
+
+  - name: "Shield"
+    prompt: "close up of a round wooden shield being carried, focus on the shield, iron boss center, worn wood grain, dark moody background, painterly high fantasy"
+    output: "assets/items/shield.png"
+    status: "pending"
+
+  - name: "Shortsword"
+    prompt: "close up of a hand gripping a fantasy short sword, focus on the wide blade and leather grip, detailed weapon, dark moody background, painterly high fantasy"
+    output: "assets/items/shortsword.png"
+    status: "pending"
+
+  - name: "Shortbow"
+    prompt: "close up of a wooden bow being drawn, focus on the bow and string, simple curved wood, detailed weapon, dark moody background, painterly high fantasy"
+    output: "assets/items/shortbow.png"
+    status: "pending"
+
+  - name: "Quarterstaff"
+    prompt: "close up of a hand gripping a wooden quarterstaff, focus on the dark carved wood with runes, detailed weapon, dark moody background, painterly high fantasy"
+    output: "assets/items/quarterstaff.png"
+    status: "pending"
+
+  - name: "Spellbook"
+    prompt: "close up of a leather spellbook on a table, focus on the book, arcane symbols on cover, metal clasps, dark moody background, painterly high fantasy"
+    output: "assets/items/spellbook.png"
+    status: "pending"
+
+  - name: "Mace"
+    prompt: "close up of a hand gripping a flanged steel mace, focus on the spiked head and wooden handle, detailed weapon, dark moody background, painterly high fantasy"
+    output: "assets/items/mace.png"
+    status: "pending"
+
+  - name: "Holy Symbol"
+    prompt: "close up of a golden sun pendant hanging from a chain, focus on the pendant, radiating sun rays, glowing divine light, dark moody background, painterly high fantasy"
+    output: "assets/items/holy_symbol.png"
+    status: "pending"
+
+  - name: "Healing Herb Pouch"
+    prompt: "close up of a small leather pouch with dried herbs spilling out, focus on the pouch, drawstring bag, dark moody background, painterly high fantasy"
+    output: "assets/items/healing_herb_pouch.png"
+    status: "pending"
+
+  - name: "Potion of Blight Resistance"
+    prompt: "close up of a glowing green potion in a crystal vial, focus on the vial, cork stopper, swirling liquid, dark moody background, painterly high fantasy"
+    output: "assets/items/potion_blight_resistance.png"
+    status: "pending"
+
+
+_world_generation_summary:
+  biome_blocks: 9
+  biome_files_found: 0
+  player_portraits: 16
+  shared_item_icons: 10
+  total_assets_pending: 0
+  total_voice_lines_pending: 0

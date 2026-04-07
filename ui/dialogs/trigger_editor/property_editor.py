@@ -46,23 +46,26 @@ class TriggerPropertyEditor(QWidget):
         form.addRow("Next Trigger:", self.next_trigger_input)
 
         self.condition_input = QComboBox()
-        self.condition_input.addItems(condition_registry.list_keys())
         form.addRow("Condition:", self.condition_input)
-        self.condition_input.currentTextChanged.connect(self.update_condition_fields)
 
         self.reaction_input = QComboBox()
-        self.reaction_input.addItems(reaction_registry.list_keys())
         form.addRow("Reaction:", self.reaction_input)
-        self.reaction_input.currentTextChanged.connect(self.on_reaction_changed)
 
         layout.addLayout(form)
 
-        # --- Dynamic fields ---
+        # --- Dynamic fields (must exist before signals fire) ---
         self.condition_param_layout = QFormLayout()
         layout.addLayout(self.condition_param_layout)
 
         self.reaction_param_layout = QFormLayout()
         layout.addLayout(self.reaction_param_layout)
+
+        # Connect signals and populate combos AFTER layouts exist
+        self.condition_input.currentTextChanged.connect(self.update_condition_fields)
+        self.condition_input.addItems(condition_registry.list_keys())
+
+        self.reaction_input.currentTextChanged.connect(self.on_reaction_changed)
+        self.reaction_input.addItems(reaction_registry.list_keys())
 
 
     def update_condition_fields(self, name):
@@ -153,6 +156,9 @@ class TriggerPropertyEditor(QWidget):
         for name, param in sig.parameters.items():
             if name == 'self':
                 continue
+            # Skip *args and **kwargs (VAR_POSITIONAL / VAR_KEYWORD)
+            if param.kind in (param.VAR_POSITIONAL, param.VAR_KEYWORD):
+                continue
 
             # Create widget based on parameter type
             if param.annotation == int:
@@ -189,7 +195,14 @@ class TriggerPropertyEditor(QWidget):
             self.reaction_input.setCurrentText(self.trigger.reaction.__class__.__name__)
 
             self.update_condition_fields(self.trigger.condition.__class__.__name__)
-            self.build_reaction_fields(type(self.trigger.reaction))
+            # Look up the real class from the registry (not type() which may
+            # return a mock after deepcopy).
+            reaction_name = self.trigger.reaction.__class__.__name__
+            real_reaction_cls = reaction_registry.get_class(reaction_name)
+            if real_reaction_cls:
+                self.build_reaction_fields(real_reaction_cls)
+            else:
+                self.build_reaction_fields(type(self.trigger.reaction))
 
             if hasattr(self.trigger, "next_trigger") and self.trigger.next_trigger:
                 idx = self.next_trigger_input.findText(self.trigger.next_trigger)

@@ -1,0 +1,42 @@
+{
+  "template_id": "guard",
+  "name": "Guard",
+  "category": "npc",
+  "tags": ["military", "town"],
+  "description": "A town guard on patrol duty.",
+  "entity_data": {
+    "name": "Guard",
+    "entity_type": "npc",
+    "stats": {
+      "str": 13,
+      "dex": 12,
+      "con": 12,
+      "int": 10,
+      "wis": 11,
+      "cha": 10,
+      "ac": 16,
+      "hp": 11,
+      "max_hp": 11
+    },
+    "inventory": ["Spear", "Shield"],
+    "triggers": [],
+    "hp": 11,
+    "max_hp": 11,
+    "conditions": [],
+    "voice_profile": {
+      "voice_id": "guard_tmpl",
+      "source_type": "preset",
+      "reference_audio": "core/audio/voice_seeds/grizzled_veteran.wav",
+      "preset_name": "grizzled_veteran",
+      "exaggeration": 0.3,
+      "speed_factor": 0.9,
+      "cfg_weight": 0.5,
+      "language": "en",
+      "pitch_description": "Stern military voice"
+    },
+    "dialogue_lines": {
+      "greeting": ["Halt. State your business."],
+      "farewell": ["Move along."]
+    }
+  }
+}

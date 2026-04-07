@@ -125,7 +125,7 @@ class StatBlockDialog(QDialog):
         scores = {}
         stats = getattr(e, "stats", {})
         for abbr in ability_names:
-            val = stats.get(abbr) or stats.get(full_names[abbr]) or stats.get(abbr.lower()) or stats.get(full_names[abbr].lower())
+            val = stats.get(full_names[abbr]) or stats.get(abbr) or stats.get(abbr.lower()) or stats.get(full_names[abbr].lower())
             if val is not None:
                 scores[abbr] = val
 

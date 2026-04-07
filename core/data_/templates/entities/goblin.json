@@ -1,0 +1,27 @@
+{
+  "template_id": "goblin",
+  "name": "Goblin",
+  "category": "enemy",
+  "tags": ["monster", "low_cr"],
+  "description": "SRD Goblin. Small, cunning, and mean.",
+  "entity_data": {
+    "name": "Goblin",
+    "entity_type": "enemy",
+    "stats": {
+      "str": 8,
+      "dex": 14,
+      "con": 10,
+      "int": 10,
+      "wis": 8,
+      "cha": 8,
+      "ac": 15,
+      "hp": 7,
+      "max_hp": 7
+    },
+    "inventory": ["Scimitar"],
+    "triggers": [],
+    "hp": 7,
+    "max_hp": 7,
+    "conditions": []
+  }
+}

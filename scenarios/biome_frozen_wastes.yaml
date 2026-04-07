@@ -1,0 +1,376 @@
+# ══════════════════════════════════════════════════════════════════════
+# Frozen Wastes — Difficulty 2 (Top-right)
+# Magical winter. Ice wraiths, frost wolves, a frozen lake, a warrior NPC.
+# ══════════════════════════════════════════════════════════════════════
+
+biome:
+  id: "frozen_wastes"
+  name: "The Frozen Wastes"
+  description: >
+    The Crown's corruption manifests here as an unnatural winter that
+    has gripped the northeastern highlands for months. Snow falls from
+    a sky that never fully darkens. Beneath a frozen lake, something
+    ancient sleeps. A lone shieldmaiden guards the passage, the last
+    survivor of a warband that ventured here to find the source.
+  biome_type: "tundra"
+  difficulty: 2
+  grid_size: [20, 20]
+  grid_offset: [0, 40]
+  ambient_audio: "night"
+  terrain_default: "MOUNTAIN"
+
+  assets:
+    background:
+      needed: true
+      prompt: >
+        frozen fantasy wasteland, endless snow-covered plains, frozen lake
+        in the distance reflecting pale sky, dead trees coated in ice,
+        aurora borealis in pale green, icy wind blowing snow crystals,
+        desolate and beautiful, wide cinematic shot, painterly illustration
+      output: "assets/backgrounds/frozen_wastes.png"
+      status: "pending"
+
+    terrain_texture:
+      needed: true
+      terrain_type: "MOUNTAIN"
+      prompt: >
+        frozen snow and ice ground, white snow with blue ice patches,
+        top down battle map style, painted, fantasy illustration
+      output: "assets/terrain/frozen_snow.png"
+      status: "pending"
+
+
+zones:
+  - id: "frost_border"
+    label: "Frost Border"
+    description: "The temperature plummets. Your breath crystallizes. The snow line begins here — and doesn't end."
+    terrain: "MOUNTAIN"
+    tiles: [[16, 0], [16, 1], [16, 2], [16, 3], [17, 0], [17, 1], [17, 2], [17, 3]]
+    tags: []
+    ambient_audio: "night"
+    background:
+      needed: true
+      prompt: >
+        snow line beginning, endless white tundra ahead, frozen dead trees
+        coated in ice, crystallized breath visible, pale sky, aurora borealis
+        faint in distance, painterly high fantasy, wide shot, cold desolate
+        atmosphere
+      output: "assets/backgrounds/zones/frozen_wastes_frost_border.png"
+      status: "pending"
+
+  - id: "frozen_lake"
+    label: "Frozen Lake"
+    description: >
+      A vast lake sealed under ice so clear you can see to the bottom.
+      Something enormous is frozen down there. The ice groans and cracks
+      but holds. Dawn lotus flowers grow at the shore, their petals
+      untouched by the cold.
+    terrain: "WATER"
+    tiles: [[8, 8], [8, 9], [8, 10], [8, 11], [9, 8], [9, 9], [9, 10], [9, 11], [10, 8], [10, 9], [10, 10], [10, 11]]
+    tags: []
+    ambient_audio: "cave"
+    background:
+      needed: true
+      prompt: >
+        vast frozen lake with impossibly clear ice, enormous dark shape
+        visible far below surface, golden dawn lotus flowers glowing at
+        shore, ice groaning, painterly high fantasy, wide shot, beautiful
+        and terrifying atmosphere
+      output: "assets/backgrounds/zones/frozen_wastes_frozen_lake.png"
+      status: "pending"
+
+  - id: "wraith_hollow"
+    label: "Wraith Hollow"
+    description: >
+      A depression in the snow where the wind dies and silence becomes
+      absolute. Ice wraiths drift here — spectral shapes that were once
+      travelers, now frozen echoes of their final moments.
+    terrain: "MOUNTAIN"
+    tiles: [[5, 3], [5, 4], [5, 5], [6, 3], [6, 4], [6, 5], [7, 3], [7, 4]]
+    tags: []
+    ambient_audio: "dungeon"
+    background:
+      needed: true
+      prompt: >
+        depression in snow where wind has died, absolute silence, faint
+        translucent shapes drifting, frost crystallizing in mid-air, cold
+        blue mist, painterly high fantasy, wide shot, haunting still
+        atmosphere
+      output: "assets/backgrounds/zones/frozen_wastes_wraith_hollow.png"
+      status: "pending"
+
+  - id: "shieldmaiden_camp"
+    label: "Shieldmaiden's Camp"
+    description: >
+      A well-maintained camp in the shelter of a rock overhang. A fire
+      burns steadily — the only warmth for miles. Weapons are arranged
+      with military precision. Someone has been surviving here alone
+      for a very long time.
+    terrain: "FLOOR"
+    tiles: [[12, 13], [12, 14], [12, 15], [13, 13], [13, 14], [13, 15]]
+    tags: []
+    ambient_audio: "night"
+    background:
+      needed: true
+      prompt: >
+        well-maintained camp under rock overhang, steady fire burning as only
+        warmth, weapons arranged with military precision, fur bedroll, snow
+        falling outside, painterly high fantasy, warm firelit interior,
+        survival atmosphere
+      output: "assets/backgrounds/zones/frozen_wastes_shieldmaiden_camp.png"
+      status: "pending"
+
+
+entities:
+
+  - name: "Frost Wolf"
+    entity_type: "enemy"
+    zone: "frost_border"
+    count: 3
+    position: [[16, 0], [16, 2], [17, 1]]
+    stats:
+      str: 14
+      dex: 14
+      con: 14
+      int: 4
+      wis: 12
+      cha: 5
+      ac: 13
+      hp: 26
+      max_hp: 26
+      speed: 45
+    inventory: []
+    portraits:
+      needed: true
+      style: "creature"
+      prompt_base: >
+        frost wolf with white-blue fur, icy breath visible as mist,
+        pale blue glowing eyes, frost crystals forming on muzzle,
+        powerful muscular build, snarling, front-facing, painterly
+        high fantasy, blizzard background
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/frost_wolf_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "darker blue lighting, colder tint, more aggressive snarl"
+          denoise: 0.25
+          output: "assets/portraits/enemies/frost_wolf_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "dark blue-grey shadows, desaturated, strained expression"
+          denoise: 0.350
+          output: "assets/portraits/enemies/frost_wolf_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "very dark, nearly black with cold blue, eyes closing"
+          denoise: 0.450
+          output: "assets/portraits/enemies/frost_wolf_critical.png"
+          status: "pending"
+    voice: null
+    dialogue: null
+
+  - name: "Ice Wraith"
+    entity_type: "enemy"
+    zone: "wraith_hollow"
+    count: 3
+    position: [[5, 3], [6, 4], [7, 4]]
+    stats:
+      str: 6
+      dex: 16
+      con: 12
+      int: 8
+      wis: 12
+      cha: 10
+      ac: 14
+      hp: 20
+      max_hp: 20
+      speed: 40
+    inventory: []
+    portraits:
+      needed: true
+      style: "creature"
+      prompt_base: >
+        spectral ice wraith, translucent ghostly humanoid figure made of
+        swirling frost and mist, frozen anguished expression visible
+        through the ice, reaching out with crystalline fingers, trailing
+        ribbons of cold vapor, front-facing, painterly high fantasy,
+        dark frozen background
+      health_states:
+        healthy:
+          output: "assets/portraits/enemies/ice_wraith_healthy.png"
+          status: "pending"
+        wounded:
+          prompt_mod: "form flickering, face cracking like broken ice"
+          denoise: 0.60
+          output: "assets/portraits/enemies/ice_wraith_wounded.png"
+          status: "pending"
+        bloodied:
+          prompt_mod: "form fading, face shattered and distorted"
+          denoise: 0.70
+          output: "assets/portraits/enemies/ice_wraith_bloodied.png"
+          status: "pending"
+        critical:
+          prompt_mod: "almost invisible, just fading fragments of ice"
+          denoise: 0.80
+          output: "assets/portraits/enemies/ice_wraith_critical.png"
+          status: "pending"
+    voice: null
+    dialogue:
+      combat:
+        - "So... cold... can't... stop..."
+        - "Join us... in the ice..."
+
+  # ── NPCs ──
+
+  - name: "Sigrid Frostborn"
+    entity_type: "npc"
+    zone: "shieldmaiden_camp"
+    count: 1
+    position: [[12, 14]]
+    stats:
+      str: 16
+      dex: 14
+      con: 16
+      int: 11
+      wis: 13
+      cha: 14
+      ac: 17
+      hp: 38
+      max_hp: 38
+      speed: 30
+    inventory: ["Frost-Rune Axe", "Round Shield", "Fur Cloak"]
+
+    portraits:
+      needed: true
+      style: "humanoid"
+      prompt_base: >
+        nordic shieldmaiden warrior woman, blonde hair in tight braids with
+        frost in them, ice-blue eyes, strong angular features with a scar
+        across the bridge of her nose, fur-lined armor with rune markings,
+        confident battle-hardened expression, holding a round shield,
+        bust shot, painterly high fantasy, cold blue lighting, dark
+        moody background
+      health_states:
+        healthy:
+          output: "assets/portraits/npcs/sigrid_frostborn.png"
+          status: "pending"
+
+    voice:
+      preset: "grizzled_veteran"
+      reference_audio: "core/audio/voice_seeds/grizzled_veteran.wav"
+      exaggeration: 0.5
+      speed: 0.95
+
+    dialogue:
+      greeting:
+        - "You're either very brave or very lost. Either way, warm yourself by the fire."
+        - "I am Sigrid. Last of the Frostborn warband. The ice took the rest."
+      quest:
+        - "My warband came to find the source of the winter. We found it. Under the lake."
+        - "Something sleeps beneath the ice. Old. Powerful. The cold radiates from it."
+        - "I can't fight it alone. But if you help me reach the lake's heart..."
+        - "There are wraiths between here and there. They were my warriors once."
+        - "I'll fight beside you. I owe them a clean death."
+      lore:
+        - "This winter isn't natural. It started the same time as the blight everywhere else."
+        - "The wraiths are people. Travelers, soldiers, my own warriors. The cold takes you and your spirit stays, frozen in the moment of death."
+        - "Under the lake there's a creature — a frost wyrm, I think. Bound by the Crown's power."
+        - "Kill it or free it, I don't care. Just stop this endless winter."
+        - "The dawn lotus flowers by the lake shore — they're protected by the wyrm's magic. Sacred, maybe. Take them if you need them."
+      farewell:
+        - "The cold is patient. We shouldn't be."
+        - "Rest. Eat. We move at first light — such as it is."
+
+    voice_lines:
+      needed: true
+      status: "pending"
+      output_dir: "assets/voice/sigrid_frostborn/"
+
+  # ── Objects ──
+
+  - name: "Dawn Lotus"
+    entity_type: "object"
+    zone: "frozen_lake"
+    count: 3
+    position: [[8, 9], [9, 10], [10, 8]]
+    stats: {}
+    inventory: []
+    tags: ["item", "quest_item"]
+    portraits:
+      needed: true
+      style: "object"
+      prompt_base: >
+        a luminous golden-white flower with crystalline petals, warm
+        glow, fantasy flower, digital painting, dark background,
+        concept art
+      health_states:
+        healthy:
+          output: "assets/items/dawn_lotus.png"
+          status: "pending"
+    voice: null
+    dialogue:
+      lore:
+        - "A flower that radiates gentle warmth despite growing from frozen soil. Its petals glow with captured sunlight."
+
+
+triggers:
+  - label: "wraith_encounter"
+    zone: "wraith_hollow"
+    tile: [5, 4]
+    event_type: "ENTER_TILE"
+    condition:
+      type: "AlwaysTrue"
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: >
+          The air goes deathly still. Frost crystallizes on your armor.
+          Shapes materialize from the swirling snow — translucent figures
+          reaching toward you with frozen fingers, mouths open in
+          silent screams.
+
+  - label: "frozen_lake_creak"
+    zone: "frozen_lake"
+    tile: [8, 8]
+    event_type: "ENTER_TILE"
+    condition:
+      type: "AlwaysTrue"
+    reaction:
+      type: "AlertGamemaster"
+      args:
+        message: >
+          The ice groans beneath your feet. Through the impossibly clear
+          surface, you see a vast shape far below — coiled, scaled,
+          frost-rimmed. It shifts slightly and the entire lake shudders.
+          Dawn lotus flowers glow golden at the water's edge.
+
+
+quests:
+  - id: "break_the_winter"
+    name: "The Frozen Heart"
+    type: "side"
+    giver: "Sigrid Frostborn"
+    zone: "shieldmaiden_camp"
+    description: >
+      Sigrid believes a frost wyrm bound beneath the frozen lake is the
+      source of the unnatural winter. She'll fight alongside you to
+      end it — and to give her fallen warriors rest.
+    objectives:
+      - "Clear the Ice Wraiths in Wraith Hollow"
+      - "Reach the Frozen Lake with Sigrid"
+      - "Confront the Frost Wyrm"
+    reward:
+      items: ["Sigrid's Rune"]
+      xp: 300
+    difficulty: 3
+
+
+connections:
+  north: null
+  south: "biome_scorched_sands"
+  east: null
+  west: "biome_blighted_crossing"
+  border_tiles:
+    south: [[19, 8], [19, 9], [19, 10]]
+    west: [[9, 0], [10, 0], [11, 0]]

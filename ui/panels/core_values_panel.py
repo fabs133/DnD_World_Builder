@@ -76,9 +76,13 @@ class CoreValuesPanel(QWidget):
             tag_layout.addWidget(cb)
         self.form.addRow(tag_group)
 
-        # Label / Note
+        # Label / Zone / Note
         self.label_input = QLineEdit()
         self.form.addRow("User Label:", self.label_input)
+
+        self.zone_id_input = QLineEdit()
+        self.zone_id_input.setPlaceholderText("e.g. Guard Post, Main Hall")
+        self.form.addRow("Encounter Zone:", self.zone_id_input)
 
         self.note_input = QTextEdit()
         self.note_input.setMaximumHeight(80)
@@ -97,7 +101,11 @@ class CoreValuesPanel(QWidget):
         self.bg_image_label = QLabel()
         self.bg_image_label.setFixedSize(80, 80)
         self.bg_image_label.setAlignment(Qt.AlignCenter)
-        self.bg_image_label.setStyleSheet("border: 1px solid #ccc; background: #f5f5f5;")
+        from core import theme_palette as tp
+        self.bg_image_label.setStyleSheet(
+            f"border: 1px solid {tp.get_themed('border_secondary')}; "
+            f"background: {tp.get_themed('bg_secondary')};"
+        )
         bg_btn = QPushButton("Choose Image...")
         bg_btn.clicked.connect(self._pick_bg_image)
         bg_clear_btn = QPushButton("Clear")
@@ -154,6 +162,7 @@ class CoreValuesPanel(QWidget):
         for tag, cb in self.tag_checkboxes.items():
             cb.setChecked(tag in tile_data.tags)
         self.label_input.setText(tile_data.user_label or "")
+        self.zone_id_input.setText(tile_data.zone_id or "")
         self.note_input.setPlainText(tile_data.note or "")
         self.overlay_input.setText(tile_data.overlay_color or "#CCCCCC")
         self.audio_label.setText(tile_data.ambient_audio or "")
@@ -188,6 +197,7 @@ class CoreValuesPanel(QWidget):
         td.terrain = TerrainType[self.terrain_input.currentText()]
         td.tags = [tag for tag, cb in self.tag_checkboxes.items() if cb.isChecked()]
         td.user_label = self.label_input.text()
+        td.zone_id = self.zone_id_input.text().strip() or None
         td.note = self.note_input.toPlainText()
         td.overlay_color = self.overlay_input.text()
         td.background_image = self._background_image_path
@@ -209,7 +219,8 @@ class CoreValuesPanel(QWidget):
         self._original_state = new_state
 
         from core.gameCreation.event_bus import EventBus
-        EventBus.emit("tile_modified", {"position": td.position, "tile_id": td.tile_id})
+        from core.events import TILE_MODIFIED
+        EventBus.emit(TILE_MODIFIED, {"position": td.position, "tile_id": td.tile_id})
 
         app_logger.info(f"[CoreValuesPanel] Saved tile {td.tile_id}")
 

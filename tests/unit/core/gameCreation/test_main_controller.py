@@ -8,7 +8,7 @@ import importlib
 def setup_ui_mocks(monkeypatch):
     # Dummy ScenarioOverviewWidget
     class DummyScenarioOverview(QWidget):
-        def __init__(self, map_loader, settings_manager):
+        def __init__(self, map_loader, settings_manager, back_to_launcher=None):
             super().__init__()
             self.map_loader = map_loader
             self.settings_manager = settings_manager

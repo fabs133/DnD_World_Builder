@@ -27,7 +27,8 @@ class ColorPaintCommand(QUndoCommand):
 
     def _emit_tile_modified(self):
         from core.gameCreation.event_bus import EventBus
-        EventBus.emit("tile_modified", {
+        from core.events import TILE_MODIFIED
+        EventBus.emit(TILE_MODIFIED, {
             "position": self.tile_data.position,
             "tile_id": self.tile_data.tile_id,
         })

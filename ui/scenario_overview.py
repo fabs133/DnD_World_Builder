@@ -15,16 +15,24 @@ from core.gameCreation.tiles_gui import MainMenuDialog
 
 
 class ScenarioOverviewWidget(QWidget):
-    def __init__(self, map_loader, settings_manager):
+    def __init__(self, map_loader, settings_manager, back_to_launcher=None):
         super().__init__()
         self.map_loader = map_loader
         self.settings_manager = settings_manager
         self.export_manager = ExportManager()
+        self._back_to_launcher = back_to_launcher
 
         self.init_ui()
 
     def init_ui(self):
         layout = QVBoxLayout()
+
+        # Back to launcher button
+        if self._back_to_launcher:
+            back_btn = QPushButton("< Back to Launcher")
+            back_btn.setStyleSheet("font-weight: bold; padding: 4px 12px;")
+            back_btn.clicked.connect(self._back_to_launcher)
+            layout.addWidget(back_btn)
 
         # Scenario List
         self.scenario_list = QListWidget()
@@ -35,9 +43,13 @@ class ScenarioOverviewWidget(QWidget):
 
         # Buttons
         btn_layout = QHBoxLayout()
-        self.new_btn = QPushButton("➕ New Scenario")
-        self.load_btn = QPushButton("📂 Import Scenario")
-        self.export_btn = QPushButton("📦 Export Scenario")
+        from core.icon_provider import themed_icon
+        self.new_btn = QPushButton("  New Scenario")
+        self.new_btn.setIcon(themed_icon("plus"))
+        self.load_btn = QPushButton("  Import Scenario")
+        self.load_btn.setIcon(themed_icon("folder"))
+        self.export_btn = QPushButton("  Export Scenario")
+        self.export_btn.setIcon(themed_icon("export"))
         self.new_btn.clicked.connect(self.create_new_scenario)
         self.load_btn.clicked.connect(self.import_scenario)
         self.export_btn.clicked.connect(self.export_scenario)

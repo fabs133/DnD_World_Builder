@@ -174,3 +174,156 @@ class TestSessionManagerSignals:
         assert sm.is_hosting
 
         sm.stop_hosting()
+
+
+class TestSessionManagerActionRouting:
+    """Tests for ACTION_RESULT, TURN_CHANGE signals and request_action()."""
+
+    def test_action_result_success_signal(self):
+        """_on_action_result emits action_result_received with parsed message."""
+        from network.protocol import Message, MessageType
+
+        sm = SessionManager()
+        results = []
+        sm.signals.action_result_received.connect(
+            lambda success, msg: results.append((success, msg))
+        )
+
+        fake_msg = Message(
+            type=MessageType.ACTION_RESULT,
+            payload={
+                "success": True,
+                "result": {"action": "move", "to": [2, 0]},
+                "state_delta": [],
+            },
+        )
+        sm._on_action_result(fake_msg)
+        _wait_for_signals(0.2)
+
+        assert len(results) == 1
+        assert results[0][0] is True
+        assert "Moved to" in results[0][1]
+
+    def test_action_result_attack_hit(self):
+        """Attack hit message is correctly formatted."""
+        from network.protocol import Message, MessageType
+
+        sm = SessionManager()
+        results = []
+        sm.signals.action_result_received.connect(
+            lambda success, msg: results.append((success, msg))
+        )
+
+        fake_msg = Message(
+            type=MessageType.ACTION_RESULT,
+            payload={
+                "success": True,
+                "result": {"action": "attack", "hit": True, "damage": 7},
+                "state_delta": [],
+            },
+        )
+        sm._on_action_result(fake_msg)
+        _wait_for_signals(0.2)
+
+        assert results[0] == (True, "Attack hit for 7 damage")
+
+    def test_action_result_attack_miss(self):
+        """Attack miss message is correctly formatted."""
+        from network.protocol import Message, MessageType
+
+        sm = SessionManager()
+        results = []
+        sm.signals.action_result_received.connect(
+            lambda success, msg: results.append((success, msg))
+        )
+
+        fake_msg = Message(
+            type=MessageType.ACTION_RESULT,
+            payload={
+                "success": True,
+                "result": {"action": "attack", "hit": False, "damage": 0},
+                "state_delta": [],
+            },
+        )
+        sm._on_action_result(fake_msg)
+        _wait_for_signals(0.2)
+
+        assert results[0] == (True, "Attack missed")
+
+    def test_action_result_failure_signal(self):
+        """Failed action emits (False, error_message)."""
+        from network.protocol import Message, MessageType
+
+        sm = SessionManager()
+        results = []
+        sm.signals.action_result_received.connect(
+            lambda success, msg: results.append((success, msg))
+        )
+
+        fake_msg = Message(
+            type=MessageType.ACTION_RESULT,
+            payload={
+                "success": False,
+                "result": {"message": "Not your turn"},
+                "state_delta": [],
+            },
+        )
+        sm._on_action_result(fake_msg)
+        _wait_for_signals(0.2)
+
+        assert len(results) == 1
+        assert results[0] == (False, "Not your turn")
+
+    def test_action_result_end_turn(self):
+        """End turn action result is formatted correctly."""
+        from network.protocol import Message, MessageType
+
+        sm = SessionManager()
+        results = []
+        sm.signals.action_result_received.connect(
+            lambda success, msg: results.append((success, msg))
+        )
+
+        fake_msg = Message(
+            type=MessageType.ACTION_RESULT,
+            payload={
+                "success": True,
+                "result": {"action": "end_turn", "actor": "Goblin"},
+                "state_delta": [],
+            },
+        )
+        sm._on_action_result(fake_msg)
+        _wait_for_signals(0.2)
+
+        assert results[0] == (True, "Turn ended")
+
+    def test_turn_change_signal(self):
+        """_on_turn_change emits turn_changed signal."""
+        from network.protocol import Message, MessageType
+
+        sm = SessionManager()
+        turns = []
+        sm.signals.turn_changed.connect(
+            lambda name, rnd: turns.append((name, rnd))
+        )
+
+        fake_msg = Message(
+            type=MessageType.TURN_CHANGE,
+            payload={"current_entity": "Hero", "round": 3},
+        )
+        sm._on_turn_change(fake_msg)
+        _wait_for_signals(0.2)
+
+        assert len(turns) == 1
+        assert turns[0] == ("Hero", 3)
+
+    def test_request_action_no_client(self):
+        """request_action is a no-op when not connected."""
+        sm = SessionManager()
+        # Should not raise
+        sm.request_action("END_TURN", {})
+
+    def test_claimed_entity_id_no_client(self):
+        """claimed_entity_id returns empty string when not connected."""
+        sm = SessionManager()
+        assert sm.claimed_entity_id == ""

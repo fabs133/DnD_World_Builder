@@ -1,5 +1,7 @@
 import random
 
+from core.events import ACTION_EXECUTED, ACTION_PROPOSED
+
 ### UTILITIES ###
 
 def roll(dice_str):
@@ -140,11 +142,11 @@ class TurnSystem:
 
         action = actor.decide_action(game_state)
         if ActionValidator.validate(action, game_state):
-            EventBus.emit("ACTION_PROPOSED", action)
+            EventBus.emit(ACTION_PROPOSED, action)
 
         if not ReactionQueue.blocked():
             action.execute(game_state)
-            EventBus.emit("ACTION_EXECUTED", action)
+            EventBus.emit(ACTION_EXECUTED, action)
         else:
             ReactionQueue.resolve()
 
@@ -162,7 +164,7 @@ class Wizard(GameEntity):
 class Countermage(GameEntity):
     def __init__(self, name, hp):
         super().__init__(name, hp)
-        EventBus.on("ACTION_PROPOSED", self.maybe_counterspell)
+        EventBus.on(ACTION_PROPOSED, self.maybe_counterspell)
 
     def decide_action(self, game_state):
         target = next(e for e in game_state.entities if e != self)
