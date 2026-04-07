@@ -37,13 +37,26 @@ class AudioPlayer:
         else:
             self._player = None
 
-    def play(self, file_path):
+    def play(self, file_path, channel=None):
         """
         Play an audio file.
 
         :param file_path: Path to the audio file to play.
         :type file_path: str or Path
+        :param channel: Optional AudioChannel for mixer routing.
         """
+        # Delegate to AudioMixer when available
+        try:
+            from core.audio.audio_mixer import AudioMixer, AudioChannel
+            mixer = AudioMixer.instance()
+            if mixer:
+                ch = channel if channel is not None else AudioChannel.SFX
+                mixer.play(file_path, ch)
+                return
+        except Exception:
+            pass
+
+        # Fallback to single-player behaviour
         if not self._player:
             app_logger.warning(f"[AudioPlayer] Cannot play — QtMultimedia not available: {file_path}")
             return
@@ -61,6 +74,14 @@ class AudioPlayer:
 
     def stop(self):
         """Stop any currently playing audio."""
+        try:
+            from core.audio.audio_mixer import AudioMixer, AudioChannel
+            mixer = AudioMixer.instance()
+            if mixer:
+                mixer.stop(AudioChannel.SFX)
+                return
+        except Exception:
+            pass
         if self._player:
             self._player.stop()
             app_logger.debug("[AudioPlayer] Stopped.")
