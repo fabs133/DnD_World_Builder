@@ -7,9 +7,48 @@ from registries.trigger_registry import global_trigger_registry
 from enum import Enum
 from core.logger import app_logger
 from core.gameCreation.event_bus import EventBus
+from models.entities.entity_type import EntityType
 
 if TYPE_CHECKING:
     from models.ai.personality import EntityPersonality
+
+
+    # Canonical stat names (D&D 5e standard, title case for abilities)
+_STAT_ALIASES: dict[str, str] = {
+    # Strength
+    "str": "Strength", "STR": "Strength", "strength": "Strength",
+    # Dexterity
+    "dex": "Dexterity", "DEX": "Dexterity", "dexterity": "Dexterity",
+    # Constitution
+    "con": "Constitution", "CON": "Constitution", "constitution": "Constitution",
+    # Intelligence
+    "int": "Intelligence", "INT": "Intelligence", "intelligence": "Intelligence",
+    # Wisdom
+    "wis": "Wisdom", "WIS": "Wisdom", "wisdom": "Wisdom",
+    # Charisma
+    "cha": "Charisma", "CHA": "Charisma", "charisma": "Charisma",
+    # HP variants
+    "hit_points": "hp",
+    # AC variants
+    "ac": "armor_class",
+}
+
+
+def _normalize_stats(stats: dict) -> dict:
+    """Canonicalize stat key names to prevent lookup mismatches.
+
+    Maps shorthand and case variants (e.g. ``"dex"``, ``"DEX"``) to their
+    canonical form (``"Dexterity"``).  If both an alias and the canonical
+    key already exist, the canonical key's value is kept.
+    """
+    if not isinstance(stats, dict):
+        return stats
+    normalized: dict = {}
+    for key, value in stats.items():
+        canonical = _STAT_ALIASES.get(key, key)
+        if canonical not in normalized:
+            normalized[canonical] = value
+    return normalized
 
 
 class GameEntity:
@@ -43,16 +82,82 @@ class GameEntity:
         """
         self.vision_range = None
         self.name = name
-        self.entity_type = entity_type
-        self.stats = stats or {}
+        # Normalize to EntityType enum when possible; preserve unknown types as-is
+        if isinstance(entity_type, EntityType):
+            self.entity_type = entity_type
+        else:
+            try:
+                self.entity_type = EntityType(str(entity_type).lower())
+            except (ValueError, AttributeError):
+                self.entity_type = entity_type
+        self.stats = _normalize_stats(stats or {})
         self.inventory = inventory or []
         self.triggers = []
         self.image_path = image_path
         self.personality: EntityPersonality | None = None
-        self.position: tuple[int, int] | None = None
-        self.hp: int = self.stats.get("hp", self.stats.get("hit_points", 10))
-        self.max_hp: int = self.stats.get("max_hp", self.hp)
+        self._position: tuple[int, int] | None = None
+        # Ensure core stats have defaults in the stats dict (single source of truth)
+        self.stats.setdefault("hp", 10)
+        self.stats.setdefault("max_hp", self.stats["hp"])
+        self.stats.setdefault("armor_class", 10)
+        self.stats.setdefault("speed", 30)
         self.conditions: list[str] = []
+        self.spells: list = self.stats.get("spells", [])
+        self.spell_slots = self.stats.get("spell_slots", 0)
+        self.spellcasting_ability: str = self.stats.get("spellcasting_ability", "")
+        self.spell_attack_bonus: int = self.stats.get("spell_attack_bonus", 0)
+        self.portraits: dict[str, str] = {}
+        self.voice_profile = None  # Optional[VoiceProfile]
+        self.voice_lines_dir: str | None = None
+        self.dialogue_lines: dict[str, list[str]] = {}
+
+    # -- Core combat stats as properties backed by self.stats ----------------
+
+    @property
+    def hp(self) -> int:
+        return self.stats.get("hp", 10)
+
+    @hp.setter
+    def hp(self, value: int):
+        self.stats["hp"] = value
+
+    @property
+    def max_hp(self) -> int:
+        return self.stats.get("max_hp", self.hp)
+
+    @max_hp.setter
+    def max_hp(self, value: int):
+        self.stats["max_hp"] = value
+
+    @property
+    def armor_class(self) -> int:
+        return self.stats.get("armor_class", 10)
+
+    @armor_class.setter
+    def armor_class(self, value: int):
+        self.stats["armor_class"] = value
+
+    @property
+    def speed(self) -> int:
+        return self.stats.get("speed", 30)
+
+    @speed.setter
+    def speed(self, value: int):
+        self.stats["speed"] = value
+
+    @property
+    def position(self) -> tuple[int, int] | None:
+        return self._position
+
+    @position.setter
+    def position(self, value):
+        if value is None:
+            self._position = None
+            return
+        if isinstance(value, (list, tuple)) and len(value) == 2:
+            self._position = (int(value[0]), int(value[1]))
+        else:
+            raise ValueError(f"position must be a (x, y) pair or None, got {value!r}")
 
     def register_trigger(self, trigger):
         """
@@ -80,20 +185,30 @@ class GameEntity:
         """
         data = {
             "name": self.name,
-            "entity_type": self.entity_type,
+            "entity_type": self.entity_type.value if isinstance(self.entity_type, EntityType) else self.entity_type,
             "stats": self.stats,
             "inventory": self.inventory,
             "triggers": [t.to_dict() for t in self.triggers],
             "hp": self.hp,
             "max_hp": self.max_hp,
+            "armor_class": self.armor_class,
+            "speed": self.speed,
             "conditions": self.conditions,
         }
         if self.image_path:
             data["image_path"] = self.image_path
+        if self.portraits:
+            data["portraits"] = self.portraits
         if self.position:
             data["position"] = self.position
         if self.personality:
             data["personality"] = self.personality.to_dict()
+        if self.voice_profile:
+            data["voice_profile"] = self.voice_profile.to_dict()
+        if self.voice_lines_dir:
+            data["voice_lines_dir"] = self.voice_lines_dir
+        if self.dialogue_lines:
+            data["dialogue_lines"] = self.dialogue_lines
         return data
 
     def handle_event(self, event_type, data):
@@ -135,6 +250,12 @@ class GameEntity:
             obj.hp = data["hp"]
         if "max_hp" in data:
             obj.max_hp = data["max_hp"]
+        if "armor_class" in data:
+            obj.armor_class = data["armor_class"]
+        elif "ac" in data:
+            obj.armor_class = data["ac"]
+        if "speed" in data:
+            obj.speed = data["speed"]
         if "conditions" in data:
             obj.conditions = data["conditions"]
         if "position" in data:
@@ -144,7 +265,33 @@ class GameEntity:
         if "personality" in data:
             from models.ai.personality import EntityPersonality
             obj.personality = EntityPersonality.from_dict(data["personality"])
-        
+
+        # Restore voice — preset ID takes priority (always picks up latest
+        # reference audio and params from the registry), falling back to
+        # a saved voice_profile dict, then auto-selection from tags.
+        if "voice_preset" in data:
+            from core.voice.voice_preset_registry import get_preset
+            preset = get_preset(data["voice_preset"])
+            if preset:
+                obj.voice_profile = preset.to_voice_profile()
+        elif "voice_profile" in data:
+            from core.voice.voice_profile import VoiceProfile
+            obj.voice_profile = VoiceProfile.from_dict(data["voice_profile"])
+        elif data.get("dialogue_lines"):
+            # Auto-select preset from entity tags when no voice is explicitly set
+            from core.voice.voice_preset_registry import auto_select_preset
+            preset = auto_select_preset(
+                entity_name=data.get("name", ""),
+                entity_type=data.get("entity_type", ""),
+                gender=data.get("gender", ""),
+                role=data.get("role", ""),
+            )
+            if preset:
+                obj.voice_profile = preset.to_voice_profile()
+        obj.dialogue_lines = data.get("dialogue_lines", {})
+        obj.portraits = data.get("portraits", {})
+        obj.voice_lines_dir = data.get("voice_lines_dir")
+
         return obj
     
     def set_personality(self, personality: "EntityPersonality") -> None:
@@ -169,7 +316,19 @@ class GameEntity:
     def is_alive(self) -> bool:
         """Check if entity is alive (HP > 0)."""
         return self.hp > 0
-    
+
+    @property
+    def is_player(self) -> bool:
+        return self.entity_type == EntityType.PLAYER
+
+    @property
+    def is_enemy(self) -> bool:
+        return self.entity_type in (EntityType.ENEMY, EntityType.MONSTER, EntityType.HOSTILE)
+
+    @property
+    def is_friendly(self) -> bool:
+        return self.entity_type in (EntityType.PLAYER, EntityType.ALLY, EntityType.COMPANION)
+
     @property
     def hp_percent(self) -> float:
         """Current HP as a percentage."""
