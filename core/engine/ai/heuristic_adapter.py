@@ -93,7 +93,14 @@ class HeuristicAIAdapter(InputAdapter):
                 )
                 return MoveAction(actor, flee_pos, world_tile_manager=self._tile_map)
 
-        # 2) Attack adjacent enemy
+        # 2) Cast a spell if available (healing if low HP, damage if enemies in range)
+        if "CAST_SPELL" in available_actions:
+            spell_action = self._try_cast_spell(
+                actor, entity_name, hp_ratio, enemies, game_state)
+            if spell_action:
+                return spell_action
+
+        # 3) Attack adjacent enemy
         if adjacent_enemies and "ATTACK" in available_actions:
             target = self._pick_weakest(adjacent_enemies, game_state)
             if target is None:
@@ -111,7 +118,7 @@ class HeuristicAIAdapter(InputAdapter):
                 rng=self._rng,
             )
 
-        # 3) Move toward nearest enemy
+        # 4) Move toward nearest enemy
         if enemies and "MOVE" in available_actions:
             advance_pos = self._position_toward_enemies(actor_pos, enemies, game_state, speed)
             if advance_pos and advance_pos != actor_pos:
@@ -120,7 +127,7 @@ class HeuristicAIAdapter(InputAdapter):
                 )
                 return MoveAction(actor, advance_pos, world_tile_manager=self._tile_map)
 
-        # 4) Fallback
+        # 5) Fallback
         app_logger.debug(f"[Heuristic] {entity_name} ends turn (no useful action)")
         return EndTurnAction(actor)
 
@@ -411,3 +418,58 @@ class HeuristicAIAdapter(InputAdapter):
             e.position for e in game_state.entities
             if e.is_alive and e.position
         )
+
+    # ── Spell casting ────────────────────────────────────────────
+
+    def _try_cast_spell(self, actor, entity_name, hp_ratio,
+                        enemies, game_state) -> Action | None:
+        """Try to find and cast an appropriate spell.
+
+        Priority: heal self if low → damage nearest enemy → None.
+        """
+        spells = getattr(actor, "spells", [])
+        if not spells:
+            return None
+
+        # Check if any spell slots remain
+        slots = getattr(actor, "spell_slots", 0)
+        has_slots = False
+        if isinstance(slots, dict):
+            has_slots = any(
+                (v.get("used", 0) < v.get("maximum", 0) if isinstance(v, dict) else v > 0)
+                for v in slots.values()
+            )
+        elif isinstance(slots, int):
+            has_slots = slots > 0
+
+        if not has_slots:
+            # Still allow cantrips
+            cantrips = [s for s in spells if getattr(s, "level", 0) == 0]
+            if not cantrips:
+                return None
+            spells = cantrips
+
+        from models.flow.action.spell_action import SpellAction
+
+        # Prioritize healing if low HP
+        if hp_ratio < 0.5:
+            for spell in spells:
+                if getattr(spell, "healing", None):
+                    app_logger.debug(
+                        f"[Heuristic] {entity_name} casts {spell.name} (heal)")
+                    return SpellAction(actor, spell, [actor], rng=self._rng)
+
+        # Try damage spell on weakest enemy
+        if enemies:
+            target_snap = self._pick_weakest(enemies, game_state)
+            if target_snap:
+                target_entity = self._get_actor(target_snap.name)
+                for spell in spells:
+                    if getattr(spell, "damage", None):
+                        app_logger.debug(
+                            f"[Heuristic] {entity_name} casts {spell.name} "
+                            f"at {target_snap.name}")
+                        return SpellAction(
+                            actor, spell, [target_entity], rng=self._rng)
+
+        return None

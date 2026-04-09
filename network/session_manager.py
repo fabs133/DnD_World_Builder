@@ -60,6 +60,10 @@ class SessionSignals(QObject):
     voice_progress = pyqtSignal(str, int, int)
     #: Emitted when all voice characters are generated.
     voice_all_complete = pyqtSignal()
+    #: Emitted when another player shares voice lines (player_name, lines_list).
+    voice_line_share_received = pyqtSignal(str, list)
+    #: Emitted when another player triggers a voice line (player_name, text).
+    voice_line_played = pyqtSignal(str, str)
     #: Emitted when another player's cursor moves (player_id, name, x, y, color).
     cursor_updated = pyqtSignal(str, str, float, float, str)
     #: Emitted when a draw stroke is received (player_id, points_json, color).
@@ -200,6 +204,8 @@ class SessionManager:
         self._host._message_handlers[MessageType.VOICE_CAPABILITY] = self._handle_voice_capability
         self._host._message_handlers[MessageType.VOICE_CHARACTER_PROGRESS] = self._handle_voice_progress
         self._host._message_handlers[MessageType.VOICE_CHARACTER_COMPLETE] = self._handle_voice_complete
+        self._host._message_handlers[MessageType.VOICE_LINE_SHARE] = self._handle_voice_line_share
+        self._host._message_handlers[MessageType.VOICE_LINE_PLAY] = self._handle_voice_line_play
 
     def _on_host_started(self, future):
         try:
@@ -288,6 +294,8 @@ class SessionManager:
         self._client.on(MessageType.TURN_CHANGE, self._on_turn_change)
         self._client.on(MessageType.VOICE_CHARACTER_ASSIGN, self._on_voice_character_assign)
         self._client.on(MessageType.VOICE_CACHE_SYNC, self._on_voice_cache_sync)
+        self._client.on(MessageType.VOICE_LINE_SHARE, self._on_voice_line_share)
+        self._client.on(MessageType.VOICE_LINE_PLAY, self._on_voice_line_play)
         self._client.on(MessageType.CURSOR_UPDATE, self._on_cursor_update)
         self._client.on(MessageType.DRAW_STROKE, self._on_draw_stroke)
 
@@ -523,6 +531,32 @@ class SessionManager:
         if self._swarm_worker:
             self._swarm_worker.handle_cache_sync(msg.payload)
 
+    def _on_voice_line_share(self, msg):
+        """Client received voice line metadata from another player."""
+        player_name = msg.payload.get("player_name", "")
+        lines = msg.payload.get("lines", [])
+        # Notify UI to update soundboard
+        self.signals.voice_line_share_received.emit(player_name, lines)
+
+    def _on_voice_line_play(self, msg):
+        """Client received a playback trigger from another player."""
+        cache_key = msg.payload.get("cache_key", "")
+        player_name = msg.payload.get("player_name", "")
+        text = msg.payload.get("text", "")
+        # Play from local cache
+        try:
+            from pathlib import Path
+            from core.voice.voice_cache import VoiceCache
+            cache = VoiceCache(Path("assets/voice_cache"))
+            path = cache.get(cache_key)
+            if path and path.exists():
+                from core.audio_player import AudioPlayer, AudioChannel
+                AudioPlayer.instance().play(str(path), AudioChannel.VOICE)
+        except Exception:
+            pass
+        # Also show in chat
+        self.signals.voice_line_played.emit(player_name, text)
+
     def _worker_on_progress(self, data):
         """Worker progress callback — sends to host."""
         if self._client and self._is_connected and self._loop:
@@ -583,6 +617,53 @@ class SessionManager:
                     sync_data["results"],
                 )
                 await self._host.broadcast(sync_msg)
+
+    # ------------------------------------------------------------------
+    # Player voice lines — host-side relay
+    # ------------------------------------------------------------------
+
+    async def _handle_voice_line_share(self, player, msg):
+        """Host receives generated voice lines from a player.
+
+        Re-broadcast audio to all other clients via VOICE_CACHE_SYNC,
+        then send line metadata (without audio) so other clients can
+        build their soundboard.
+        """
+        payload = msg.payload
+        player_name = payload.get("player_name", player.player_name)
+        lines = payload.get("lines", [])
+
+        if self._host and lines:
+            # Broadcast audio via cache sync (reuse existing pattern)
+            from network.voice.swarm_protocol import make_voice_cache_sync
+            sync_msg = make_voice_cache_sync(
+                character_id=f"player_{player_name}",
+                entity_name=player_name,
+                results=[{
+                    "cache_key": l["cache_key"],
+                    "text": l.get("text", ""),
+                    "audio_base64": l.get("audio_base64", ""),
+                    "size_bytes": l.get("size_bytes", 0),
+                } for l in lines],
+            )
+            await self._host.broadcast(sync_msg, exclude=player.player_id)
+
+            # Broadcast line metadata (without audio) for soundboard UI
+            from network.voice.swarm_protocol import make_voice_line_play
+            meta_msg = Message(
+                type=MessageType.VOICE_LINE_SHARE,
+                payload={
+                    "player_name": player_name,
+                    "lines": [{"text": l["text"], "category": l.get("category", "custom"),
+                               "cache_key": l["cache_key"]} for l in lines],
+                },
+            )
+            await self._host.broadcast(meta_msg, exclude=player.player_id)
+
+    async def _handle_voice_line_play(self, player, msg):
+        """Host receives a playback trigger — relay to all other clients."""
+        if self._host:
+            await self._host.broadcast(msg, exclude=player.player_id)
 
     # ------------------------------------------------------------------
     # Voice swarm — public API

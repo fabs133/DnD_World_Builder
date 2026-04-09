@@ -62,32 +62,58 @@ class AttackAction(Action):
         return True
 
     def execute(self, game_state) -> dict:
+        from core.engine.check_runner import run_attack_roll, DiceRollType
+
         actor_name = self.actor.name
         target_name = self.target.name
-        target_ac = getattr(self.target, "armor_class", 10)
 
-        # Roll attack — check for dodge (disadvantage) and advantage
-        roll1 = self._rng.randint(1, 20)
+        # Determine advantage/disadvantage from entity flags + conditions
+        roll_type = DiceRollType.NORMAL
         if getattr(self.target, "dodging", False):
-            roll2 = self._rng.randint(1, 20)
-            natural = min(roll1, roll2)
-            self.execution_log.append(
-                f"Target is dodging — disadvantage (rolls: {roll1}, {roll2})"
-            )
+            roll_type = DiceRollType.DISADVANTAGE
         elif getattr(self.actor, "has_advantage", False):
-            roll2 = self._rng.randint(1, 20)
-            natural = max(roll1, roll2)
-            self.execution_log.append(
-                f"Attacker has advantage (rolls: {roll1}, {roll2})"
-            )
-        else:
-            natural = roll1
-        attack_roll = natural + self.to_hit_bonus
-        self.execution_log.append(
-            f"{actor_name} rolls {attack_roll} vs AC {target_ac}"
-        )
+            roll_type = DiceRollType.ADVANTAGE
 
-        if attack_roll >= target_ac:
+        # Apply condition-based modifiers (override flag-based if stronger)
+        try:
+            from core.engine.condition_effects import get_condition_modifiers
+            attacker_mods = get_condition_modifiers(
+                getattr(self.actor, "conditions", []))
+            target_mods = get_condition_modifiers(
+                getattr(self.target, "conditions", []))
+            # Attacker conditions affect attack roll
+            if attacker_mods.attack_roll_type == DiceRollType.DISADVANTAGE:
+                roll_type = DiceRollType.DISADVANTAGE
+            elif (attacker_mods.attack_roll_type == DiceRollType.ADVANTAGE
+                  and roll_type == DiceRollType.NORMAL):
+                roll_type = DiceRollType.ADVANTAGE
+            # Target conditions grant advantage/disadvantage to attacker
+            if target_mods.attacks_against_roll_type == DiceRollType.ADVANTAGE:
+                if roll_type == DiceRollType.DISADVANTAGE:
+                    roll_type = DiceRollType.NORMAL  # cancel
+                else:
+                    roll_type = DiceRollType.ADVANTAGE
+            elif target_mods.attacks_against_roll_type == DiceRollType.DISADVANTAGE:
+                if roll_type == DiceRollType.ADVANTAGE:
+                    roll_type = DiceRollType.NORMAL  # cancel
+                else:
+                    roll_type = DiceRollType.DISADVANTAGE
+        except ImportError:
+            pass
+
+        # Roll attack via unified check runner
+        check = run_attack_roll(
+            self.actor, self.target,
+            to_hit_bonus=self.to_hit_bonus,
+            roll_type=roll_type,
+            rng=self._rng,
+        )
+        attack_roll = check.total
+        natural = check.natural_roll
+        target_ac = check.dc
+        self.execution_log.append(check.message)
+
+        if check.passed:
             damage, individual_dice = self._roll_damage_detailed()
             old_hp = getattr(self.target, "hp", 0)
             if hasattr(self.target, "take_damage"):

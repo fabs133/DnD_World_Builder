@@ -202,10 +202,7 @@ class ExplorationController:
                     self._log.add_system_message("Hostile encounter! Rolling initiative...", "combat")
                 else:
                     self._log.append("Hostile encounter! Rolling initiative...")
-                try:
-                    UISoundManager.instance().play_shared("combat_start", SoundCategory.ALERT)
-                except Exception:
-                    pass
+                # Sound handled by SoundEventBridge on COMBAT_STARTED event
                 QTimer.singleShot(300, self._enter_combat)
                 return
 
@@ -260,11 +257,10 @@ class ExplorationController:
         if not entity:
             self._log.append("  No character selected.")
             return
-        wis_mod = (entity.stats.get("Wisdom", 10) - 10) // 2
-        roll = random.randint(1, 20)
-        total = roll + wis_mod
-        self._log.append(
-            f"  {entity.name} searches: d20({roll}) + WIS({wis_mod:+d}) = {total}")
+        from core.engine.check_runner import run_skill_check
+        check = run_skill_check(entity, "Perception", dc=10)
+        total = check.total
+        self._log.append(f"  {entity.name} searches: {check.message}")
 
         pos = self._get_current_tile_pos()
         found = False
@@ -319,12 +315,10 @@ class ExplorationController:
         if not entity:
             self._log.append("  No character selected.")
             return
-        dex_mod = (entity.stats.get("Dexterity", 10) - 10) // 2
-        roll = random.randint(1, 20)
-        total = roll + dex_mod
-        self._log.append(
-            f"  {entity.name} sneaks: d20({roll}) + DEX({dex_mod:+d}) = {total}")
-        if total >= 15:
+        from core.engine.check_runner import run_skill_check
+        check = run_skill_check(entity, "Stealth", dc=15)
+        self._log.append(f"  {entity.name} sneaks: {check.message}")
+        if check.passed:
             self._log.append("  Moving stealthily!")
         else:
             self._log.append("  You fail to move quietly.")
@@ -387,7 +381,16 @@ class ExplorationController:
             p.conditions.clear()
             # Recover spell slots
             max_slots = p.stats.get("spell_slots", 0)
-            if max_slots and getattr(p, "spell_slots", 0) < max_slots:
+            if isinstance(max_slots, dict):
+                restored = {}
+                for lvl, val in max_slots.items():
+                    if isinstance(val, dict):
+                        restored[lvl] = {"maximum": val.get("maximum", 0), "used": 0}
+                    else:
+                        restored[lvl] = val
+                p.spell_slots = restored
+                self._log.append(f"  {p.name} spell slots restored")
+            elif max_slots and isinstance(max_slots, int):
                 p.spell_slots = max_slots
                 self._log.append(f"  {p.name} spell slots restored ({max_slots})")
         if hasattr(self._log, "add_system_message"):
@@ -526,12 +529,14 @@ class ExplorationController:
         if interaction_id == "talk":
             try:
                 from ui.exploration.npc_conversation_dialog import NpcConversationDialog
-                # Voice: only use pre-generated files, no on-the-fly generation
                 dlg = NpcConversationDialog(
                     entity,
                     parent=parent_widget,
                 )
                 dlg.exec_()
+                # Refresh quest state after conversation (flags may have changed)
+                if hasattr(self, "_on_flags_changed") and self._on_flags_changed:
+                    self._on_flags_changed()
             except Exception as e:
                 self._log.append(f"  Conversation error: {e}")
 
@@ -708,35 +713,35 @@ class ExplorationController:
 
     def _resolve_skill_check(self, se: dict) -> None:
         """Roll a skill check for the current side event."""
-        from models.side_events import SKILL_TO_ABILITY
+        from core.engine.check_runner import run_skill_check
         variant = se["variant"]
         pos = se["pos"]
         sc = variant.skill_check
         skill = sc["skill"]
         dc = sc["dc"]
-        ability = SKILL_TO_ABILITY.get(skill, "Wisdom")
 
         entity = self.get_active_character()
         if not entity:
             self._log.append("  No character selected.")
             return
 
-        ability_score = entity.stats.get(ability, 10)
-        mod = (ability_score - 10) // 2
-        roll = random.randint(1, 20)
-        total = roll + mod
-        passed = total >= dc
+        check = run_skill_check(entity, skill, dc)
 
         # Try animated dice roll; fall back to instant if widget unavailable
         panel = self._zone_detail.side_event_panel
         if hasattr(panel, "show_dice_roll"):
-            # Defer result display + consequences to after animation
             def _on_roll_complete(_passed):
-                self._finish_skill_check(se, roll, mod, ability, skill, dc, total, passed)
-            panel.show_dice_roll(roll, mod, f"{ability[:3].upper()}", dc, passed,
-                                on_complete=_on_roll_complete)
+                self._finish_skill_check(
+                    se, check.natural_roll, check.modifier, check.ability,
+                    skill, dc, check.total, check.passed)
+            panel.show_dice_roll(
+                check.natural_roll, check.modifier,
+                f"{check.ability[:3].upper()}", dc, check.passed,
+                on_complete=_on_roll_complete)
         else:
-            self._finish_skill_check(se, roll, mod, ability, skill, dc, total, passed)
+            self._finish_skill_check(
+                se, check.natural_roll, check.modifier, check.ability,
+                skill, dc, check.total, check.passed)
 
     def _finish_skill_check(self, se, roll, mod, ability, skill, dc, total, passed):
         """Apply results after dice animation completes."""

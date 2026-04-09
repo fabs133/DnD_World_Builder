@@ -91,4 +91,4 @@ class TestAdvantageOnAttack:
         action.execute(None)
 
         logs = " ".join(action.execution_log)
-        assert "advantage" in logs.lower()
+        assert "advantage" in logs.lower() or "[adv]" in logs.lower()

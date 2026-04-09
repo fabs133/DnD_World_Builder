@@ -86,4 +86,4 @@ class TestDodgeDisadvantage:
         action.execute(None)
 
         logs = " ".join(action.execution_log)
-        assert "dodging" in logs.lower() or "disadvantage" in logs.lower()
+        assert "dodging" in logs.lower() or "disadvantage" in logs.lower() or "[dis]" in logs.lower()

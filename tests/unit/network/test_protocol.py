@@ -155,6 +155,7 @@ class TestMessageTypeEnum:
             "VOICE_CAPABILITY", "VOICE_CHARACTER_ASSIGN",
             "VOICE_CHARACTER_PROGRESS", "VOICE_CHARACTER_COMPLETE",
             "VOICE_CACHE_SYNC",
+            "VOICE_LINE_SHARE", "VOICE_LINE_PLAY",
         }
         actual = {t.value for t in MessageType}
         assert actual == expected

@@ -90,7 +90,7 @@ class QuestLogPanel(QWidget):
         self._selected_quest: dict | None = None
 
     def load_quests(self, quests: list[dict]) -> None:
-        """Load quest data from map.json."""
+        """Load quest data from map.json or quest dicts."""
         self._quests = quests
         self._refresh()
 
@@ -100,6 +100,27 @@ class QuestLogPanel(QWidget):
 
     def set_completed(self, quest_ids: set[str]) -> None:
         self._completed = quest_ids
+        self._refresh()
+
+    def refresh_from_tracker(self, tracker) -> None:
+        """Refresh display from a QuestTracker instance."""
+        quests = []
+        for q in tracker.get_all():
+            quests.append({
+                "id": q.quest_id,
+                "title": q.title,
+                "description": q.description,
+                "giver": q.giver,
+                "objectives": [
+                    {"text": o.description, "done": o.completed}
+                    for o in q.objectives
+                ],
+                "rewards": q.rewards,
+                "status": q.status,
+            })
+        self._quests = quests
+        self._active = {q.quest_id for q in tracker.get_active()}
+        self._completed = {q.quest_id for q in tracker.get_completed()}
         self._refresh()
 
     def _get_status(self, quest: dict) -> str:

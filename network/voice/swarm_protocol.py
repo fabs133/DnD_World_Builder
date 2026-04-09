@@ -108,3 +108,39 @@ def make_voice_cache_sync(
             "results": results,
         },
     )
+
+
+# ── Player voice lines ──────────────────────────────────────────
+
+
+def make_voice_line_share(
+    player_name: str,
+    lines: list[dict],
+) -> Message:
+    """Player sends their generated voice lines to the host.
+
+    Each entry in *lines*: ``{text, category, cache_key, audio_base64, size_bytes}``.
+    """
+    return Message(
+        type=MessageType.VOICE_LINE_SHARE,
+        payload={
+            "player_name": player_name,
+            "lines": lines,
+        },
+    )
+
+
+def make_voice_line_play(
+    player_name: str,
+    cache_key: str,
+    text: str,
+) -> Message:
+    """Trigger playback of a voice line across all connected clients."""
+    return Message(
+        type=MessageType.VOICE_LINE_PLAY,
+        payload={
+            "player_name": player_name,
+            "cache_key": cache_key,
+            "text": text,
+        },
+    )

@@ -34,6 +34,10 @@ class SessionPanel(QWidget):
     disconnect_requested = pyqtSignal()
     #: Emitted when the user clicks Claim with a selected entity name.
     entity_claim_requested = pyqtSignal(str)
+    #: Emitted when voice lines are ready to share over network.
+    voice_lines_ready = pyqtSignal(dict)
+    #: Emitted when user triggers a voice line from the soundboard.
+    voice_line_play = pyqtSignal(str, str, str)  # player_name, cache_key, text
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -109,6 +113,18 @@ class SessionPanel(QWidget):
         voice_layout.addWidget(self._voice_status_label)
         self._voice_section.hide()
         layout.addWidget(self._voice_section)
+
+        # Voice setup button (visible only when Chatterbox is available)
+        self._voice_setup_btn = QPushButton("Setup Voice")
+        self._voice_setup_btn.setToolTip("Record your voice and create custom voice lines")
+        self._voice_setup_btn.clicked.connect(self._on_voice_setup)
+        self._voice_setup_btn.hide()  # shown after availability check
+        layout.addWidget(self._voice_setup_btn)
+
+        # Voice soundboard (populated after voice lines are shared)
+        from network.ui.voice_soundboard_widget import VoiceSoundboardWidget
+        self._soundboard = VoiceSoundboardWidget(parent=self)
+        layout.addWidget(self._soundboard)
 
         # Disconnect button
         self._disconnect_btn = QPushButton("Disconnect")
@@ -254,3 +270,38 @@ class SessionPanel(QWidget):
         if text:
             self.chat_submitted.emit(text)
             self._chat_input.clear()
+
+    # ------------------------------------------------------------------
+    # Voice line system
+    # ------------------------------------------------------------------
+
+    def enable_voice_setup(self, player_name: str = "Player") -> None:
+        """Show the Setup Voice button (call after confirming Chatterbox available)."""
+        self._player_name = player_name
+        self._voice_setup_btn.show()
+        self._soundboard.set_own_name(player_name)
+        self._soundboard.voice_line_triggered.connect(
+            lambda pn, ck, t: self.voice_line_play.emit(pn, ck, t))
+
+    def _on_voice_setup(self) -> None:
+        """Open the player voice setup dialog."""
+        from ui.voice.player_voice_setup_dialog import PlayerVoiceSetupDialog
+        name = getattr(self, "_player_name", "Player")
+        dlg = PlayerVoiceSetupDialog(player_name=name, parent=self)
+        dlg.voice_lines_ready.connect(self._on_voice_lines_ready)
+        dlg.exec_()
+
+    def _on_voice_lines_ready(self, data: dict) -> None:
+        """Handle locally generated voice lines — update soundboard and share."""
+        player_name = data.get("player_name", "Player")
+        lines = data.get("lines", [])
+
+        # Add to local soundboard
+        self._soundboard.add_player_lines(player_name, lines)
+
+        # Forward to network layer
+        self.voice_lines_ready.emit(data)
+
+    def add_remote_voice_lines(self, player_name: str, lines: list[dict]) -> None:
+        """Add voice lines received from another player to the soundboard."""
+        self._soundboard.add_player_lines(player_name, lines)

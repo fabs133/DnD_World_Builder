@@ -447,11 +447,26 @@ class PlaySessionDialog(QDialog):
         self._narration_panel = NarrationPanel()
         self._dock_narration = _add_dock("Narration", self._narration_panel, "dock_narration")
 
-        # Quest log panel
+        # Quest log panel + tracker
         from ui.panels.quest_log_panel import QuestLogPanel
         self._quest_panel = QuestLogPanel()
         if self._quests:
             self._quest_panel.load_quests(self._quests)
+
+        # Initialize quest tracker with scenario quests
+        from core.engine.quest_tracker import QuestTracker
+        try:
+            from models.quest.quest_registry import SHATTERED_REALMS_QUESTS
+            self._quest_tracker = QuestTracker(
+                SHATTERED_REALMS_QUESTS,
+                on_quest_completed=self._on_quest_completed)
+            self._quest_panel.refresh_from_tracker(self._quest_tracker)
+        except ImportError:
+            self._quest_tracker = None
+
+        # Give controller a callback to refresh quests after flag changes
+        self._explore_ctrl._on_flags_changed = self.refresh_quest_state
+
         self._dock_quests = _add_dock("Quest Log", self._quest_panel, "dock_quests")
 
         # Adapter shims for controllers (CollapsibleSection interface)
@@ -1539,9 +1554,76 @@ class PlaySessionDialog(QDialog):
         if state:
             self._inner_main.restoreState(state)
 
+    # ------------------------------------------------------------------
+    #  Session save/load
+    # ------------------------------------------------------------------
+
+    def save_session(self, path=None) -> None:
+        """Save the complete session state to a JSON file."""
+        from pathlib import Path
+        from core.engine.session_state import capture_session
+
+        if path is None:
+            path = Path("workspace/session_save.json")
+
+        se_state = getattr(self._explore_ctrl, "_side_event_state", {})
+        state = capture_session(
+            play_state_str=self._play_state.value if hasattr(self._play_state, "value") else str(self._play_state),
+            all_entities=self._all_entities,
+            tile_dicts=self._tile_dicts,
+            current_tile_pos=self._current_tile_pos,
+            side_event_state=se_state,
+            quest_tracker=getattr(self, "_quest_tracker", None),
+        )
+        state.save(path)
+        self._log_msg(f"Session saved to {path.name}")
+
+    def _log_msg(self, msg: str) -> None:
+        if hasattr(self._log, "add_system_message"):
+            self._log.add_system_message(msg, "explore")
+        else:
+            self._log.append(msg)
+
+    # ------------------------------------------------------------------
+    #  Quest tracking
+    # ------------------------------------------------------------------
+
+    def _on_quest_completed(self, quest) -> None:
+        """Called when a quest's objectives are all met."""
+        msg = f"Quest completed: {quest.title}!"
+        if hasattr(self._log, "add_system_message"):
+            self._log.add_system_message(msg, "explore")
+        else:
+            self._log.append(msg)
+        # Apply rewards
+        if quest.rewards.get("gold"):
+            entity = self._explore_ctrl.get_active_character()
+            if entity:
+                entity.stats["gold"] = entity.stats.get("gold", 0) + quest.rewards["gold"]
+                self._log.append(f"  Reward: {quest.rewards['gold']} gold")
+        if quest.rewards.get("xp"):
+            self._log.append(f"  Reward: {quest.rewards['xp']} XP")
+        self._quest_panel.refresh_from_tracker(self._quest_tracker)
+
+    def refresh_quest_state(self) -> None:
+        """Re-check quest flags after NPC conversations or side events."""
+        if not self._quest_tracker:
+            return
+        # Collect all dialogue flags from all entities
+        flags: dict[str, bool] = {}
+        for entity in self._all_entities:
+            if hasattr(entity, "dialogue_flags"):
+                flags.update(entity.dialogue_flags)
+        self._quest_tracker.check_flags(flags)
+        self._quest_panel.refresh_from_tracker(self._quest_tracker)
+
     def closeEvent(self, event) -> None:
         self._save_dock_state()
         self._persist_entity_state()
+        try:
+            self.save_session()
+        except Exception:
+            pass
         self._is_running = False
         self._play_state = PlayState.ENDED
         if self._animator:
