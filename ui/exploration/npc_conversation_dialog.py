@@ -150,8 +150,9 @@ class NpcConversationDialog(QDialog):
         self._add_npc_message(node.text, node_id=node_id)
 
         if node.is_terminal:
-            # Auto-close after a delay
-            QTimer.singleShot(1500, self._on_close)
+            # Auto-close after a reading delay (scaled by text length)
+            read_ms = max(2500, len(node.text) * 50)  # ~50ms per char, min 2.5s
+            QTimer.singleShot(read_ms, self._on_close)
             return
 
         # Build option buttons
@@ -207,8 +208,14 @@ class NpcConversationDialog(QDialog):
         # Navigate to target node
         self._navigate_to(opt.next_node)
 
-    def _is_subtree_visited(self, node_id: str) -> bool:
+    def _is_subtree_visited(self, node_id: str,
+                             _seen: set[str] | None = None) -> bool:
         """Check if a node and all its reachable descendants have been visited."""
+        if _seen is None:
+            _seen = set()
+        if node_id in _seen:
+            return True  # cycle — already checked, don't recurse
+        _seen.add(node_id)
         if node_id not in self._visited_nodes:
             return False
         node = self._graph.get_node(node_id) if self._graph else None
@@ -217,7 +224,7 @@ class NpcConversationDialog(QDialog):
         # Check all available options' targets
         for opt in node.options:
             if opt.is_available(self._flags):
-                if not self._is_subtree_visited(opt.next_node):
+                if not self._is_subtree_visited(opt.next_node, _seen):
                     return False
         return True
 

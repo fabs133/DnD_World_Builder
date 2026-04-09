@@ -145,7 +145,17 @@ def brenna_graph():
                     {"text": "Tell me about this place.", "next_node": "lore_0"},
                     {"text": "We're looking for work.", "next_node": "quest_0"},
                     {"text": "What about the roads ahead?", "next_node": "quest_1"},
+                    {"text": "We helped some refugees on the road.", "next_node": "se_refugees",
+                     "conditions": [{"flag": "helped_refugees"}]},
                     {"text": "Goodbye.", "next_node": "farewell_0"},
+                ],
+            },
+            "se_refugees": {
+                "node_id": "se_refugees",
+                "text": "Word travels fast. I heard you helped some refugees on the road. That kind of decency is rare these days. Drinks are on me tonight.",
+                "category": "lore", "emotion": "friendly",
+                "options": [
+                    {"text": "It was the right thing to do.", "next_node": "hub"},
                 ],
             },
             "farewell_0": {
@@ -500,10 +510,20 @@ def thessa_graph():
                 "text": "Anything else?",
                 "category": "greeting", "emotion": "commanding",
                 "options": [
+                    {"text": "We found intelligence from a dying spy.", "next_node": "se_intel",
+                     "conditions": [{"flag": "has_spy_intel"}]},
                     {"text": "Tell me about the town defenses.", "next_node": "lore_0"},
                     {"text": "About the patrol...", "next_node": "quest_0",
                      "conditions": [{"flag": "patrol_quest_accepted", "expected": False}]},
                     {"text": "Goodbye.", "next_node": "farewell_0"},
+                ],
+            },
+            "se_intel": {
+                "node_id": "se_intel",
+                "text": "Supply routes to the citadel? Dates and quantities? This is exactly what we needed. With this, I can plan ambushes on Torven's supply lines. You may have just turned the tide, soldier.",
+                "category": "quest", "emotion": "excited",
+                "options": [
+                    {"text": "Glad we could help.", "next_node": "hub"},
                 ],
             },
             "farewell_0": {
@@ -1375,6 +1395,8 @@ def nessa_graph():
                 "text": "I knew you were coming. The leeches told me. They tell me everything. What else?",
                 "category": "greeting", "emotion": "friendly",
                 "options": [
+                    {"text": "A wolf has been following me.", "next_node": "se_wolf",
+                     "conditions": [{"flag": "freed_wolf"}]},
                     {"text": "The lost soldiers.", "next_node": "lore_soldiers",
                      "conditions": [{"flag": "patrol_quest_accepted"},
                                     {"flag": "heard_soldier_fate", "expected": False}]},
@@ -1383,6 +1405,23 @@ def nessa_graph():
                      "conditions": [{"flag": "bone_quest_offered", "expected": False}]},
                     {"text": "Trading.", "next_node": "trade_0"},
                     {"text": "Goodbye.", "next_node": "farewell_0"},
+                ],
+            },
+            "se_wolf": {
+                "node_id": "se_wolf",
+                "text": "A wolf followed you here. It watches from the treeline. You freed it, didn't you? The old pact holds \u2014 a wolf freed is a debt owed. It will remember you when you need it most.",
+                "category": "lore", "emotion": "whispering",
+                "options": [
+                    {"text": "What does that mean?", "next_node": "se_wolf_2"},
+                    {"text": "I just helped a wounded animal.", "next_node": "hub"},
+                ],
+            },
+            "se_wolf_2": {
+                "node_id": "se_wolf_2",
+                "text": "The beasts of the wild are bound by older laws than men. Help given freely is repaid in kind. When the darkness closes in, you may find teeth at your back \u2014 on your side, for once.",
+                "category": "lore", "emotion": "friendly",
+                "options": [
+                    {"text": "Good to know.", "next_node": "hub"},
                 ],
             },
             "farewell_0": {
@@ -1522,11 +1561,21 @@ def maren_graph():
                 "text": "What else weighs on your spirit?",
                 "category": "greeting", "emotion": "friendly",
                 "options": [
+                    {"text": "A child arrived safely, I think.", "next_node": "se_child",
+                     "conditions": [{"flag": "helped_child"}]},
                     {"text": "The wards.", "next_node": "quest_0",
                      "conditions": [{"flag": "dawn_lotus_quest_offered", "expected": False}]},
                     {"text": "The Shattering.", "next_node": "lore_0"},
                     {"text": "The last ward.", "next_node": "lore_3"},
                     {"text": "Goodbye.", "next_node": "farewell_0"},
+                ],
+            },
+            "se_child": {
+                "node_id": "se_child",
+                "text": "Yes \u2014 a child came to the chapel doors, frightened but unharmed. They said a kind stranger showed them the way. The Dawn blesses those who protect the innocent.",
+                "category": "lore", "emotion": "friendly",
+                "options": [
+                    {"text": "I'm glad they made it.", "next_node": "hub"},
                 ],
             },
             "farewell_0": {

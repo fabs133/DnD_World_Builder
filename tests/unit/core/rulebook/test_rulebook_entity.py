@@ -121,4 +121,6 @@ def test_to_game_entity_preserves_fields():
     for key, val in expected.items():
         assert ge.stats[key] == val
     # In this implementation, abilities are used as inventory:
-    assert ge.inventory == re.abilities
+    # Inventory items are normalized to dicts
+    from models.entities.game_entity import _normalize_item
+    assert ge.inventory == [_normalize_item(a) for a in re.abilities]

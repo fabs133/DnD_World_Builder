@@ -63,6 +63,13 @@ class PartyStatusStrip(QWidget):
             bar.setStyleSheet(self._bar_style(hp, max_hp))
             row.addWidget(bar)
 
+            gold = entry.get("gold", 0)
+            gold_label = QLabel(f"{gold} gp")
+            gold_label.setFixedWidth(50)
+            gold_label.setStyleSheet(
+                "font-size: 10px; color: #e8c840; font-weight: bold;")
+            row.addWidget(gold_label)
+
             container.mousePressEvent = (
                 lambda ev, n=name: self.entity_selected.emit(n)
             )
@@ -72,6 +79,7 @@ class PartyStatusStrip(QWidget):
                 "container": container,
                 "label": label,
                 "bar": bar,
+                "gold_label": gold_label,
                 "max_hp": max_hp,
             }
 

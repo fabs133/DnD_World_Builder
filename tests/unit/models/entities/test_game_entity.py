@@ -83,7 +83,7 @@ def test_to_dict_and_handle_event():
     assert dd["name"] == "Gob"
     assert dd["entity_type"] == "enemy"
     assert dd["stats"]["hp"] == 5
-    assert dd["inventory"] == ["axe"]
+    assert dd["inventory"] == [{"name": "axe", "type": "trinket", "gold_value": 0}]
     # to_dict on triggers should have been called
     assert t1.to_dict_called and t2.to_dict_called
     assert dd["triggers"] == [
@@ -119,7 +119,7 @@ def test_from_dict(monkeypatch):
     assert ge.name == "Z"
     assert ge.entity_type == "npc"
     assert ge.stats["Strength"] == 2  # "str" normalized to "Strength"
-    assert ge.inventory == ["book"]
+    assert ge.inventory == [{"name": "book", "type": "trinket", "gold_value": 0}]
 
     # ensure we got exactly one trigger, of correct type
     assert len(registered) == 1

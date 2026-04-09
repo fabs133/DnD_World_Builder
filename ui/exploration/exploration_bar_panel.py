@@ -24,6 +24,7 @@ class ExplorationBarPanel(QWidget):
         ("interact", "Interact", "Talk to an NPC or examine an object"),
         ("search", "Search", "Perception check — find hidden features"),
         ("sneak", "Sneak", "Stealth check before entering a zone"),
+        ("inventory", "Inventory", "View party inventory and equipment"),
     ]
 
     _REST_BUTTONS = [

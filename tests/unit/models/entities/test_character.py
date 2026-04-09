@@ -129,7 +129,10 @@ def test_save_to_db_inserts_row(db_conn):
     assert stats_loaded["Strength"] == 10
 
     inv_loaded = json.loads(row[5])
-    assert inv_loaded == ["sword", "shield"]
+    assert inv_loaded == [
+        {"name": "sword", "type": "trinket", "gold_value": 0},
+        {"name": "shield", "type": "trinket", "gold_value": 0},
+    ]
 
     spells_loaded = json.loads(row[6])
     assert isinstance(spells_loaded, list)

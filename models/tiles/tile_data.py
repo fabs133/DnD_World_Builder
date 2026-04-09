@@ -112,6 +112,9 @@ class TileData:
     # Used by the prompt composer to create visual continuity with the
     # neighbouring tile on the opposite edge.
     edge_structures: List[dict] = field(default_factory=list)
+    # Lightweight side event assignment for empty tiles.
+    # Format: {"event_id": int, "variant": int}
+    side_event: Optional[dict] = None
 
     @property
     def has_zones(self) -> bool:
@@ -228,6 +231,8 @@ class TileData:
             data["narrator_intro"] = self.narrator_intro
         if self.edge_structures:
             data["edge_structures"] = list(self.edge_structures)
+        if self.side_event:
+            data["side_event"] = self.side_event
         return data
 
     @classmethod
@@ -272,4 +277,5 @@ class TileData:
             tile_type=data.get("tile_type"),
             narrator_intro=data.get("narrator_intro"),
             edge_structures=list(data.get("edge_structures", [])),
+            side_event=data.get("side_event"),
         )

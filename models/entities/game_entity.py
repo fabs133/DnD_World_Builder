@@ -34,6 +34,17 @@ _STAT_ALIASES: dict[str, str] = {
 }
 
 
+def _normalize_item(item) -> dict:
+    """Ensure an inventory item is a dict with name/type/gold_value."""
+    if isinstance(item, dict):
+        return {
+            "name": item.get("name", str(item)),
+            "type": item.get("type", item.get("item_type", "trinket")),
+            "gold_value": item.get("gold_value", 0),
+        }
+    return {"name": str(item), "type": "trinket", "gold_value": 0}
+
+
 def _normalize_stats(stats: dict) -> dict:
     """Canonicalize stat key names to prevent lookup mismatches.
 
@@ -91,7 +102,7 @@ class GameEntity:
             except (ValueError, AttributeError):
                 self.entity_type = entity_type
         self.stats = _normalize_stats(stats or {})
-        self.inventory = inventory or []
+        self.inventory = [_normalize_item(i) for i in (inventory or [])]
         self.triggers = []
         self.image_path = image_path
         self.personality: EntityPersonality | None = None

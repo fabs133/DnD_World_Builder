@@ -509,6 +509,11 @@ class ZoneDetailWidget(QWidget):
         self._info_toast.hide()
         self._info_toast_timer = None
 
+        # Side-event interaction panel (persistent until dismissed)
+        from ui.exploration.side_event_panel import SideEventPanel
+        self._side_event_panel = SideEventPanel(self)
+        self._side_event_panel.hide()
+
         self.setFocusPolicy(Qt.StrongFocus)
 
         # Crossfade state (timer-driven, no QGraphicsOpacityEffect)
@@ -710,6 +715,34 @@ class ZoneDetailWidget(QWidget):
         self._info_toast_timer.setSingleShot(True)
         self._info_toast_timer.timeout.connect(self._info_toast.hide)
         self._info_toast_timer.start(duration_ms)
+
+    # ── Side-event panel ────────────────────────────────────────
+
+    @property
+    def side_event_panel(self):
+        """Direct access to the SideEventPanel for signal wiring."""
+        return self._side_event_panel
+
+    def show_side_event_panel(self, title: str, narrative: str,
+                              buttons: list[dict]) -> None:
+        """Show the side-event interaction panel, centered."""
+        self._side_event_panel.show_event(title, narrative, buttons)
+        self._position_side_event_panel()
+
+    def hide_side_event_panel(self) -> None:
+        self._side_event_panel.hide()
+
+    def _position_side_event_panel(self) -> None:
+        p = self._side_event_panel
+        p.adjustSize()
+        w = self.width()
+        pw = min(p.sizeHint().width() + 32, int(w * 0.7))
+        p.setFixedWidth(pw)
+        p.adjustSize()
+        x = (w - p.width()) // 2
+        y = max(20, (self.height() - p.height()) // 3)
+        p.move(x, y)
+        p.raise_()
 
     # ── Entity list helpers ───────────────────────────────────────
 

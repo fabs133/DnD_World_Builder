@@ -226,7 +226,8 @@ class ExplorationController:
         players = [e for e in self._get_all_entities()
                    if e.entity_type == "player"]
         self._party_strip.set_party([
-            {"name": p.name, "hp": p.hp, "max_hp": p.max_hp} for p in players
+            {"name": p.name, "hp": p.hp, "max_hp": p.max_hp,
+             "gold": p.stats.get("gold", 0)} for p in players
         ])
 
     def on_exploration_action(self, action_id: str) -> None:
@@ -238,11 +239,17 @@ class ExplorationController:
                 if entity is not None:
                     self.on_entity_clicked(entity)
                     return
+            # Fallback: re-show side event panel if one is pending
+            if self._has_pending_side_event():
+                self._trigger_side_event_panel()
+                return
             self._log.append("  Select an entity in the detail view to interact.")
         elif action_id == "search":
             self._do_search_check()
         elif action_id == "sneak":
             self._do_sneak_check()
+        elif action_id == "inventory":
+            self._show_inventory()
 
     def _do_search_check(self) -> None:
         try:
@@ -321,6 +328,18 @@ class ExplorationController:
             self._log.append("  Moving stealthily!")
         else:
             self._log.append("  You fail to move quietly.")
+
+    def _show_inventory(self) -> None:
+        """Toggle the inventory dock panel."""
+        if hasattr(self, "_inventory_panel") and self._inventory_panel:
+            self._inventory_panel.refresh(self._get_all_entities())
+            # Find the dock widget and make it visible
+            dock = self._inventory_panel.parent()
+            while dock and not hasattr(dock, "setVisible"):
+                dock = dock.parent() if hasattr(dock, "parent") else None
+            if dock:
+                dock.setVisible(True)
+                dock.raise_()
 
     def on_rest_requested(self, rest_type: str) -> None:
         if rest_type == "short_rest":
@@ -421,6 +440,7 @@ class ExplorationController:
         interactions = []
         if etype == EntityType.NPC:
             interactions.append({"id": "talk", "label": "Talk"})
+            interactions.append({"id": "give_item", "label": "Give Item"})
             interactions.append({"id": "inspect", "label": "Inspect"})
             if self._role == PlayerRole.DM:
                 interactions.append({"id": "stat_block", "label": "View Stats"})
@@ -433,6 +453,7 @@ class ExplorationController:
                 interactions.append({"id": "inspect", "label": "Observe"})
         elif etype == EntityType.PLAYER:
             interactions.append({"id": "stat_block", "label": "Character Sheet"})
+            interactions.append({"id": "give_item", "label": "Give Item"})
         else:
             interactions.append({"id": "inspect", "label": "Examine"})
 
@@ -530,6 +551,33 @@ class ExplorationController:
             except Exception as e:
                 self._log.append(f"  Entity edit error: {e}")
 
+        elif interaction_id == "give_item":
+            source = self.get_active_character()
+            if not source:
+                self._log.append("  No active character to give items from.")
+                return
+            if source.name == entity.name:
+                self._log.append("  Cannot give items to yourself.")
+                return
+            try:
+                from ui.dialogs.item_transfer_dialog import ItemTransferDialog
+                dlg = ItemTransferDialog(source, entity, parent=parent_widget)
+                if dlg.exec_() == ItemTransferDialog.Accepted:
+                    items = dlg.transferred_items()
+                    gold = dlg.transferred_gold()
+                    parts = []
+                    for item in items:
+                        iname = item.get("name", "???") if isinstance(item, dict) else str(item)
+                        parts.append(iname)
+                    if gold:
+                        parts.append(f"{gold} gp")
+                    if parts:
+                        self._log_msg(
+                            f"  {source.name} gave {', '.join(parts)} to {entity.name}.")
+                    self._refresh_inventory()
+            except Exception as e:
+                self._log.append(f"  Transfer error: {e}")
+
         elif interaction_id == "inspect":
             # Log role-filtered info and show floating toast
             name = entity.name
@@ -554,3 +602,288 @@ class ExplorationController:
             # Show prominent toast in the main view
             if hasattr(self._zone_detail, "show_info_toast"):
                 self._zone_detail.show_info_toast(info_line)
+
+    # ------------------------------------------------------------------
+    # Side-event interactions
+    # ------------------------------------------------------------------
+
+    # Shared state: position → {"status": "seen"|"completed", ...}
+    _side_event_state: dict[tuple, dict] = {}
+    # Cached current event data (set by PlaySessionDialog._check_side_event)
+    _current_side_event: dict | None = None  # {"pos", "event", "variant", "itype"}
+
+    def _has_pending_side_event(self) -> bool:
+        se = self._current_side_event
+        if not se:
+            return False
+        state = self._side_event_state.get(se["pos"], {})
+        return state.get("status") != "completed"
+
+    def _trigger_side_event_panel(self) -> None:
+        """(Re-)show the side event panel for the current tile."""
+        se = self._current_side_event
+        if not se:
+            return
+        from models.side_events import get_interaction_type
+        variant = se["variant"]
+        itype = se["itype"]
+        buttons = self._build_side_event_buttons(itype, variant)
+        self._zone_detail.show_side_event_panel(
+            variant.name, variant.narrative, buttons)
+
+    def _build_side_event_buttons(self, itype: str, variant) -> list[dict]:
+        """Build button definitions based on interaction type."""
+        if itype == "choice" and variant.choices:
+            btns = []
+            for i, ch in enumerate(variant.choices):
+                btns.append({"label": ch["label"], "action": f"choice_{i}",
+                             "style": "action"})
+            btns.append({"label": "Move On", "action": "move_on", "style": "dismiss"})
+            return btns
+        if itype == "salvage":
+            skill = variant.skill_check["skill"] if variant.skill_check else "Investigation"
+            dc = variant.skill_check["dc"] if variant.skill_check else 10
+            return [
+                {"label": f"Search ({skill} DC {dc})", "action": "check",
+                 "style": "action"},
+                {"label": "Leave It", "action": "move_on", "style": "dismiss"},
+            ]
+        if itype == "skill_check":
+            skill = variant.skill_check["skill"]
+            dc = variant.skill_check["dc"]
+            return [
+                {"label": f"Attempt {skill} Check (DC {dc})", "action": "check",
+                 "style": "action"},
+                {"label": "Leave It", "action": "move_on", "style": "dismiss"},
+            ]
+        # examine (default)
+        if variant.skill_check:
+            skill = variant.skill_check["skill"]
+            dc = variant.skill_check["dc"]
+            return [
+                {"label": f"Examine ({skill} DC {dc})", "action": "check",
+                 "style": "action"},
+                {"label": "Move On", "action": "move_on", "style": "dismiss"},
+            ]
+        return [
+            {"label": "Examine Closer", "action": "examine", "style": "action"},
+            {"label": "Move On", "action": "move_on", "style": "dismiss"},
+        ]
+
+    def on_side_event_action(self, action: str) -> None:
+        """Handle a button click from the SideEventPanel."""
+        se = self._current_side_event
+        if not se:
+            self._zone_detail.hide_side_event_panel()
+            return
+
+        variant = se["variant"]
+        pos = se["pos"]
+
+        if action == "continue" or action == "move_on":
+            self._side_event_state[pos] = {"status": "completed"}
+            self._zone_detail.hide_side_event_panel()
+            return
+
+        if action == "examine":
+            # Show success_text or extra flavor
+            extra = variant.success_text or "You take a closer look but find nothing beyond what you already noticed."
+            self._log_msg(f"  {extra}")
+            self._zone_detail.side_event_panel.show_result(extra, passed=None)
+            if variant.reward:
+                self._log_reward(variant.reward)
+            if variant.success_consequences:
+                self._apply_consequences(variant.success_consequences)
+            self._side_event_state[pos] = {"status": "completed"}
+            return
+
+        if action == "check":
+            self._resolve_skill_check(se)
+            return
+
+        if action.startswith("choice_"):
+            idx = int(action.split("_")[1])
+            self._resolve_choice(se, idx)
+            return
+
+    def _resolve_skill_check(self, se: dict) -> None:
+        """Roll a skill check for the current side event."""
+        from models.side_events import SKILL_TO_ABILITY
+        variant = se["variant"]
+        pos = se["pos"]
+        sc = variant.skill_check
+        skill = sc["skill"]
+        dc = sc["dc"]
+        ability = SKILL_TO_ABILITY.get(skill, "Wisdom")
+
+        entity = self.get_active_character()
+        if not entity:
+            self._log.append("  No character selected.")
+            return
+
+        ability_score = entity.stats.get(ability, 10)
+        mod = (ability_score - 10) // 2
+        roll = random.randint(1, 20)
+        total = roll + mod
+        passed = total >= dc
+
+        # Try animated dice roll; fall back to instant if widget unavailable
+        panel = self._zone_detail.side_event_panel
+        if hasattr(panel, "show_dice_roll"):
+            # Defer result display + consequences to after animation
+            def _on_roll_complete(_passed):
+                self._finish_skill_check(se, roll, mod, ability, skill, dc, total, passed)
+            panel.show_dice_roll(roll, mod, f"{ability[:3].upper()}", dc, passed,
+                                on_complete=_on_roll_complete)
+        else:
+            self._finish_skill_check(se, roll, mod, ability, skill, dc, total, passed)
+
+    def _finish_skill_check(self, se, roll, mod, ability, skill, dc, total, passed):
+        """Apply results after dice animation completes."""
+        variant = se["variant"]
+        pos = se["pos"]
+        roll_line = (
+            f"{skill} check: d20({roll}) + {ability[:3].upper()}({mod:+d}) = {total}"
+            f" vs DC {dc}"
+        )
+
+        if passed:
+            result_text = variant.success_text or "Success!"
+            display = f"{roll_line} \u2014 Success!\n\n{result_text}"
+            self._zone_detail.side_event_panel.show_result(display, passed=True)
+            self._log_msg(f"  {roll_line} \u2014 Success!")
+            self._log_msg(f"  {result_text}")
+            if variant.reward:
+                self._log_reward(variant.reward)
+            if variant.success_consequences:
+                self._apply_consequences(variant.success_consequences)
+        else:
+            result_text = variant.fail_text or "You don't learn anything further."
+            display = f"{roll_line} \u2014 Failed.\n\n{result_text}"
+            self._zone_detail.side_event_panel.show_result(display, passed=False)
+            self._log_msg(f"  {roll_line} \u2014 Failed.")
+            self._log_msg(f"  {result_text}")
+            if variant.fail_consequences:
+                self._apply_consequences(variant.fail_consequences)
+
+        self._side_event_state[pos] = {"status": "completed", "result": "pass" if passed else "fail"}
+
+    def _resolve_choice(self, se: dict, idx: int) -> None:
+        """Resolve a player's choice selection."""
+        variant = se["variant"]
+        pos = se["pos"]
+        if not variant.choices or idx >= len(variant.choices):
+            self._zone_detail.hide_side_event_panel()
+            return
+
+        choice = variant.choices[idx]
+        text = choice.get("text", "")
+        self._log_msg(f"  {text}")
+
+        self._zone_detail.side_event_panel.show_result(text, passed=None)
+        if choice.get("reward"):
+            self._log_reward(choice["reward"])
+        if choice.get("consequences"):
+            self._apply_consequences(choice["consequences"])
+
+        self._side_event_state[pos] = {"status": "completed", "result": f"choice_{idx}"}
+
+    def _log_msg(self, msg: str) -> None:
+        if hasattr(self._log, "add_system_message"):
+            self._log.add_system_message(msg, "explore")
+        else:
+            self._log.append(msg)
+
+    def _log_reward(self, reward: dict) -> None:
+        """Log a side-event reward, apply gold, and add item to inventory."""
+        rtype = reward.get("type", "")
+        if rtype == "loot":
+            name = reward.get("name", "something")
+            gold = reward.get("gold_value", 0)
+            item_type = reward.get("item_type", "trinket")
+            msg = f"  Found: {name}" + (f" (worth ~{gold} gp)" if gold else "")
+            entity = self.get_active_character()
+            if entity:
+                if gold:
+                    entity.stats["gold"] = entity.stats.get("gold", 0) + gold
+                # Add item to inventory
+                from models.entities.game_entity import _normalize_item
+                item = _normalize_item({"name": name, "type": item_type, "gold_value": gold})
+                entity.inventory.append(item)
+                self._refresh_inventory()
+        elif rtype == "info":
+            msg = f"  Learned: {reward.get('text', '')}"
+        else:
+            msg = f"  Received: {reward}"
+        self._log_msg(msg)
+
+    def _refresh_inventory(self) -> None:
+        """Refresh inventory UI after item/gold changes."""
+        self.refresh_party_strip()
+        if hasattr(self, "_inventory_panel") and self._inventory_panel:
+            self._inventory_panel.refresh(self._get_all_entities())
+
+    def _apply_consequences(self, consequences: dict) -> None:
+        """Apply mechanical consequences from a side event."""
+        from models.side_events import roll_dice
+
+        entity = self.get_active_character()
+        if not entity:
+            return
+
+        # Damage
+        if "damage" in consequences:
+            amount = roll_dice(consequences["damage"])
+            dmg_type = consequences.get("damage_type", "untyped")
+            actual = entity.take_damage(amount, dmg_type) if hasattr(entity, "take_damage") else 0
+            if not hasattr(entity, "take_damage"):
+                entity.hp = max(0, entity.hp - amount)
+                actual = amount
+            self._log_msg(f"  Took {actual} {dmg_type} damage!")
+            self._refresh_hp(entity)
+
+        # Healing
+        if "heal" in consequences:
+            amount = int(consequences["heal"])
+            actual = entity.heal(amount) if hasattr(entity, "heal") else 0
+            if not hasattr(entity, "heal"):
+                old = entity.hp
+                entity.hp = min(entity.max_hp, entity.hp + amount)
+                actual = entity.hp - old
+            if actual > 0:
+                self._log_msg(f"  Healed {actual} HP.")
+                self._refresh_hp(entity)
+
+        # Gold
+        if "gold" in consequences:
+            amount = int(consequences["gold"])
+            entity.stats["gold"] = entity.stats.get("gold", 0) + amount
+            self._log_msg(f"  Gained {amount} gold.")
+
+        # Condition add
+        if "condition" in consequences:
+            cond = consequences["condition"]
+            if cond not in getattr(entity, "conditions", []):
+                entity.conditions.append(cond)
+            self._log_msg(f"  Condition: {cond}")
+
+        # Condition remove
+        if "condition_remove" in consequences:
+            cond = consequences["condition_remove"]
+            if cond in getattr(entity, "conditions", []):
+                entity.conditions.remove(cond)
+            self._log_msg(f"  Removed condition: {cond}")
+
+        # Flags (Feature C — set on ALL entities for NPC dialogue access)
+        if "flags" in consequences:
+            for flag_name, flag_value in consequences["flags"].items():
+                for ent in self._get_all_entities():
+                    if hasattr(ent, "dialogue_flags"):
+                        ent.dialogue_flags[flag_name] = flag_value
+
+    def _refresh_hp(self, entity) -> None:
+        """Update party strip after HP change."""
+        if self._party_strip:
+            self._party_strip.update_entity_hp(
+                entity.name, entity.hp, entity.max_hp)
+        self.refresh_party_strip()

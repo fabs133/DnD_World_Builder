@@ -208,6 +208,14 @@ class PlaySessionDialog(QDialog):
             refit_maps=self._refit_map_views,
         )
 
+        # Wire side-event panel actions to the controller
+        self._zone_detail.side_event_panel.action_clicked.connect(
+            self._explore_ctrl.on_side_event_action)
+
+        # Give controller access to the inventory panel (created later in _build_ui)
+        # Deferred assignment — the panel is set after _build_ui completes.
+        self._explore_ctrl._inventory_panel = None
+
         self._action_handler = CombatActionHandler(
             get_play_state=lambda: self._play_state,
             get_ui_adapter=lambda: self._ui_adapter,
@@ -385,6 +393,15 @@ class PlaySessionDialog(QDialog):
         # Party status strip
         self._party_strip = PartyStatusStrip()
         self._dock_party = _add_dock("Party", self._party_strip, "dock_party")
+
+        # Inventory panel
+        from ui.panels.inventory_panel import InventoryPanel
+        self._inventory_panel = InventoryPanel()
+        self._dock_inventory = _add_dock(
+            "Inventory", self._inventory_panel, "dock_inventory", visible=False)
+        # Wire to controller
+        if hasattr(self, "_explore_ctrl"):
+            self._explore_ctrl._inventory_panel = self._inventory_panel
 
         # DM automation controls
         if self._role == PlayerRole.DM:
@@ -1308,12 +1325,57 @@ class PlaySessionDialog(QDialog):
                 label, note, entities_here, self._info_filter,
                 background_image=td.get("background_image"),
                 nav_arrows=self._build_adjacent_arrows(pos))
+            self._check_side_event(pos, td)
             if self._view_stack.currentIndex() == 2:
                 self._run_transition(
                     "map_to_tile_detail",
                     on_complete=lambda: self._view_stack.setCurrentIndex(1))
             else:
                 self._view_stack.setCurrentIndex(1)
+
+    # ------------------------------------------------------------------
+    #  Side-event interaction for empty tiles
+    # ------------------------------------------------------------------
+
+    def _check_side_event(self, pos: tuple[int, int], td: dict) -> None:
+        """Show the side-event interaction panel when entering a tile."""
+        se = td.get("side_event")
+        if not se:
+            self._explore_ctrl._current_side_event = None
+            return
+        try:
+            from models.side_events import get_event, get_interaction_type
+            event = get_event(se["event_id"])
+            if not event:
+                return
+            variant = event.variants[se["variant"]]
+            itype = get_interaction_type(event, variant)
+        except (KeyError, IndexError):
+            return
+
+        # Cache the event on the controller for resolution
+        self._explore_ctrl._current_side_event = {
+            "pos": pos, "event": event, "variant": variant, "itype": itype,
+        }
+
+        # Always log the narrative
+        header = f"[{variant.name}]"
+        if hasattr(self._log, "add_system_message"):
+            self._log.add_system_message(
+                f"{header} {variant.narrative}", "explore")
+        else:
+            self._log.append(f"{header} {variant.narrative}")
+
+        state = self._explore_ctrl._side_event_state.get(pos, {})
+
+        if state.get("status") == "completed":
+            # Already resolved — show abbreviated view
+            self._zone_detail.side_event_panel.show_completed(
+                variant.name, "(Already explored)")
+        else:
+            # Show interactive panel
+            self._explore_ctrl._side_event_state[pos] = {"status": "seen"}
+            self._explore_ctrl._trigger_side_event_panel()
 
     def keyPressEvent(self, event) -> None:
         key = event.key()
@@ -1479,6 +1541,7 @@ class PlaySessionDialog(QDialog):
 
     def closeEvent(self, event) -> None:
         self._save_dock_state()
+        self._persist_entity_state()
         self._is_running = False
         self._play_state = PlayState.ENDED
         if self._animator:
@@ -1487,3 +1550,18 @@ class PlaySessionDialog(QDialog):
         if self._ui_adapter:
             self._ui_adapter.cancel()
         super().closeEvent(event)
+
+    def _persist_entity_state(self) -> None:
+        """Write entity changes (inventory, gold, HP) back to tile dicts."""
+        for entity in self._all_entities:
+            pos = getattr(entity, "position", None)
+            if not pos:
+                continue
+            td = self._tile_by_pos.get(pos)
+            if not td:
+                continue
+            ename = getattr(entity, "name", "")
+            for i, edict in enumerate(td.get("entities", [])):
+                if edict.get("name") == ename:
+                    td["entities"][i] = entity.to_dict()
+                    break

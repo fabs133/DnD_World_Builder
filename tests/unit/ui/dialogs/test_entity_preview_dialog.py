@@ -35,7 +35,8 @@ def test_initial_fields(qdlg):
     abilities: QTextEdit = dlg.abilities_box
     text = abilities.toPlainText()
     for item in ent.inventory:
-        assert item in text
+        item_name = item.get("name", str(item)) if isinstance(item, dict) else str(item)
+        assert item_name in text
 
 def test_get_entity_after_edit(qdlg):
     dlg, ent = qdlg
@@ -57,7 +58,10 @@ def test_get_entity_after_edit(qdlg):
     assert new_ent.stats["hp"] == 42 and isinstance(new_ent.stats["hp"], int)
     assert new_ent.stats["speed"] == 12.5 and isinstance(new_ent.stats["speed"], float)
     # Inventory lines
-    assert new_ent.inventory == ["Stomp", "Roar"]
+    assert new_ent.inventory == [
+        {"name": "Stomp", "type": "trinket", "gold_value": 0},
+        {"name": "Roar", "type": "trinket", "gold_value": 0},
+    ]
 
 def test_safe_cast_non_numeric(qdlg):
     dlg, _ = qdlg

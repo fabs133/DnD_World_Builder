@@ -74,7 +74,10 @@ class EntityPreviewDialog(QDialog):
             self.stat_inputs[key] = stat_field
 
         # Abilities (as single block of text for now)
-        self.abilities_box = QTextEdit("\n".join(entity.inventory))
+        self.abilities_box = QTextEdit("\n".join(
+            i.get("name", str(i)) if isinstance(i, dict) else str(i)
+            for i in entity.inventory
+        ))
         layout.addRow("Abilities:", self.abilities_box)
 
         # Confirm button
