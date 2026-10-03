@@ -20,6 +20,8 @@ TOKEN_COLORS = {
     "other": "#E0A030",
 }
 DEAD_COLOR = "#808080"
+TOKEN_KIND_KEY = 0  # QGraphicsItem.data key: entity kind
+TOKEN_POS_KEY = 1  # QGraphicsItem.data key: (row, col) of the token's tile
 
 
 def entity_kind(entity) -> str:
@@ -101,9 +103,9 @@ class EntityTokenLayer:
             center = rect.center()
             cell = min(rect.width(), rect.height())
             for ent, (dx, dy, d) in zip(entities, token_slots(len(entities), cell)):
-                self._add_token(ent, QPointF(center.x() + dx, center.y() + dy), d)
+                self._add_token(ent, QPointF(center.x() + dx, center.y() + dy), d, td.position)
 
-    def _add_token(self, entity, center: QPointF, diameter: float) -> None:
+    def _add_token(self, entity, center: QPointF, diameter: float, position=None) -> None:
         circle = QGraphicsEllipseItem(QRectF(-diameter / 2, -diameter / 2, diameter, diameter))
         circle.setPos(center)
         circle.setBrush(QBrush(QColor(token_color(entity))))
@@ -111,6 +113,8 @@ class EntityTokenLayer:
         circle.setZValue(TOKEN_Z)
         circle.setAcceptedMouseButtons(Qt.NoButton)
         circle.setToolTip(token_tooltip(entity))
+        circle.setData(TOKEN_KIND_KEY, entity_kind(entity))
+        circle.setData(TOKEN_POS_KEY, position)
 
         label = QGraphicsSimpleTextItem(token_label(entity), circle)
         font = QFont()

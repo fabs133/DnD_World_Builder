@@ -26,6 +26,7 @@ from models.tiles.hex_tile_item import HexTileItem
 from models.tiles.square_tile_item import SquareTileItem
 from models.tiles.tile_data import TileData
 from ui.entity_tokens import EntityTokenLayer
+from ui.fog_overlay import FogOfWarLayer
 from ui.map_view import MapView
 
 # Pause before an AI-controlled turn is played, so the turn highlight is visible.
@@ -87,6 +88,9 @@ class MainWindow(QMainWindow):
         from core.gameCreation.event_bus import EventBus
         EventBus.subscribe("entity_added", self._on_entities_changed)
         EventBus.subscribe("entity_removed", self._on_entities_changed)
+        EventBus.subscribe("tile_modified", self._on_tile_modified)
+        # Tile dialog saves and undo/redo go through the undo stack.
+        self.undo_stack.indexChanged.connect(self._on_tile_modified)
 
         if rows is not None and cols is not None:
             self.init_grid(rows, cols)
@@ -100,6 +104,7 @@ class MainWindow(QMainWindow):
         self.view = MapView()
         self.scene = QGraphicsScene(self)
         self.entity_tokens = EntityTokenLayer(self.scene)
+        self.fog_overlay = FogOfWarLayer(self.scene, lambda: self.grid_type)
         self.view.setScene(self.scene)
 
         # --- Map container (left column) ---
@@ -202,6 +207,18 @@ class MainWindow(QMainWindow):
         initiative_toggle.setShortcut("Ctrl+I")
         view_menu.addAction(initiative_toggle)
 
+        self._player_view_action = QAction("&Player View (Fog of War)", self)
+        self._player_view_action.setShortcut("Ctrl+Shift+F")
+        self._player_view_action.setCheckable(True)
+        self._player_view_action.setChecked(False)
+        self._player_view_action.toggled.connect(self.set_player_view)
+        view_menu.addAction(self._player_view_action)
+
+        self._reset_fog_action = QAction("Reset &Explored Area", self)
+        self._reset_fog_action.setEnabled(False)
+        self._reset_fog_action.triggered.connect(self.reset_explored_area)
+        view_menu.addAction(self._reset_fog_action)
+
         # --- Encounter menu ---
         encounter_menu = menubar.addMenu("Encounter")
         self._start_encounter_action = QAction("&Start Encounter", self)
@@ -264,13 +281,35 @@ class MainWindow(QMainWindow):
             self.create_hex_grid(rows, cols, 30)
         else:
             raise ValueError("Unsupported grid type. Use 'square' or 'hex'.")
+        self.fog_overlay.reset()
         self.refresh_entity_tokens()
 
     def refresh_entity_tokens(self):
-        """Redraw entity tokens from the tiles' current entities."""
+        """Redraw entity tokens (and the fog overlay when in player view)."""
         try:
             self.entity_tokens.refresh()
+            self.fog_overlay.refresh()
         except RuntimeError:  # window/scene already torn down
+            pass
+
+    def set_player_view(self, enabled):
+        """Toggle the fog-of-war player view (DM view shows everything)."""
+        self._reset_fog_action.setEnabled(bool(enabled))
+        if self._player_view_action.isChecked() != bool(enabled):
+            self._player_view_action.setChecked(bool(enabled))
+            return  # toggled signal re-enters with the same value
+        self.fog_overlay.set_enabled(bool(enabled))
+        if enabled and not self.fog_overlay.has_viewers():
+            self.statusBar().showMessage("Player view: no player entities on the map", 5000)
+
+    def reset_explored_area(self):
+        self.fog_overlay.reset()
+        self.fog_overlay.refresh()
+
+    def _on_tile_modified(self, _data=None):
+        try:
+            self.fog_overlay.refresh()
+        except RuntimeError:
             pass
 
     def _on_entities_changed(self, _data=None):
@@ -278,9 +317,13 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
         from core.gameCreation.event_bus import EventBus
-        for name in ("entity_added", "entity_removed"):
+        for name, cb in (
+            ("entity_added", self._on_entities_changed),
+            ("entity_removed", self._on_entities_changed),
+            ("tile_modified", self._on_tile_modified),
+        ):
             try:
-                EventBus.unsubscribe(name, self._on_entities_changed)
+                EventBus.unsubscribe(name, cb)
             except Exception:
                 pass
         super().closeEvent(event)
@@ -449,6 +492,7 @@ class MainWindow(QMainWindow):
             tile_data.tile_item = tile
             self.scene.addItem(tile)
 
+        self.fog_overlay.reset()
         self.refresh_entity_tokens()
         app_logger.info(f"[Loaded] {len(tiles)} tiles loaded from {filename}")
 
