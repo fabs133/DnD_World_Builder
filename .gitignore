@@ -183,3 +183,18 @@ cython_debug/
 # Browser demo
 node_modules/
 browser-demo/dist/
+# Virtualenvs / local workspaces
+*env/
+workspace/
+
+# Generated docs build output (built from source/ in CI)
+docs/*.html
+docs/objects.inv
+docs/searchindex.js
+docs/.buildinfo
+docs/_images/
+docs/_sources/
+docs/_static/
+docs/html/
+docs/latex/
+docs/overview/
