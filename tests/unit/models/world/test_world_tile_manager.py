@@ -85,3 +85,17 @@ def test_display_world(caplog):
     assert len(lines) == 2
     for line in lines:
         assert "[ ][ ][ ][ ]" in line
+
+
+def test_move_entity_keeps_index_and_tile_data_in_sync():
+    mgr = WorldTileManager(3, 3, tile_type="square")
+    ent = DummyEntity("Rogue")
+    mgr.place_entity(ent, 0, 0)
+    mgr.tiles[(0, 0)].add_entity(ent)
+
+    mgr.move_entity(ent, 1, 2)
+
+    assert mgr.get_entities_at(0, 0) == []
+    assert mgr.get_entities_at(1, 2) == [ent]
+    assert ent not in mgr.tiles[(0, 0)].entities
+    assert mgr.tiles[(1, 2)].entities == [ent]

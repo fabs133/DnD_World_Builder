@@ -605,19 +605,24 @@ class MainWindow(QMainWindow):
 
         gm = Gamemaster()
 
-        tile_manager = WorldTileManager(0, 0, self.grid_type)
-        for item in self.scene.items():
-            if hasattr(item, "tile_data"):
-                td = item.tile_data
-                tile_manager.tiles[td.position] = td
-                for entity in td.entities:
-                    tile_manager.entities.setdefault(td.position, []).append(entity)
-                    gm.add_entity(entity)
+        tile_datas = [item.tile_data for item in self.scene.items() if hasattr(item, "tile_data")]
+        # Tile positions are (row, col); the tile manager's (x, y) bounds follow the same order.
+        rows = max((td.position[0] for td in tile_datas), default=-1) + 1
+        cols = max((td.position[1] for td in tile_datas), default=-1) + 1
+
+        tile_manager = WorldTileManager(rows, cols, self.grid_type)
+        # Use the scene's TileData objects so moves show up on the map.
+        tile_manager.tiles = {td.position: td for td in tile_datas}
+        for td in tile_datas:
+            for entity in list(td.entities):
+                entity.position = td.position
+                tile_manager.entities.setdefault(td.position, []).append(entity)
+                gm.add_entity(entity)
 
         gm.world = World(
             world_version="1.0",
-            width=self.settings.get("default_cols", 25),
-            height=self.settings.get("default_rows", 25),
+            width=cols,
+            height=rows,
             tile_type=self.grid_type,
             description="",
             map_data={},

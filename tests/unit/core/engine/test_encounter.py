@@ -151,3 +151,76 @@ class TestSubmit:
         assert not result.success
         assert "Invalid tile" in result.error
         assert actor.position == (0, 0)
+
+
+class _ScriptedAdapter:
+    """Returns a fixed action for whoever is acting."""
+
+    def __init__(self, make_action):
+        self._make_action = make_action
+        self.seen = []
+
+    def choose_action(self, entity_name, game_state, available_actions):
+        self.seen.append((entity_name, game_state.current_entity_name, tuple(available_actions)))
+        return self._make_action(game_state)
+
+
+class TestTakeAiTurn:
+
+    def test_acts_then_advances_turn(self, gm):
+        encounter = _started(gm)
+        actor = encounter.current_entity
+        adapter = _ScriptedAdapter(lambda state: MoveAction(actor, (0, 0)))
+
+        result = encounter.take_ai_turn(adapter)
+
+        assert result.success
+        assert encounter.current_entity_name != actor.name
+        name, state_name, available = adapter.seen[0]
+        assert name == state_name == actor.name
+        assert "MOVE" in available
+
+    def test_end_turn_action_advances_exactly_once(self, gm):
+        encounter = _started(gm)
+        first = encounter.current_entity
+        encounter.take_ai_turn(_ScriptedAdapter(lambda state: EndTurnAction(first)))
+        assert encounter.current_entity_name != first.name
+        assert encounter.round_number == 1
+
+    def test_rejected_action_still_advances(self, gm):
+        encounter = _started(gm)
+        actor = encounter.current_entity
+        off_map = MoveAction(actor, (9, 9), world_tile_manager=gm.world.tile_manager)
+
+        result = encounter.take_ai_turn(_ScriptedAdapter(lambda state: off_map))
+
+        assert not result.success
+        assert encounter.current_entity_name != actor.name
+
+    def test_heuristic_enemy_attacks_adjacent_player(self):
+        from core.engine.ai.heuristic_adapter import HeuristicAIAdapter
+        from models.world.world import World
+
+        gm = Gamemaster()
+        gm.world = World(world_version=1, width=3, height=3, tile_type="square",
+                         description="", map_data={}, time_of_day="", weather_conditions="")
+        gm.world_tile_manager = gm.world.tile_manager
+        hero = GameEntity("Hero", "player", stats={"hp": 30, "Dexterity": 1})
+        goblin = GameEntity("Goblin", "enemy", stats={"hp": 7, "Dexterity": 30})
+        for entity, pos in ((hero, (0, 0)), (goblin, (0, 1))):
+            gm.add_entity(entity)
+            gm.world_tile_manager.place_entity(entity, *pos)
+
+        encounter = Encounter(gm, seed=3)
+        encounter.start()
+        assert encounter.current_entity_name == "Goblin"  # Dexterity 30 always wins initiative
+        adapter = HeuristicAIAdapter(
+            entities_by_name={e.name: e for e in gm.game_entities},
+            world_tile_manager=gm.world_tile_manager,
+        )
+
+        result = encounter.take_ai_turn(adapter)
+
+        assert result.success
+        assert type(result.action).__name__ == "AttackAction"
+        assert encounter.current_entity_name == "Hero"

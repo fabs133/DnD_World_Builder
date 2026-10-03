@@ -108,6 +108,9 @@ class WorldTileManager:
         """
         Move an entity to a new tile if the tile is valid.
 
+        Keeps ``entity.position``, the ``entities`` index and the tiles'
+        ``TileData.entities`` lists consistent.
+
         :param entity: The entity to move.
         :type entity: GameEntity
         :param new_x: New X-coordinate.
@@ -116,7 +119,19 @@ class WorldTileManager:
         :type new_y: int
         """
         if self.is_valid_tile(new_x, new_y):
+            old_pos = getattr(entity, "position", None)
+            if old_pos is not None:
+                occupants = self.entities.get(old_pos, [])
+                if entity in occupants:
+                    occupants.remove(entity)
+                old_tile = self.tiles.get(old_pos)
+                if old_tile is not None:
+                    old_tile.remove_entity(entity)
             entity.position = (new_x, new_y)
+            self.entities.setdefault((new_x, new_y), []).append(entity)
+            new_tile = self.tiles.get((new_x, new_y))
+            if new_tile is not None and entity not in new_tile.entities:
+                new_tile.add_entity(entity)
             app_logger.info(f"{entity.name} moved to tile ({new_x}, {new_y})")
         else:
             app_logger.warning(f"Invalid move for {entity.name}.")

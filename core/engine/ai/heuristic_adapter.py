@@ -41,8 +41,11 @@ class HeuristicAIAdapter(InputAdapter):
         entities_by_name: dict[str, Any] | None = None,
         rng: random.Random | None = None,
         default_personality: EntityPersonality | None = None,
+        world_tile_manager: Any = None,
     ):
         self._entities_by_name = entities_by_name or {}
+        # When set, moves are validated by the pathfinder and update the tile map.
+        self._tile_manager = world_tile_manager
         self._rng = rng or random.Random()
         self._default_personality = default_personality or EntityPersonality(
             alignment=Alignment.TRUE_NEUTRAL,
@@ -83,7 +86,7 @@ class HeuristicAIAdapter(InputAdapter):
                     f"[Heuristic] {entity_name} flees to {flee_pos} "
                     f"(hp_ratio={hp_ratio:.2f} < threshold={weights.flee_threshold})"
                 )
-                return MoveAction(actor, flee_pos, world_tile_manager=None)
+                return MoveAction(actor, flee_pos, world_tile_manager=self._tile_manager)
 
         # 2) Attack adjacent enemy
         if adjacent_enemies and "ATTACK" in available_actions:
@@ -107,7 +110,7 @@ class HeuristicAIAdapter(InputAdapter):
                 app_logger.debug(
                     f"[Heuristic] {entity_name} advances to {advance_pos}"
                 )
-                return MoveAction(actor, advance_pos, world_tile_manager=None)
+                return MoveAction(actor, advance_pos, world_tile_manager=self._tile_manager)
 
         # 4) Fallback
         app_logger.debug(f"[Heuristic] {entity_name} ends turn (no useful action)")

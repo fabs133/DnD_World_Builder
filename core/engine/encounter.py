@@ -18,6 +18,7 @@ from typing import Any
 
 from core.engine.action_executor import ActionExecutor, ActionResult
 from core.engine.actions.end_turn_action import EndTurnAction
+from core.engine.game_state import GameState
 from core.engine.initiative import InitiativeTracker
 from core.gameCreation.event_bus import EventBus
 from core.logger import app_logger
@@ -162,6 +163,37 @@ class Encounter:
             raise EncounterError(f"It is {self.current_entity_name}'s turn, not {actor_name}'s")
         result = self._executor.execute(action, self.current_entity, game_state)
         if result.success and isinstance(action, EndTurnAction):
+            self.next_turn()
+        return result
+
+    def game_state(self) -> GameState:
+        """Immutable snapshot of the current encounter, as consumed by AI adapters."""
+        self._require_active()
+        return GameState.from_gamemaster(
+            self._gm,
+            round_number=self.round_number,
+            current_entity_name=self.current_entity_name or "",
+            initiative_order=self._tracker.get_order(),
+        )
+
+    def take_ai_turn(self, adapter: Any) -> ActionResult:
+        """Let ``adapter`` act for the current entity, then end its turn.
+
+        Mirrors :meth:`GameSession.run_one_turn`: one action per turn. The turn
+        always advances, also when the chosen action is rejected, so a confused
+        AI can never stall the encounter.
+
+        :param adapter: An :class:`~core.engine.input_adapter.InputAdapter`.
+        :return: The result of the chosen action.
+        """
+        self._require_active()
+        name = self.current_entity_name
+        state = self.game_state()
+        available = self._executor.get_available_actions(self.current_entity, state)
+        action = adapter.choose_action(name, state, available)
+        result = self.submit(name, action, state)
+        ended_by_action = result.success and isinstance(action, EndTurnAction)
+        if not ended_by_action:
             self.next_turn()
         return result
 
