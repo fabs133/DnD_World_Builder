@@ -50,10 +50,9 @@ Done:
 - GUI Encounter menu (Start, Next Turn, End) drives the initiative panel; one gamemaster is
   shared by the local panel and a hosted session.
 - Joined clients receive `TURN_CHANGE` broadcasts and show the current turn and round.
+- The legacy `models/flow/turn_system.py` and `models/flow/combat_system.py` are removed.
 
 Remaining follow-ups:
-- Delete the now-unused `models/flow/turn_system.py` and `models/flow/combat_system.py`
-  (and their tests), pending owner approval.
 - AI-controlled enemy turns in the GUI (`HeuristicAIAdapter`, Ollama adapter) are not wired yet.
 - Then move on to the Stage 4 features below.
 
