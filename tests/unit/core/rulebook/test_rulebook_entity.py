@@ -3,6 +3,7 @@ import pytest
 from core.rulebook.rulebook_entity import RulebookEntity
 from models.entities.game_entity import GameEntity
 
+
 # Helper to build a minimal monster payload
 def make_monster(name, m_type, subtype=None, hp=10, ac_value=12, speed_walk="30 ft",
                  strength=14, dexterity=12, constitution=13,

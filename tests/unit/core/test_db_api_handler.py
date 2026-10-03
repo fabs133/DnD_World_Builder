@@ -1,8 +1,9 @@
-import pytest
-import json
 import os
-from pathlib import Path
-from core.db_api_handler import LocalAPIHandler, APIError
+
+import pytest
+
+from core.db_api_handler import APIError, LocalAPIHandler
+
 
 @pytest.fixture
 def handler():

@@ -1,8 +1,8 @@
 import logging
-import pytest
 
-from models.flow.reaction.reactions_list import ApplyDamage, AlertGamemaster
 from core.logger import app_logger
+from models.flow.reaction.reactions_list import AlertGamemaster, ApplyDamage
+
 
 class DummyTarget:
     def __init__(self):

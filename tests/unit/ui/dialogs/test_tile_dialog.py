@@ -1,13 +1,12 @@
-import pytest
-import json
-from datetime import datetime
-from pathlib import Path
 
-from PyQt5.QtWidgets import QCheckBox, QLineEdit, QTextEdit, QComboBox
+import pytest
 from PyQt5.QtGui import QColor
-from models.tiles.tile_data import TileData, TerrainType, TileTag
+from PyQt5.QtWidgets import QComboBox, QLineEdit, QTextEdit
+
 import ui.dialogs.tile_dialog as td_mod
+from models.tiles.tile_data import TerrainType, TileData, TileTag
 from ui.dialogs.tile_dialog import TileDialog
+
 
 class DummyTileItem:
     def __init__(self):
@@ -123,7 +122,7 @@ def test_edit_entities_and_triggers(monkeypatch, dlg, tile_data):
     d, td, _ = dlg
     # stub dialogs so they don't actually open UI
     class FakeEntityEditor:
-        def __init__(self, td2): 
+        def __init__(self, td2):
             assert td2 is td
         def exec_(self): pass
     monkeypatch.setattr(td_mod, "EntityEditorDialog", FakeEntityEditor)

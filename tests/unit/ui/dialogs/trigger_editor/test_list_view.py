@@ -1,7 +1,8 @@
 """Tests for TriggerListView population and clearing."""
 
-import pytest
 from types import SimpleNamespace
+
+import pytest
 
 from ui.dialogs.trigger_editor.list_view import TriggerListView
 

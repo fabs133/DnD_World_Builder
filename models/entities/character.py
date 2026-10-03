@@ -1,8 +1,9 @@
+import json
 from dataclasses import dataclass, field
-from typing import List, Dict, Optional, Any
+from typing import Any
+
 from models.entities.game_entity import GameEntity
 from models.spell import Spell
-import json
 
 
 @dataclass
@@ -18,42 +19,42 @@ class Character(GameEntity):
     appearance: str = ""
     backstory: str = ""
     personality: str = ""
-    languages: List[str] = field(default_factory=list)
-    spellslots: Dict[str, Any] = field(default_factory=dict)
-    spellcasting_ability: Dict[str, Any] = field(default_factory=dict)
+    languages: list[str] = field(default_factory=list)
+    spellslots: dict[str, Any] = field(default_factory=dict)
+    spellcasting_ability: dict[str, Any] = field(default_factory=dict)
     char_class: str = ""
-    char_class_features: Dict[str, Any] = field(default_factory=dict)
+    char_class_features: dict[str, Any] = field(default_factory=dict)
     species: str = ""
-    species_traits: Dict[str, Any] = field(default_factory=dict)
+    species_traits: dict[str, Any] = field(default_factory=dict)
     subclass: str = ""
-    feats: List[str] = field(default_factory=list)
+    feats: list[str] = field(default_factory=list)
     background: str = ""
     level: int = 1
     xp: int = 0
     armor_class: int = 10
-    death_saves: Dict[str, Any] = field(default_factory=dict)
+    death_saves: dict[str, Any] = field(default_factory=dict)
     hp: int = 0
-    stats: Dict[str, Any] = field(default_factory=dict)
-    inventory: List[str] = field(default_factory=list)
-    training_proficiencies: Dict[str, Any] = field(default_factory=dict)
-    spells: List[Dict[str, Any]] = field(default_factory=list)
+    stats: dict[str, Any] = field(default_factory=dict)
+    inventory: list[str] = field(default_factory=list)
+    training_proficiencies: dict[str, Any] = field(default_factory=dict)
+    spells: list[dict[str, Any]] = field(default_factory=list)
     proficiency_bonus: int = 2
-    hit_dice: Dict[str, Any] = field(default_factory=dict)
-    saving_throws: Dict[str, Any] = field(default_factory=dict)
-    skills: Dict[str, Any] = field(default_factory=dict)
+    hit_dice: dict[str, Any] = field(default_factory=dict)
+    saving_throws: dict[str, Any] = field(default_factory=dict)
+    skills: dict[str, Any] = field(default_factory=dict)
     temporary_hp: int = 0
     inspiration: bool = False
     passive_perception: int = 10
-    conditions: List[str] = field(default_factory=list)
-    currency: Dict[str, Any] = field(default_factory=dict)
+    conditions: list[str] = field(default_factory=list)
+    currency: dict[str, Any] = field(default_factory=dict)
     exhaustion_level: int = 0
-    armor: List[str] = field(default_factory=list)
-    weapons: List[str] = field(default_factory=list)
+    armor: list[str] = field(default_factory=list)
+    weapons: list[str] = field(default_factory=list)
     speed: int = 30
     initiative: int = 0
-    resistances: List[str] = field(default_factory=list)
-    immunities: List[str] = field(default_factory=list)
-    vulnerabilities: List[str] = field(default_factory=list)
+    resistances: list[str] = field(default_factory=list)
+    immunities: list[str] = field(default_factory=list)
+    vulnerabilities: list[str] = field(default_factory=list)
 
     def __post_init__(self):
         """Initialize the GameEntity base class and derived fields."""

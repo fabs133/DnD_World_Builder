@@ -1,6 +1,5 @@
 """Tests for the ActionExecutor."""
 
-import pytest
 from core.engine.action_executor import ActionExecutor, ActionResult
 from models.flow.action.action import Action
 
@@ -65,6 +64,24 @@ class TestActionExecutor:
         result = executor.execute(action, actor, game_state=None)
 
         assert result.success is False
+
+    def test_execute_rejects_when_action_validate_fails(self):
+        executor = ActionExecutor()
+        actor = MockEntity(hp=10)
+        action = MockAction(actor, should_pass=False)
+        action.execution_log.append("Target out of range")
+        result = executor.execute(action, actor, game_state=None)
+
+        assert result.success is False
+        assert result.error == "Target out of range"
+        assert "Executed MockAction" not in result.execution_log
+
+    def test_execute_returns_action_payload(self):
+        executor = ActionExecutor()
+        actor = MockEntity(hp=10)
+        result = executor.execute(MockAction(actor, execute_result={"damage": 3}), actor, game_state=None)
+
+        assert result.data == {"damage": 3}
 
     def test_execute_handles_exception(self):
         executor = ActionExecutor()

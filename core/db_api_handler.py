@@ -1,7 +1,8 @@
 import json
 import re
 from pathlib import Path
-from typing import Optional, Dict, Any, List
+from typing import Any
+
 from core.logger import app_logger
 
 
@@ -24,8 +25,8 @@ class LocalAPIHandler:
         self.base_path = Path(base_path).resolve()
         app_logger.debug(f"[LocalAPI] Base path: {self.base_path}")
 
-        self.cache: Dict[str, Any] = {}
-        self.filenames: Dict[str, str] = {}
+        self.cache: dict[str, Any] = {}
+        self.filenames: dict[str, str] = {}
 
         # More robust matching
         for file in self.base_path.iterdir():
@@ -48,7 +49,7 @@ class LocalAPIHandler:
                 raise APIError(f"[LocalAPI] Unknown category: '{category}', filename : '{filename}'")
             path = self.base_path / filename
             try:
-                with open(path, "r", encoding="utf-8") as f:
+                with open(path, encoding="utf-8") as f:
                     self.cache[category] = json.load(f)
             except FileNotFoundError:
                 raise APIError(f"[LocalAPI] File not found: {path}")
@@ -56,10 +57,10 @@ class LocalAPIHandler:
                 raise APIError(f"[LocalAPI] JSON decode error in {filename}: {e}")
         return self.cache[category]
 
-    def get(self, category: str, params: Optional[Dict[str, Any]] = None) -> Any:
+    def get(self, category: str, params: dict[str, Any] | None = None) -> Any:
         return self._load_file(category)
 
-    def get_raw(self, endpoint: str, params: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, Any]]:
+    def get_raw(self, endpoint: str, params: dict[str, Any] | None = None) -> dict[str, Any] | None:
         parts = endpoint.strip("/").split("/")
         if len(parts) < 3:
             raise APIError(f"[LocalAPI] Invalid endpoint path: {endpoint}")
@@ -70,16 +71,16 @@ class LocalAPIHandler:
                 return entry
         return None
 
-    def get_monster(self, name: str) -> Optional[Dict[str, Any]]:
+    def get_monster(self, name: str) -> dict[str, Any] | None:
         slug = name.lower().replace(" ", "-")
         return self.get_raw(f"/api/monsters/{slug}")
 
-    def get_spell(self, name: str) -> Optional[Dict[str, Any]]:
+    def get_spell(self, name: str) -> dict[str, Any] | None:
         slug = name.lower().replace(" ", "-")
         return self.get_raw(f"/api/spells/{slug}")
 
     def list_available(self, category: str) -> Any:
         return self._load_file(category)
 
-    def list_categories(self) -> List[str]:
+    def list_categories(self) -> list[str]:
         return list(self.filenames.keys())

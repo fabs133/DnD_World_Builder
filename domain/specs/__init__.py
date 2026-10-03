@@ -39,139 +39,139 @@ Quick Start:
 
 # Base classes
 from domain.specs.base import (
+    AllOf,
+    AlwaysFalse,
+    AlwaysTrue,
+    AndSpec,
+    AnyOf,
+    NotSpec,
+    OrSpec,
     Specification,
     SpecResult,
-    AndSpec,
-    OrSpec,
-    NotSpec,
-    AllOf,
-    AnyOf,
-    AlwaysTrue,
-    AlwaysFalse,
+)
+
+# Rule builder
+from domain.specs.builder import (
+    CompositionType,
+    MaskLibrary,
+    RuleBuilder,
+    RuleComponent,
+    RuleMask,
+    combat_prerequisite_template,
+    get_default_library,
+    trap_template,
+    zone_effect_template,
 )
 
 # Check specifications
 from domain.specs.checks import (
-    SkillCheckSpec,
-    SavingThrowSpec,
     ContestSpec,
-)
-
-# Movement specifications
-from domain.specs.movement import (
-    TerrainType,
-    MovementMode,
-    HasMovementRemaining,
-    TileIsPassable,
-    TileNotOccupied,
-    InRange,
-    IsAdjacent,
-    CanReachTile,
-    can_move_to,
+    SavingThrowSpec,
+    SkillCheckSpec,
 )
 
 # Entity specifications
 from domain.specs.entity import (
-    Condition,
-    INCAPACITATING_CONDITIONS,
     ATTACK_DISADVANTAGE_CONDITIONS,
-    HasCondition,
-    IsIncapacitated,
-    IsAlive,
-    HasHP,
-    HasSpellSlot,
-    HasAbilityUse,
-    IsEntityType,
-    HasFaction,
+    INCAPACITATING_CONDITIONS,
     CanTakeAction,
     CanTakeBonusAction,
     CanTakeReaction,
-)
-
-# Trigger system
-from domain.specs.triggers import (
-    EventType,
-    TriggerEvent,
-    ReactionResult,
-    TriggerEvaluation,
-    TriggerSpec,
-    TriggerEvaluator,
-    perception_trap,
-    enter_zone_trigger,
+    Condition,
+    HasAbilityUse,
+    HasCondition,
+    HasFaction,
+    HasHP,
+    HasSpellSlot,
+    IsAlive,
+    IsEntityType,
+    IsIncapacitated,
 )
 
 # Migration adapters
 from domain.specs.migration import (
     LegacyConditionAdapter,
     LegacySkillCheckAdapter,
+    SpecRegistry,
     adapt_legacy_condition,
     adapt_legacy_trigger,
-    SpecRegistry,
     get_registry,
     spec_from_dict,
+)
+
+# Movement specifications
+from domain.specs.movement import (
+    CanReachTile,
+    HasMovementRemaining,
+    InRange,
+    IsAdjacent,
+    MovementMode,
+    TerrainType,
+    TileIsPassable,
+    TileNotOccupied,
+    can_move_to,
+)
+
+# Rule packs
+from domain.specs.pack import (
+    CompatibilityLevel,
+    PackAuthor,
+    PackCategory,
+    PackDependency,
+    PackManager,
+    PackStats,
+    PackValidator,
+    RulePack,
+    ValidationResult,
 )
 
 # Rule registry
 from domain.specs.registry import (
     RuleCategory,
-    RuleScope,
-    RuleParameter,
     RuleDefinition,
+    RuleParameter,
     RuleRegistry,
+    RuleScope,
     get_default_registry,
     register_custom_rule,
 )
 
-# Rule builder
-from domain.specs.builder import (
-    CompositionType,
-    RuleComponent,
-    RuleMask,
-    RuleBuilder,
-    MaskLibrary,
-    get_default_library,
-    trap_template,
-    zone_effect_template,
-    combat_prerequisite_template,
+# Repository
+from domain.specs.repository import (
+    FEATURED_COLLECTIONS,
+    Collection,
+    IndexGenerator,
+    PackListing,
+    PackPublisher,
+    PublishResult,
+    RepositoryClient,
+    RepositoryIndex,
+    SortOrder,
 )
 
 # Ruleset management
 from domain.specs.ruleset import (
-    RuleInstanceState,
-    RuleInstance,
     CustomRule,
+    RuleInstance,
+    RuleInstanceState,
     Ruleset,
     RulesetManager,
     TriggerRuleBinding,
     create_default_ruleset,
-    create_minimal_ruleset,
     create_dungeon_crawl_ruleset,
+    create_minimal_ruleset,
 )
 
-# Rule packs
-from domain.specs.pack import (
-    PackCategory,
-    CompatibilityLevel,
-    PackAuthor,
-    PackDependency,
-    PackStats,
-    RulePack,
-    ValidationResult,
-    PackValidator,
-    PackManager,
-)
-
-# Repository
-from domain.specs.repository import (
-    SortOrder,
-    PackListing,
-    RepositoryIndex,
-    RepositoryClient,
-    PublishResult,
-    PackPublisher,
-    IndexGenerator,
-    Collection,
-    FEATURED_COLLECTIONS,
+# Trigger system
+from domain.specs.triggers import (
+    EventType,
+    ReactionResult,
+    TriggerEvaluation,
+    TriggerEvaluator,
+    TriggerEvent,
+    TriggerSpec,
+    enter_zone_trigger,
+    perception_trap,
 )
 
 __all__ = [

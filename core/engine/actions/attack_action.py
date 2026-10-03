@@ -6,8 +6,8 @@ import random
 import re
 from typing import Any
 
-from models.flow.action.action import Action
 from core.logger import app_logger
+from models.flow.action.action import Action
 
 
 class AttackAction(Action):

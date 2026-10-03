@@ -1,10 +1,11 @@
-from core.logger import app_logger
-from PyQt5.QtWidgets import QGraphicsRectItem
 from PyQt5.QtCore import QRectF, Qt
-from PyQt5.QtGui import QBrush, QColor, QPen, QPixmap, QImageReader
+from PyQt5.QtGui import QBrush, QColor, QImageReader, QPen, QPixmap
+from PyQt5.QtWidgets import QGraphicsRectItem
+
+from core.logger import app_logger
 from models.tiles.base_tile_item import BaseTileItem
-from ui.commands.tile_edit_command import TileEditCommand
 from ui.commands.color_paint_command import ColorPaintCommand
+
 
 class SquareTileItem(QGraphicsRectItem, BaseTileItem):
     """

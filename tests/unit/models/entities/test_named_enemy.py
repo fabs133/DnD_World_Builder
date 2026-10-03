@@ -1,9 +1,11 @@
-import sqlite3
 import json
+import sqlite3
+
 import pytest
 
 import models.entities.named_enemy as ne_mod
 from models.entities.named_enemy import NamedEnemy
+
 
 @pytest.fixture
 def db_conn(tmp_path):

@@ -1,7 +1,6 @@
 """Tests for MeasureOverlay: drawing and clearing path highlights."""
 
 import pytest
-
 from PyQt5.QtWidgets import QGraphicsScene
 
 from ui.tools.measure_overlay import MeasureOverlay

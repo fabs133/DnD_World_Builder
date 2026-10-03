@@ -1,9 +1,10 @@
-from .entity_importer import EntityImporter
-from .spell_importer import SpellImporter
-from models.entities.game_entity import GameEntity
-from models.spell import Spell
 from core.db_api_handler import LocalAPIHandler
 from core.logger import app_logger
+from models.entities.game_entity import GameEntity
+from models.spell import Spell
+
+from .entity_importer import EntityImporter
+from .spell_importer import SpellImporter
 
 
 class RulebookImporter:

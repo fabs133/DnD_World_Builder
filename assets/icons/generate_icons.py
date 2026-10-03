@@ -5,6 +5,7 @@ Outputs app.ico (Windows multi-size) and app.png (256x256 for Linux).
 """
 
 import math
+
 from PIL import Image, ImageDraw, ImageFont
 
 SIZE = 256

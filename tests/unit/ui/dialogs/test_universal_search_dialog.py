@@ -1,8 +1,8 @@
 """Tests for UniversalSearchDialog: category switching, filtering, import flow."""
 
-import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
+import pytest
 from PyQt5.QtWidgets import QDialog
 
 from ui.dialogs.universal_search_dialog import UniversalSearchDialog

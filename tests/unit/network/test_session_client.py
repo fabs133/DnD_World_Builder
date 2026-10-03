@@ -1,11 +1,13 @@
 import asyncio
+
 import pytest
-from network.transport import InMemoryServer, InMemoryClient
-from network.session_host import SessionHost
-from network.session_client import SessionClient
-from network.protocol import Message, MessageType
-from models.game_master import Gamemaster
+
 from models.entities.game_entity import GameEntity
+from models.game_master import Gamemaster
+from network.protocol import MessageType
+from network.session_client import SessionClient
+from network.session_host import SessionHost
+from network.transport import InMemoryClient, InMemoryServer
 
 
 @pytest.fixture
@@ -201,6 +203,35 @@ class TestSendMethods:
             await client.disconnect()
             assert client.conn.closed
 
+            await host.stop()
+
+        event_loop.run_until_complete(_test())
+
+
+class TestTurnChange:
+
+    def test_turn_change_handler_fires(self, event_loop, gamemaster):
+        from network.protocol import make_turn_change
+
+        async def _test():
+            server = InMemoryServer()
+            host = SessionHost(gamemaster, server)
+            await host.start()
+
+            client = SessionClient("Alice", InMemoryClient(server))
+            await client.connect()
+            received = []
+            client.on(MessageType.TURN_CHANGE, lambda m: received.append(m))
+            listen = asyncio.ensure_future(client.listen())
+            await asyncio.sleep(0.05)
+
+            await host.broadcast(make_turn_change("Goblin", 2))
+            await asyncio.sleep(0.05)
+
+            assert len(received) == 1
+            assert received[0].payload == {"current_entity": "Goblin", "round": 2}
+
+            listen.cancel()
             await host.stop()
 
         event_loop.run_until_complete(_test())

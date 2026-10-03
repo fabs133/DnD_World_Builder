@@ -1,19 +1,18 @@
 """Tests for unified personality system via engine package."""
 
-import pytest
 from core.engine.ai import (
-    EntityPersonality,
-    Personality,
-    Alignment,
-    TacticalWeights,
-    LAWFUL_GOOD,
-    CHAOTIC_EVIL,
-    TRUE_NEUTRAL,
     # Legacy presets
     AGGRESSIVE,
-    DEFENSIVE,
-    TACTICAL,
     BERSERKER,
+    CHAOTIC_EVIL,
+    DEFENSIVE,
+    LAWFUL_GOOD,
+    TACTICAL,
+    TRUE_NEUTRAL,
+    Alignment,
+    EntityPersonality,
+    Personality,
+    TacticalWeights,
 )
 
 

@@ -140,6 +140,16 @@ pytest --cov
 
 ---
 
+## Running an Encounter
+
+1. Place entities on the map, then open the **Encounter** menu.
+2. **Start Encounter** (Ctrl+Shift+E) rolls initiative and opens the Initiative panel (Ctrl+I toggles it).
+3. **Next Turn** (Ctrl+Shift+N, or the panel button) advances the turn; **End Encounter** (Ctrl+Shift+Q) stops it.
+
+When hosting, joined players see the current turn and round as it changes.
+
+---
+
 ## Multiplayer Quick Start
 
 ### Hosting (DM)
@@ -182,11 +192,11 @@ pytest --cov
 
 ## Roadmap
 
-See [V1_RELEASE_PLAN.md](V1_RELEASE_PLAN.md) for the full v1.0.0 release plan.
+See [ROADMAP.md](ROADMAP.md) for current status and planned work. Older plans are in [docs/archive/](docs/archive/).
 
 **Current priorities:**
+* Unify GUI and headless engine (Stage 3), including the initiative panel
 * Fog of War / vision system
-* Initiative tracker panel
 * Drag & drop entity placement
 * Map layers system
 * Distance measurement tool

@@ -11,15 +11,23 @@ authoritative source of truth for all game state.
 """
 
 import asyncio
-import uuid
 import logging
-from network.transport import TransportServer, TransportConnection
+import uuid
+
 from network.protocol import (
-    Message, MessageType, PROTOCOL_VERSION,
-    make_welcome, make_error, make_entity_claimed,
-    make_full_state, make_action_result, make_chat, ErrorCode,
+    PROTOCOL_VERSION,
+    ErrorCode,
+    Message,
+    MessageType,
+    make_action_result,
+    make_chat,
+    make_entity_claimed,
+    make_error,
+    make_full_state,
+    make_welcome,
 )
-from network.sync import serialize_world, serialize_entity
+from network.sync import serialize_entity, serialize_world
+from network.transport import TransportConnection, TransportServer
 
 logger = logging.getLogger(__name__)
 
@@ -93,7 +101,7 @@ class SessionHost:
         try:
             raw = await asyncio.wait_for(conn.recv(), timeout=10.0)
             msg = Message.from_json(raw)
-        except (asyncio.TimeoutError, ValueError) as e:
+        except (TimeoutError, ValueError) as e:
             error = make_error(ErrorCode.INVALID_MESSAGE, str(e))
             await conn.send(error.to_json())
             await conn.close()
@@ -127,9 +135,10 @@ class SessionHost:
 
         # Send FULL_STATE
         world_data = serialize_world(self.gamemaster.world)
+        encounter = self.gamemaster.encounter
         turn_data = {
-            "current_turn": self.gamemaster.turn_system.current_turn,
-            "round_number": self.gamemaster.turn_system.round_number,
+            "current_entity": encounter.current_entity_name,
+            "round_number": encounter.round_number,
         }
         full_state = make_full_state(world_data, entity_summaries, turn_data)
         await conn.send(full_state.to_json())
@@ -227,10 +236,11 @@ class SessionHost:
         Validates:
         1. Player has a claimed entity.
         2. The claimed entity matches ``_entity_claims``.
-        3. It is that entity's turn.
-        4. The action itself is valid.
+        3. An encounter is running and it is that entity's turn.
+        4. The action passes :class:`~core.engine.action_executor.ActionExecutor` checks.
 
-        On success the action is executed directly on the entity, an
+        On success the action is executed via the gamemaster's
+        :class:`~core.engine.encounter.Encounter` (``END_TURN`` advances it), an
         ``ACTION_RESULT(success=True)`` is sent to the requesting player,
         and the :class:`~network.event_bridge.EventBridge` (if attached)
         will automatically broadcast the resulting ``STATE_DELTA``.
@@ -271,19 +281,18 @@ class SessionHost:
             return
 
         # 4. Check it is this entity's turn
-        ts = self.gamemaster.turn_system
-        if not ts.entities:
+        encounter = self.gamemaster.encounter
+        if not encounter.is_active:
             error = make_error(
                 ErrorCode.INVALID_ACTION,
-                "No turn order established",
+                "No encounter is running",
             )
             await player.conn.send(error.to_json())
             return
-        if ts.entities[ts.current_turn].name != entity_id:
-            current_name = ts.entities[ts.current_turn].name
+        if encounter.current_entity_name != entity_id:
             error = make_error(
                 ErrorCode.NOT_YOUR_TURN,
-                f"It is {current_name}'s turn, not {entity_id}'s",
+                f"It is {encounter.current_entity_name}'s turn, not {entity_id}'s",
             )
             await player.conn.send(error.to_json())
             return
@@ -298,23 +307,12 @@ class SessionHost:
             await player.conn.send(error.to_json())
             return
 
-        # 6. Validate and execute
-        from models.flow.action.action_validator import ActionValidator
-
-        if not ActionValidator.validate(action, None):
+        # 6. Validate and execute (END_TURN also advances the encounter)
+        result = encounter.submit(entity_id, action)
+        if not result.success:
             error = make_error(
                 ErrorCode.INVALID_ACTION,
-                f"Action validation failed for {action_type}",
-            )
-            await player.conn.send(error.to_json())
-            return
-
-        try:
-            result_data = action.execute(None) or {}
-        except Exception as exc:
-            error = make_error(
-                ErrorCode.INVALID_ACTION,
-                f"Action execution failed: {exc}",
+                f"{action_type} rejected: {result.error}",
             )
             await player.conn.send(error.to_json())
             return
@@ -322,7 +320,7 @@ class SessionHost:
         # 7. Send success result to the requesting player
         result_msg = make_action_result(
             success=True,
-            result=result_data,
+            result={**result.data, "log": result.execution_log},
             state_delta=[],
         )
         await player.conn.send(result_msg.to_json())
@@ -338,8 +336,8 @@ class SessionHost:
         Returns ``None`` if the action type is unknown.
         """
         from core.engine.actions.attack_action import AttackAction
-        from core.engine.actions.move_action import MoveAction
         from core.engine.actions.end_turn_action import EndTurnAction
+        from core.engine.actions.move_action import MoveAction
 
         if action_type == "ATTACK":
             target_name = params.get("target")

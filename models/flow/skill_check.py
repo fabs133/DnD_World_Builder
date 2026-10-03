@@ -1,5 +1,6 @@
 import random
 
+
 class SkillCheck:
     """
     Represents a skill check in a DnD-like system.

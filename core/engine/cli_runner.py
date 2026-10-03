@@ -7,14 +7,12 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import sys
 
-from core.engine.scenarios.demo_encounter import build_demo_encounter
-from core.engine.cli_adapter import CLIAdapter
-from core.engine.ai.ollama_client import OllamaClient, OllamaConfig
-from core.engine.ai.heuristic_adapter import HeuristicAIAdapter
-from core.engine.game_state import GameState
 from core.engine.action_executor import ActionResult
+from core.engine.ai.ollama_client import OllamaClient, OllamaConfig
+from core.engine.cli_adapter import CLIAdapter
+from core.engine.game_state import GameState
+from core.engine.scenarios.demo_encounter import build_demo_encounter
 
 
 def _on_round_start(state: GameState) -> None:
@@ -85,7 +83,7 @@ def main() -> None:
     result = session.run()
 
     print(f"\n{'='*50}")
-    print(f"  COMBAT COMPLETE")
+    print("  COMBAT COMPLETE")
     print(f"{'='*50}")
     print(f"  Rounds: {result.rounds_played}")
     print(f"  Winner: {result.winner or 'Draw'}")

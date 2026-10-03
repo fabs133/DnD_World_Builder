@@ -1,7 +1,7 @@
 """Tests for EntityListItem widget signals and display."""
 
+
 import pytest
-from unittest.mock import MagicMock
 
 from models.entities.game_entity import GameEntity
 from ui.panels.entity_list_item import EntityListItem

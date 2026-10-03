@@ -17,10 +17,10 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from core.engine.scenarios.scenario_loader import ScenarioLoader  # noqa: E402
-from core.engine.game_state import GameState  # noqa: E402
 from core.engine.action_executor import ActionResult  # noqa: E402
 from core.engine.ai.ollama_client import OllamaClient, OllamaConfig  # noqa: E402
+from core.engine.game_state import GameState  # noqa: E402
+from core.engine.scenarios.scenario_loader import ScenarioLoader  # noqa: E402
 
 DEFAULT_SCENARIO = PROJECT_ROOT / "scenarios" / "goblin_ambush.yaml"
 
@@ -134,7 +134,7 @@ def main() -> None:
 
     # Final summary
     print(f"\n{'=' * 60}")
-    print(f"  COMBAT COMPLETE")
+    print("  COMBAT COMPLETE")
     print(f"{'=' * 60}")
     print(f"  Rounds played: {result.rounds_played}")
     print(f"  Winner: {result.winner or 'Draw'}")
@@ -142,11 +142,11 @@ def main() -> None:
     print(f"  Total actions: {len(result.action_history)}")
 
     # Entity summary
-    print(f"\n  --- Final Status ---")
+    print("\n  --- Final Status ---")
     print(_format_entity_table(result.final_state))
 
-    print(f"\n  Run behavioral tests for detailed alignment stats:")
-    print(f"    pytest tests/behavioral/ -v")
+    print("\n  Run behavioral tests for detailed alignment stats:")
+    print("    pytest tests/behavioral/ -v")
     print()
 
 

@@ -3,13 +3,12 @@
 import pytest
 
 from domain.specs.checks import (
+    ContestSpec,
     DiceRollType,
     RollContext,
-    SkillCheckSpec,
     SavingThrowSpec,
-    ContestSpec,
+    SkillCheckSpec,
 )
-
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 

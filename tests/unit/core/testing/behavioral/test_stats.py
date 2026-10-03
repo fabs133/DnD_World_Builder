@@ -1,8 +1,7 @@
 """Tests for behavioral stats tracking and aggregation."""
 
-import pytest
 
-from core.testing.behavioral.stats import BehaviorEvent, EntityRunStats, BehaviorStats
+from core.testing.behavioral.stats import BehaviorEvent, BehaviorStats, EntityRunStats
 
 
 class TestEntityRunStats:

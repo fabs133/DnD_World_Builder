@@ -1,19 +1,17 @@
 """Tests for domain.specs.triggers — Trigger system specs."""
 
-import pytest
 
-from domain.specs.base import AlwaysTrue, AlwaysFalse
+from domain.specs.base import AlwaysFalse, AlwaysTrue
 from domain.specs.triggers import (
     EventType,
-    TriggerEvent,
     ReactionResult,
     TriggerEvaluation,
-    TriggerSpec,
     TriggerEvaluator,
-    perception_trap,
+    TriggerEvent,
+    TriggerSpec,
     enter_zone_trigger,
+    perception_trap,
 )
-
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 

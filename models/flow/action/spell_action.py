@@ -1,4 +1,5 @@
-from .action import Action, roll, apply_effect
+from .action import Action, apply_effect, roll
+
 
 class SpellAction(Action):
     """

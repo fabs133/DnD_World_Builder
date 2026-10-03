@@ -1,4 +1,3 @@
-import pytest
 from models.flow.skill_check import SkillCheck
 
 

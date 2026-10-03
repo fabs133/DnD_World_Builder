@@ -27,16 +27,16 @@ Example:
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any, Callable
-from enum import Enum
 import json
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import TYPE_CHECKING, Any
 
-from domain.specs.base import (
-    Specification, SpecResult, AlwaysTrue, AlwaysFalse,
-    AndSpec, OrSpec, NotSpec, AllOf, AnyOf
-)
-from domain.specs.registry import RuleDefinition, RuleParameter, RuleCategory, RuleScope
+from domain.specs.base import AllOf, AlwaysTrue, AnyOf, Specification
+from domain.specs.registry import RuleCategory, RuleParameter
+
+if TYPE_CHECKING:
+    from domain.specs.registry import RuleRegistry
 
 
 class CompositionType(Enum):
@@ -56,14 +56,14 @@ class RuleComponent:
     rule_id: str              # Reference to registered rule
     params: dict[str, Any]    # Parameter values
     inverted: bool = False    # Apply NOT to this component
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "rule_id": self.rule_id,
             "params": self.params,
             "inverted": self.inverted,
         }
-    
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> RuleComponent:
         return cls(
@@ -97,18 +97,18 @@ class RuleMask:
     components: list[RuleComponent]
     composition: CompositionType = CompositionType.AND
     category: RuleCategory = RuleCategory.CUSTOM
-    
+
     # Parameters exposed to users of this mask
     exposed_parameters: list[RuleParameter] = field(default_factory=list)
-    
+
     # Metadata
     author: str = ""
     version: str = "1.0"
     tags: list[str] = field(default_factory=list)
-    
+
     def instantiate(
-        self, 
-        registry: "RuleRegistry",
+        self,
+        registry: RuleRegistry,
         **overrides: Any
     ) -> Specification:
         """
@@ -122,31 +122,31 @@ class RuleMask:
             Composed Specification
         """
         specs: list[Specification] = []
-        
+
         for component in self.components:
             # Get the rule definition
             rule_def = registry.get(component.rule_id)
             if rule_def is None:
                 raise ValueError(f"Unknown rule: {component.rule_id}")
-            
+
             # Merge parameters: component params + overrides
             params = dict(component.params)
-            
+
             # Apply exposed parameter overrides
             for param in self.exposed_parameters:
                 if param.name in overrides:
                     # Map exposed param to component param
                     params[param.name] = overrides[param.name]
-            
+
             # Create the spec
             spec = rule_def.create_spec(**params)
-            
+
             # Apply inversion if needed
             if component.inverted:
                 spec = ~spec
-            
+
             specs.append(spec)
-        
+
         # Compose specs
         if len(specs) == 0:
             return AlwaysTrue()
@@ -158,7 +158,7 @@ class RuleMask:
             return AnyOf(*specs, short_circuit=True)
         else:  # SEQUENCE
             return AllOf(*specs, short_circuit=True)
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Serialize mask for storage."""
         return {
@@ -173,7 +173,7 @@ class RuleMask:
             "version": self.version,
             "tags": self.tags,
         }
-    
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> RuleMask:
         """Deserialize mask from storage."""
@@ -189,11 +189,11 @@ class RuleMask:
             version=data.get("version", "1.0"),
             tags=data.get("tags", []),
         )
-    
+
     def to_json(self) -> str:
         """Export as JSON string."""
         return json.dumps(self.to_dict(), indent=2)
-    
+
     @classmethod
     def from_json(cls, json_str: str) -> RuleMask:
         """Import from JSON string."""
@@ -217,16 +217,16 @@ class RuleBuilder:
             .build(registry)
         )
     """
-    
+
     def __init__(self):
         self._components: list[RuleComponent] = []
         self._composition = CompositionType.AND
         self._name = "Custom Rule"
         self._description = ""
-    
+
     def require(
-        self, 
-        rule_id: str, 
+        self,
+        rule_id: str,
         inverted: bool = False,
         **params: Any
     ) -> RuleBuilder:
@@ -247,89 +247,89 @@ class RuleBuilder:
             inverted=inverted,
         ))
         return self
-    
+
     def require_not(self, rule_id: str, **params: Any) -> RuleBuilder:
         """Shorthand for require(..., inverted=True)."""
         return self.require(rule_id, inverted=True, **params)
-    
+
     # ─── Convenience Methods ─────────────────────────────────────────────────
-    
+
     def require_skill_check(self, skill: str, dc: int) -> RuleBuilder:
         """Require a skill check to pass."""
         return self.require("skill_check", skill=skill, dc=dc)
-    
+
     def require_skill_check_fails(self, skill: str, dc: int) -> RuleBuilder:
         """Require a skill check to FAIL (for traps)."""
         return self.require("skill_check", skill=skill, dc=dc, inverted=True)
-    
+
     def require_saving_throw(self, ability: str, dc: int) -> RuleBuilder:
         """Require a saving throw to pass."""
         return self.require("saving_throw", ability=ability, dc=dc)
-    
+
     def require_entity_type(self, entity_type: str) -> RuleBuilder:
         """Require entity to be of a specific type."""
         return self.require("is_entity_type", entity_type=entity_type)
-    
+
     def require_alive(self) -> RuleBuilder:
         """Require entity to be alive."""
         return self.require("is_alive")
-    
+
     def require_can_act(self) -> RuleBuilder:
         """Require entity can take actions."""
         return self.require("can_take_action")
-    
+
     def require_in_range(self, max_range: int, min_range: int = 0) -> RuleBuilder:
         """Require target to be within range."""
         return self.require("in_range", max_range=max_range, min_range=min_range)
-    
+
     def require_adjacent(self) -> RuleBuilder:
         """Require target to be adjacent (5ft)."""
         return self.require("is_adjacent")
-    
+
     def require_has_condition(self, condition: str) -> RuleBuilder:
         """Require entity to have a condition."""
         return self.require("has_condition", condition=condition)
-    
+
     def require_not_condition(self, condition: str) -> RuleBuilder:
         """Require entity to NOT have a condition."""
         return self.require("has_condition", condition=condition, inverted=True)
-    
+
     def require_has_movement(self, feet: int = 5) -> RuleBuilder:
         """Require entity to have movement remaining."""
         return self.require("has_movement", required=feet)
-    
+
     def require_has_spell_slot(self, level: int) -> RuleBuilder:
         """Require entity to have a spell slot."""
         return self.require("has_spell_slot", level=level)
-    
+
     # ─── Configuration ───────────────────────────────────────────────────────
-    
+
     def with_composition(self, composition: CompositionType) -> RuleBuilder:
         """Set how components are combined."""
         self._composition = composition
         return self
-    
+
     def combine_with_and(self) -> RuleBuilder:
         """Combine components with AND (all must pass)."""
         return self.with_composition(CompositionType.AND)
-    
+
     def combine_with_or(self) -> RuleBuilder:
         """Combine components with OR (any must pass)."""
         return self.with_composition(CompositionType.OR)
-    
+
     def named(self, name: str) -> RuleBuilder:
         """Set the rule name."""
         self._name = name
         return self
-    
+
     def described(self, description: str) -> RuleBuilder:
         """Set the rule description."""
         self._description = description
         return self
-    
+
     # ─── Build ───────────────────────────────────────────────────────────────
-    
-    def build(self, registry: "RuleRegistry") -> Specification:
+
+    def build(self, registry: RuleRegistry) -> Specification:
         """
         Build the final Specification.
         
@@ -341,7 +341,7 @@ class RuleBuilder:
         """
         mask = self.to_mask()
         return mask.instantiate(registry)
-    
+
     def to_mask(self, mask_id: str | None = None) -> RuleMask:
         """
         Export as a RuleMask for storage.
@@ -353,7 +353,7 @@ class RuleBuilder:
             RuleMask that can be serialized
         """
         import uuid
-        
+
         return RuleMask(
             mask_id=mask_id or f"custom_{uuid.uuid4().hex[:8]}",
             name=self._name,
@@ -361,7 +361,7 @@ class RuleBuilder:
             components=list(self._components),
             composition=self._composition,
         )
-    
+
     def clear(self) -> RuleBuilder:
         """Clear all components and start fresh."""
         self._components.clear()
@@ -411,12 +411,12 @@ def zone_effect_template(
     Create a zone effect mask (triggers on entry, no check required).
     """
     components = []
-    
+
     if entity_types:
         # Require one of the entity types (OR)
         for etype in entity_types:
             components.append(RuleComponent("is_entity_type", {"entity_type": etype}))
-    
+
     return RuleMask(
         mask_id=f"zone_{name.lower().replace(' ', '_')}",
         name=name,
@@ -442,16 +442,16 @@ def combat_prerequisite_template(
         RuleComponent("is_alive", {}),
         RuleComponent("is_incapacitated", {}, inverted=True),  # NOT incapacitated
     ]
-    
+
     if requires_action:
         components.append(RuleComponent("can_take_action", {}))
-    
+
     if requires_reaction:
         components.append(RuleComponent("can_take_reaction", {}))
-    
+
     if max_range is not None:
         components.append(RuleComponent("in_range", {"max_range": max_range}))
-    
+
     return RuleMask(
         mask_id=f"combat_{name.lower().replace(' ', '_')}",
         name=name,
@@ -473,14 +473,14 @@ class MaskLibrary:
     
     Users can browse these as starting points for custom rules.
     """
-    
+
     def __init__(self):
         self._masks: dict[str, RuleMask] = {}
         self._register_defaults()
-    
+
     def _register_defaults(self):
         """Register built-in mask templates."""
-        
+
         # Traps
         self.register(trap_template(
             "Pit Trap",
@@ -488,21 +488,21 @@ class MaskLibrary:
             dc=15,
             description="A hidden pit trap. Falling creatures take damage.",
         ))
-        
+
         self.register(trap_template(
             "Poison Dart Trap",
             skill="Perception",
             dc=12,
             description="Darts shoot from the wall when triggered.",
         ))
-        
+
         self.register(trap_template(
             "Pressure Plate",
             skill="Investigation",
             dc=14,
             description="A pressure plate that triggers when stepped on.",
         ))
-        
+
         # Combat prerequisites
         self.register(combat_prerequisite_template(
             "Melee Attack",
@@ -510,7 +510,7 @@ class MaskLibrary:
             max_range=5,
             description="Prerequisites for making a melee attack.",
         ))
-        
+
         self.register(combat_prerequisite_template(
             "Opportunity Attack",
             requires_action=False,
@@ -518,79 +518,79 @@ class MaskLibrary:
             max_range=5,
             description="Prerequisites for making an opportunity attack.",
         ))
-        
+
         self.register(combat_prerequisite_template(
             "Ranged Attack (30ft)",
             requires_action=True,
             max_range=30,
             description="Prerequisites for a short-range ranged attack.",
         ))
-        
+
         # Zone effects
         self.register(zone_effect_template(
             "Healing Zone",
             entity_types=["player", "npc"],
             description="Area that heals friendly creatures.",
         ))
-        
+
         self.register(zone_effect_template(
             "Damage Zone",
             entity_types=["player", "enemy", "npc"],
             description="Area that damages all creatures.",
         ))
-    
+
     def register(self, mask: RuleMask):
         """Add a mask to the library."""
         self._masks[mask.mask_id] = mask
-    
+
     def get(self, mask_id: str) -> RuleMask | None:
         """Get a mask by ID."""
         return self._masks.get(mask_id)
-    
+
     def get_all(self) -> list[RuleMask]:
         """Get all masks."""
         return list(self._masks.values())
-    
+
     def get_by_category(self, category: RuleCategory) -> list[RuleMask]:
         """Get masks in a category."""
         return [m for m in self._masks.values() if m.category == category]
-    
+
     def search(self, query: str) -> list[RuleMask]:
         """Search masks by name, description, or tags."""
         query = query.lower()
         results = []
-        
+
         for mask in self._masks.values():
             if (query in mask.name.lower() or
                 query in mask.description.lower() or
                 any(query in tag.lower() for tag in mask.tags)):
                 results.append(mask)
-        
+
         return results
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Serialize library."""
         return {
             "masks": {mid: m.to_dict() for mid, m in self._masks.items()}
         }
-    
+
     def export_json(self, path: str):
         """Export to JSON file."""
         with open(path, 'w') as f:
             json.dump(self.to_dict(), f, indent=2)
-    
+
     @classmethod
     def from_json(cls, path: str) -> MaskLibrary:
         """Import from JSON file."""
         library = cls()
         library._masks.clear()
-        
-        with open(path, 'r') as f:
+
+        with open(path) as f:
             data = json.load(f)
-        
+
         for mask_data in data.get("masks", {}).values():
             library.register(RuleMask.from_dict(mask_data))
-        
+
         return library
 
 

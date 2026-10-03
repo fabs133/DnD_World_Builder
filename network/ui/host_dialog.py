@@ -9,8 +9,11 @@ Displays the machine's LAN IP address so players know where to connect.
 import socket
 
 from PyQt5.QtWidgets import (
-    QDialog, QFormLayout, QSpinBox, QLabel,
+    QDialog,
     QDialogButtonBox,
+    QFormLayout,
+    QLabel,
+    QSpinBox,
 )
 
 

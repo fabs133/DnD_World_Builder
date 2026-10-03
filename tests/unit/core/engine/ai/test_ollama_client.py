@@ -1,7 +1,9 @@
 """Tests for the Ollama HTTP client."""
 
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
+
 from core.engine.ai.ollama_client import OllamaClient, OllamaConfig
 
 
@@ -57,9 +59,8 @@ class TestOllamaClient:
         mock_resp = MagicMock()
         mock_resp.raise_for_status.side_effect = requests.HTTPError("500")
 
-        with patch.object(client._session, "post", return_value=mock_resp):
-            with pytest.raises(requests.HTTPError):
-                client.generate("prompt")
+        with patch.object(client._session, "post", return_value=mock_resp), pytest.raises(requests.HTTPError):
+            client.generate("prompt")
 
     def test_default_config(self):
         config = OllamaConfig()

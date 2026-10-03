@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QToolButton, QMenu
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QMenu, QToolButton, QWidget
 
 
 class EntityListItem(QWidget):

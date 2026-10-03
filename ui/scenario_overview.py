@@ -1,16 +1,24 @@
-from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
-    QListWidget, QTextEdit, QFileDialog, QMessageBox, QLabel, QFormLayout, QLineEdit, QDialog, QInputDialog
-)
-from PyQt5.QtCore import Qt
-from pathlib import Path
 import json
 import shutil
 import zipfile
-from core.export_manager import ExportManager
 from datetime import datetime
-from core.settings_manager import SettingsManager
-from core.logger import AppLogger
+from pathlib import Path
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (
+    QFileDialog,
+    QHBoxLayout,
+    QInputDialog,
+    QLabel,
+    QListWidget,
+    QMessageBox,
+    QPushButton,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
+)
+
+from core.export_manager import ExportManager
 from core.gameCreation.tiles_gui import MainMenuDialog
 
 
@@ -76,7 +84,7 @@ class ScenarioOverviewWidget(QWidget):
 
         if path.exists():
             try:
-                with open(path, "r", encoding="utf-8") as f:
+                with open(path, encoding="utf-8") as f:
                     data = json.load(f)
 
                 meta = data.get("meta", {})

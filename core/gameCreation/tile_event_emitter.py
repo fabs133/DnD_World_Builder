@@ -1,5 +1,6 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 
+
 class TileEventEmitter(QObject):
     """
     TileEventEmitter is a QObject subclass that provides custom signals for tile-related events.

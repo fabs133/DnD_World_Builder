@@ -1,8 +1,9 @@
 """Tests for InputAdapter and TestAdapter."""
 
 import pytest
+
+from core.engine.game_state import GameState
 from core.engine.input_adapter import TestAdapter
-from core.engine.game_state import GameState, EntitySnapshot
 from models.flow.action.action import Action
 
 

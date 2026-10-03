@@ -1,5 +1,6 @@
 import sqlite3
 
+
 def initialize_db():
     """
     Initializes the SQLite database for the DnD project by creating the necessary tables if they do not exist.

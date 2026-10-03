@@ -1,7 +1,9 @@
 import sys
+
 import pytest
 from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QApplication
+
 from core.gameCreation.tile_event_emitter import TileEventEmitter
 
 # Ensure QApplication is present (especially for CI environments)

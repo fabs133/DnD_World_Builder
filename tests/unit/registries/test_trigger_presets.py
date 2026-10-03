@@ -1,14 +1,10 @@
-import pytest
-
-from core.gameCreation.trigger import Trigger
-from models.flow.reaction.reactions_list import ApplyDamage, AlertGamemaster
-from models.flow.condition.condition_list import AlwaysTrue, PerceptionCheck
-from models.flow.reaction.reactions_list import ApplyDamage as apply_damage
-from models.flow.condition.condition_list import AlwaysTrue as always_true
-from models.flow.condition.condition_list import PerceptionCheck as perception_check
-from models.flow.reaction.reactions_list import AlertGamemaster as alert_gamemaster
 
 import registries.trigger_presets as tp_mod
+from core.gameCreation.trigger import Trigger
+from models.flow.condition.condition_list import AlwaysTrue, PerceptionCheck
+from models.flow.reaction.reactions_list import AlertGamemaster, ApplyDamage
+from models.flow.reaction.reactions_list import AlertGamemaster as alert_gamemaster
+
 
 def test_trigger_presets_keys():
     expected = {"player", "npc", "enemy", "trap", "object"}

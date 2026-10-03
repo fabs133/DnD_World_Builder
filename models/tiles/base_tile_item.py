@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QGraphicsItem
 
+
 class BaseTileItem(QGraphicsItem):
     """
     Base class for tile items in the DnDProject.

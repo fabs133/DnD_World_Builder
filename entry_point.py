@@ -1,8 +1,10 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QComboBox, QLabel
-from PyQt5.QtCore import qInstallMessageHandler, QtMsgType
-from core.gameCreation.main_controller import MainController
+
+from PyQt5.QtCore import QtMsgType, qInstallMessageHandler
+from PyQt5.QtWidgets import QApplication, QComboBox, QLabel, QPushButton, QVBoxLayout, QWidget
+
 from core.characterCreation.character_gui import CharacterCreationWindow
+from core.gameCreation.main_controller import MainController
 from core.settings_manager import SettingsManager
 
 

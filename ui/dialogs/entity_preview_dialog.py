@@ -1,9 +1,17 @@
-from PyQt5.QtWidgets import (
-    QDialog, QFormLayout, QLineEdit, QTextEdit, QComboBox, QPushButton,
-    QLabel, QFileDialog, QHBoxLayout,
-)
-from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import (
+    QComboBox,
+    QDialog,
+    QFileDialog,
+    QFormLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QTextEdit,
+)
+
 from models.entities.game_entity import GameEntity
 
 

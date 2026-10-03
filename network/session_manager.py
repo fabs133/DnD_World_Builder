@@ -42,6 +42,8 @@ class SessionSignals(QObject):
     entity_claimed = pyqtSignal(str, str)
     #: Emitted when a chat message arrives (sender, message).
     chat_received = pyqtSignal(str, str)
+    #: Emitted when the host announces a turn change (entity name, round number).
+    turn_changed = pyqtSignal(str, int)
     #: Emitted when the world state has changed.
     state_updated = pyqtSignal()
     #: Emitted on connection failure (error message).
@@ -134,8 +136,8 @@ class SessionManager:
         future.add_done_callback(self._on_host_started)
 
     async def _start_hosting(self, port):
-        from network.session_host import SessionHost
         from network.event_bridge import EventBridge, TurnBridge
+        from network.session_host import SessionHost
 
         if self._transport_factory:
             self._server = self._transport_factory(port=port)
@@ -243,6 +245,7 @@ class SessionManager:
         self._client.on(MessageType.STATE_DELTA, self._on_state_delta)
         self._client.on(MessageType.ENTITY_CLAIMED, self._on_entity_claimed)
         self._client.on(MessageType.CHAT, self._on_chat)
+        self._client.on(MessageType.TURN_CHANGE, self._on_turn_change)
 
         self._is_connected = True
 
@@ -330,6 +333,11 @@ class SessionManager:
         entity_id = msg.payload.get("entity_id", "")
         player_id = msg.payload.get("player_id", "")
         self.signals.entity_claimed.emit(entity_id, player_id)
+
+    def _on_turn_change(self, msg):
+        entity = msg.payload.get("current_entity") or ""
+        round_number = int(msg.payload.get("round", 0) or 0)
+        self.signals.turn_changed.emit(entity, round_number)
 
     def _on_chat(self, msg):
         sender = msg.payload.get("sender", "")

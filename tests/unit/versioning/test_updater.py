@@ -1,5 +1,7 @@
 import pytest
+
 from versioning.updater import Updater
+
 
 def test_unknown_entity_type_raises():
     upd = Updater(registry={})

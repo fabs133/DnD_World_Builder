@@ -1,5 +1,6 @@
 from core.logger import app_logger
 
+
 class Reaction:
     """
     Represents a reaction to a trigger action in the flow.

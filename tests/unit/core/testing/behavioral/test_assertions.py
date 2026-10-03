@@ -3,10 +3,10 @@
 import pytest
 
 from core.testing.behavioral.assertions import (
-    BehaviorAssertion,
     AlignmentAssertions,
+    BehaviorAssertion,
 )
-from core.testing.behavioral.stats import BehaviorEvent, EntityRunStats, BehaviorStats
+from core.testing.behavioral.stats import BehaviorEvent, BehaviorStats, EntityRunStats
 
 
 def _make_stats(entity_name="Test", alignment="true_neutral", events=None):

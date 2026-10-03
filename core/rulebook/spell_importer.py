@@ -1,8 +1,8 @@
+from utils.string.slugify import slugify
+
 from .importer_base import BaseImporter
 from .rulebook_spell import RulebookSpell
-from core.db_api_handler import LocalAPIHandler
-from utils.string.slugify import slugify
-from core.rulebook.importer_base import BaseImporter
+
 
 class SpellImporter(BaseImporter):
     """
@@ -30,7 +30,7 @@ class SpellImporter(BaseImporter):
         :rtype: RulebookSpell
         """
         return RulebookSpell.from_api(raw)
-    
+
     def list_all(self):
         """
         Retrieves a list of all spells from the API.
@@ -52,4 +52,3 @@ class SpellImporter(BaseImporter):
         slug = slugify(name)
         raw = self.api.get_raw(f"/api/{self.endpoint}/{slug}")
         return RulebookSpell.from_api(raw) if raw else None
-    

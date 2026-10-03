@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from core.gameCreation.trigger import Trigger
-from registries.trigger_registry import global_trigger_registry
-from enum import Enum
-from core.logger import app_logger
 from core.gameCreation.event_bus import EventBus
+from core.gameCreation.trigger import Trigger
+from core.logger import app_logger
+from registries.trigger_registry import global_trigger_registry
 
 if TYPE_CHECKING:
     from models.ai.personality import EntityPersonality
@@ -129,7 +128,7 @@ class GameEntity:
         for tdata in data.get("triggers", []):
             trigger = Trigger.from_dict(tdata)
             obj.register_trigger(trigger)
-        
+
         # Restore HP and conditions
         if "hp" in data:
             obj.hp = data["hp"]
@@ -139,37 +138,37 @@ class GameEntity:
             obj.conditions = data["conditions"]
         if "position" in data:
             obj.position = tuple(data["position"])
-        
+
         # Restore personality
         if "personality" in data:
             from models.ai.personality import EntityPersonality
             obj.personality = EntityPersonality.from_dict(data["personality"])
-        
+
         return obj
-    
-    def set_personality(self, personality: "EntityPersonality") -> None:
+
+    def set_personality(self, personality: EntityPersonality) -> None:
         """Set the AI personality for this entity."""
         self.personality = personality
-    
+
     def take_damage(self, amount: int, damage_type: str = "untyped") -> int:
         """Apply damage to this entity. Returns actual damage dealt."""
         actual = min(amount, self.hp)
         self.hp -= actual
         app_logger.debug(f"{self.name} takes {actual} {damage_type} damage. HP: {self.hp}/{self.max_hp}")
         return actual
-    
+
     def heal(self, amount: int) -> int:
         """Heal this entity. Returns actual healing done."""
         actual = min(amount, self.max_hp - self.hp)
         self.hp += actual
         app_logger.debug(f"{self.name} heals {actual}. HP: {self.hp}/{self.max_hp}")
         return actual
-    
+
     @property
     def is_alive(self) -> bool:
         """Check if entity is alive (HP > 0)."""
         return self.hp > 0
-    
+
     @property
     def hp_percent(self) -> float:
         """Current HP as a percentage."""

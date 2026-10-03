@@ -1,6 +1,8 @@
 import pytest
+
 from core.gameCreation.trigger import Trigger
 from models.flow.skill_check import SkillCheck
+
 
 # Dummy callable condition and reaction for testing
 def always_true_condition(event_data):

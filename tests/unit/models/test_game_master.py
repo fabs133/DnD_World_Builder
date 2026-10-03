@@ -1,8 +1,11 @@
 import logging
+
 import pytest
+
 from core.gameCreation.event_bus import EventBus
 from core.logger import app_logger
 from models.game_master import Gamemaster
+
 
 class DummyEntity:
     def __init__(self, name):
@@ -34,7 +37,7 @@ def test_encounter_and_event_prints(caplog):
 
     e = DummyEntity("Orc")
     with caplog.at_level(logging.DEBUG, logger=app_logger.name):
-        gm.encounter(e)
+        gm.announce_encounter(e)
     assert "Encounter with Orc!" in caplog.text
 
     caplog.clear()

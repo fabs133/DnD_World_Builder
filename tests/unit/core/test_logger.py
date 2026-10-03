@@ -1,10 +1,11 @@
 import logging
 import os
 import time
-from pathlib import Path
+
 import pytest
 
 from core.logger import AppLogger
+
 
 @pytest.fixture
 def create_dummy_logs(tmp_path):

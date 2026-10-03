@@ -64,9 +64,10 @@ class RulebookEntity:
 
         if "npc" in m_name or (m_type == "humanoid" and "commoner" in m_name):
             entity_type = "npc"
-        elif m_type in {"beast", "dragon", "undead", "aberration", "fiend", "celestial"}:
-            entity_type = "enemy"
-        elif m_type in {"construct", "ooze", "elemental", "plant"}:
+        elif m_type in {
+            "beast", "dragon", "undead", "aberration", "fiend", "celestial",
+            "construct", "ooze", "elemental", "plant",
+        }:
             entity_type = "enemy"
         elif "trap" in m_name:
             entity_type = "trap"

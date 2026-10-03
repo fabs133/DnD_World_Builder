@@ -1,9 +1,10 @@
 import pytest
-from PyQt5.QtWidgets import QLineEdit, QComboBox
-from models.entities.game_entity import GameEntity
+from PyQt5.QtWidgets import QComboBox
 
 import ui.dialogs.new_entity_dialog as ned_mod
+from models.entities.game_entity import GameEntity
 from ui.dialogs.new_entity_dialog import NewEntityDialog
+
 
 class DummyTrigger:
     def __init__(self, label):

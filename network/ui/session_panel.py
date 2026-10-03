@@ -7,12 +7,18 @@ connection status, player list with claimed entities, a chat log with
 input field, and a disconnect button.
 """
 
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-    QListWidget, QListWidgetItem, QTextEdit,
-    QLineEdit, QPushButton,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QListWidget,
+    QListWidgetItem,
+    QPushButton,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
 )
-from PyQt5.QtCore import Qt, pyqtSignal
 
 
 class SessionPanel(QWidget):

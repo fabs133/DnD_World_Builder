@@ -1,8 +1,8 @@
 import logging
-import pytest
+
 from core.gameCreation.trigger import Trigger
-from models.flow.condition.condition_list import PerceptionCheck, AlwaysTrue
-from models.flow.reaction.reactions_list import ApplyDamage, AlertGamemaster
+from models.flow.condition.condition_list import AlwaysTrue, PerceptionCheck
+from models.flow.reaction.reactions_list import AlertGamemaster, ApplyDamage
 
 
 class DummyTarget:

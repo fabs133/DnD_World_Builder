@@ -1,10 +1,11 @@
 import logging
-import pytest
+
 from core.gameCreation.trigger import Trigger
 from core.logger import app_logger
-from models.flow.reaction.reactions_list import ApplyDamage
 from models.flow.condition.condition_list import AlwaysTrue
+from models.flow.reaction.reactions_list import ApplyDamage
 from registries.trigger_registry import TriggerRegistry, global_trigger_registry
+
 
 def make_simple_trigger():
     # event_type, condition, reaction

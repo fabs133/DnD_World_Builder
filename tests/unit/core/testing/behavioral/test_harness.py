@@ -1,13 +1,12 @@
 """Tests for the behavioral test harness."""
 
-import pytest
 
 from core.testing.behavioral.harness import (
     BehavioralEntity,
-    ScenarioConfig,
-    HarnessConfig,
     BehavioralTestHarness,
+    HarnessConfig,
     HarnessResult,
+    ScenarioConfig,
 )
 from core.testing.behavioral.stats import BehaviorEvent
 

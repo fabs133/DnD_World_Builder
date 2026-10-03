@@ -1,6 +1,7 @@
 import pytest
-from models.tiles.tile_data import TileData, TerrainType, TileTag
+
 from models.entities.game_entity import GameEntity
+from models.tiles.tile_data import TerrainType, TileData, TileTag
 
 
 @pytest.fixture

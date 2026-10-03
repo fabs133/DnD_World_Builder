@@ -1,14 +1,13 @@
 # tests/integration/test_proximity_alert_with_vision.py
 import logging
-import pytest
 
-from models.world.world import World
 from core.gameCreation.event_bus import EventBus
-from models.entities.game_entity import GameEntity
 from core.gameCreation.trigger import Trigger
+from models.entities.game_entity import GameEntity
 from models.flow.condition.condition_list import AlwaysTrue
 from models.flow.reaction.reactions_list import AlertGamemaster
 from models.tiles.tile_data import TileTag
+from models.world.world import World
 
 
 def test_proximity_alert_within_vision_range(caplog):

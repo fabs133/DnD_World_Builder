@@ -1,19 +1,17 @@
 """Tests for domain.specs.movement — Movement, terrain, range specs."""
 
-import pytest
 
 from domain.specs.movement import (
-    TerrainType,
-    MovementMode,
+    CanReachTile,
     HasMovementRemaining,
-    TileIsPassable,
-    TileNotOccupied,
     InRange,
     IsAdjacent,
-    CanReachTile,
+    MovementMode,
+    TerrainType,
+    TileIsPassable,
+    TileNotOccupied,
     can_move_to,
 )
-
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 

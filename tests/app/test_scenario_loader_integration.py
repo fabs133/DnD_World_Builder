@@ -2,14 +2,11 @@
 
 from __future__ import annotations
 
-import tempfile
-from pathlib import Path
-
 import pytest
 import yaml
 
 from core.engine.scenarios.scenario_loader import ScenarioLoader
-from core.testing import ScenarioConfig, HarnessConfig, BehavioralTestHarness
+from core.testing import BehavioralTestHarness, HarnessConfig, ScenarioConfig
 
 
 class TestCustomScenarioYaml:

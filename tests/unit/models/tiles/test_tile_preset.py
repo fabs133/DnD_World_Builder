@@ -1,13 +1,14 @@
 # tests/unit/models/tiles/test_tile_preset.py
-import pytest
 from copy import deepcopy
 
-from models.tiles.tile_preset import TilePreset
-from models.tiles.tile_data import TileData, TerrainType, TileTag
-from models.entities.game_entity import GameEntity
-from core.gameCreation.trigger import Trigger
-from models.flow.condition.condition_list import AlwaysTrue
+import pytest
+
 from core.gameCreation.event_bus import EventBus
+from core.gameCreation.trigger import Trigger
+from models.entities.game_entity import GameEntity
+from models.flow.condition.condition_list import AlwaysTrue
+from models.tiles.tile_data import TerrainType, TileData, TileTag
+from models.tiles.tile_preset import TilePreset
 
 
 def dummy_reaction(data):

@@ -1,8 +1,10 @@
 # tests/unit/core/rulebook/test_import_manager.py
 import pytest
+
 from core.rulebook.import_manager import RulebookImporter
 from models.entities.game_entity import GameEntity
 from models.spell import Spell
+
 
 class DummyEntityWrapper:
     def to_game_entity(self):

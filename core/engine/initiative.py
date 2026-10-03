@@ -100,6 +100,10 @@ class InitiativeTracker:
             self._round_number += 1
         return self._entries[self._current_index]
 
+    def entries(self) -> list[InitiativeEntry]:
+        """Return a copy of the initiative entries in turn order."""
+        return list(self._entries)
+
     def get_order(self) -> list[str]:
         """Return entity names in initiative order."""
         return [e.entity_name for e in self._entries]

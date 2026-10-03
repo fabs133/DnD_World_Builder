@@ -1,10 +1,9 @@
-from PyQt5.QtWidgets import (
-    QApplication, QDialog, QVBoxLayout, QLabel, QPushButton,
-    QLineEdit, QComboBox, QFormLayout, QFileDialog, QSpinBox, QWidget,
-    QHBoxLayout, QTextEdit, QCheckBox, QListWidget
-)
-from core.settings_manager import SettingsManager
+import sys
+
+from PyQt5.QtWidgets import QApplication, QComboBox, QDialog, QFileDialog, QLabel, QPushButton, QSpinBox, QVBoxLayout
+
 from core.logger import AppLogger, app_logger
+from core.settings_manager import SettingsManager
 from ui.dialogs.trigger_editor_dialog import TriggerEditorDialog
 
 

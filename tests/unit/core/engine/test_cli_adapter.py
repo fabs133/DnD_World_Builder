@@ -1,14 +1,12 @@
 """Tests for CLIAdapter interactive terminal input."""
 
-import pytest
 from unittest.mock import patch
 
-from core.engine.cli_adapter import CLIAdapter
-from core.engine.game_state import GameState, EntitySnapshot
 from core.engine.actions.attack_action import AttackAction
-from core.engine.actions.move_action import MoveAction
 from core.engine.actions.end_turn_action import EndTurnAction
-
+from core.engine.actions.move_action import MoveAction
+from core.engine.cli_adapter import CLIAdapter
+from core.engine.game_state import EntitySnapshot, GameState
 
 # ── Helpers ──────────────────────────────────────────────────────────────
 

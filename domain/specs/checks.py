@@ -23,8 +23,8 @@ Design note:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
 from enum import Enum
+from typing import Any
 
 from domain.specs.base import Specification, SpecResult
 
@@ -53,12 +53,12 @@ class RollContext:
     natural_roll: int = 0
     roll_type: DiceRollType = DiceRollType.NORMAL
     rolls: tuple[int, ...] = ()
-    
+
     def __post_init__(self):
         # If natural_roll not provided, use roll
         if self.natural_roll == 0:
             object.__setattr__(self, "natural_roll", self.roll)
-    
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> RollContext:
         return cls(
@@ -67,7 +67,7 @@ class RollContext:
             roll_type=DiceRollType(data.get("roll_type", "normal")),
             rolls=tuple(data.get("rolls", [])),
         )
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "roll": self.roll,
@@ -111,7 +111,7 @@ class SkillCheckSpec(Specification):
         # result.passed = True (12 + 5 = 17 >= 15)
         # result.message = "Perception check: 12+5=17 vs DC 15"
     """
-    
+
     def __init__(
         self,
         skill: str,
@@ -123,14 +123,14 @@ class SkillCheckSpec(Specification):
         self.dc = dc
         self.auto_pass_on_nat_20 = auto_pass_on_nat_20
         self.auto_fail_on_nat_1 = auto_fail_on_nat_1
-    
+
     @property
     def rule_id(self) -> str:
         return f"skill_check_{self.skill.lower()}_dc{self.dc}"
-    
+
     def is_satisfied_by(self, candidate: Any, context: dict[str, Any] | None = None) -> SpecResult:
         context = context or {}
-        
+
         # Extract roll from context
         roll_ctx = self._get_roll_context(context)
         if roll_ctx is None:
@@ -142,10 +142,10 @@ class SkillCheckSpec(Specification):
                 tags=frozenset({"skill_check", "missing_roll", self.skill.lower()}),
                 data={"error": "no_roll_provided"}
             )
-        
+
         # Extract modifier from candidate
         modifier = self._get_modifier(candidate)
-        
+
         # Check for auto-pass/fail on natural rolls
         if self.auto_pass_on_nat_20 and roll_ctx.natural_roll == 20:
             return self._make_result(
@@ -156,7 +156,7 @@ class SkillCheckSpec(Specification):
                 natural_roll=roll_ctx.natural_roll,
                 reason="Natural 20!"
             )
-        
+
         if self.auto_fail_on_nat_1 and roll_ctx.natural_roll == 1:
             return self._make_result(
                 passed=False,
@@ -166,11 +166,11 @@ class SkillCheckSpec(Specification):
                 natural_roll=roll_ctx.natural_roll,
                 reason="Natural 1!"
             )
-        
+
         # Normal check
         total = roll_ctx.roll + modifier
         passed = total >= self.dc
-        
+
         return self._make_result(
             passed=passed,
             roll=roll_ctx.roll,
@@ -179,7 +179,7 @@ class SkillCheckSpec(Specification):
             natural_roll=roll_ctx.natural_roll,
             roll_type=roll_ctx.roll_type,
         )
-    
+
     def _get_roll_context(self, context: dict[str, Any]) -> RollContext | None:
         """Extract RollContext from context dict."""
         if "roll_context" in context:
@@ -187,28 +187,28 @@ class SkillCheckSpec(Specification):
             if isinstance(rc, RollContext):
                 return rc
             return RollContext.from_dict(rc)
-        
+
         if "roll" in context:
             return RollContext(roll=context["roll"])
-        
+
         return None
-    
+
     def _get_modifier(self, candidate: Any) -> int:
         """Extract skill modifier from candidate entity."""
         # Try different attribute patterns
         if hasattr(candidate, "skill_modifiers"):
             return candidate.skill_modifiers.get(self.skill, 0)
-        
+
         if hasattr(candidate, "stats"):
             stats = candidate.stats
             if isinstance(stats, dict):
                 return stats.get(self.skill, 0)
-        
+
         if isinstance(candidate, dict):
             return candidate.get("skill_modifiers", {}).get(self.skill, 0)
-        
+
         return 0
-    
+
     def _make_result(
         self,
         passed: bool,
@@ -222,20 +222,20 @@ class SkillCheckSpec(Specification):
         """Build a detailed SpecResult for the check."""
         margin = total - self.dc
         margin_str = f"by {abs(margin)}" if margin != 0 else "exactly"
-        
+
         if reason:
             message = f"{self.skill} check: {reason}"
         else:
             sign = "+" if modifier >= 0 else ""
             result_word = "passed" if passed else "failed"
             message = f"{self.skill} check: {roll}{sign}{modifier}={total} vs DC {self.dc} ({result_word} {margin_str})"
-        
+
         # Roll type indicator
         if roll_type == DiceRollType.ADVANTAGE:
             message = f"[ADV] {message}"
         elif roll_type == DiceRollType.DISADVANTAGE:
             message = f"[DIS] {message}"
-        
+
         suggested_fix = None
         if not passed:
             needed = self.dc - modifier
@@ -243,7 +243,7 @@ class SkillCheckSpec(Specification):
                 suggested_fix = f"Roll {needed}+ on d20 to pass"
             else:
                 suggested_fix = f"DC {self.dc} impossible with modifier {modifier}"
-        
+
         return SpecResult(
             rule_id=self.rule_id,
             passed=passed,
@@ -261,7 +261,7 @@ class SkillCheckSpec(Specification):
                 "roll_type": roll_type.value,
             }
         )
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "type": "SkillCheckSpec",
@@ -270,7 +270,7 @@ class SkillCheckSpec(Specification):
             "auto_pass_on_nat_20": self.auto_pass_on_nat_20,
             "auto_fail_on_nat_1": self.auto_fail_on_nat_1,
         }
-    
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> SkillCheckSpec:
         return cls(
@@ -294,9 +294,9 @@ class SavingThrowSpec(Specification):
         dc: Difficulty Class
         is_death_save: Special handling for death saving throws
     """
-    
+
     ABILITIES = {"STR", "DEX", "CON", "INT", "WIS", "CHA"}
-    
+
     def __init__(
         self,
         ability: str,
@@ -306,26 +306,26 @@ class SavingThrowSpec(Specification):
         ability = ability.upper()
         if ability not in self.ABILITIES:
             raise ValueError(f"Invalid ability: {ability}. Must be one of {self.ABILITIES}")
-        
+
         self.ability = ability
         self.dc = dc
         self.is_death_save = is_death_save
-    
+
     @property
     def rule_id(self) -> str:
         prefix = "death_save" if self.is_death_save else f"save_{self.ability.lower()}"
         return f"{prefix}_dc{self.dc}"
-    
+
     def is_satisfied_by(self, candidate: Any, context: dict[str, Any] | None = None) -> SpecResult:
         context = context or {}
-        
+
         # Extract roll
         roll = context.get("roll")
         if roll is None:
             roll_ctx = context.get("roll_context")
             if roll_ctx:
                 roll = roll_ctx.roll if isinstance(roll_ctx, RollContext) else roll_ctx.get("roll")
-        
+
         if roll is None:
             return SpecResult(
                 rule_id=self.rule_id,
@@ -334,13 +334,13 @@ class SavingThrowSpec(Specification):
                 suggested_fix="Provide 'roll' in context",
                 tags=frozenset({"saving_throw", "missing_roll"}),
             )
-        
+
         # Natural roll for crit detection
         natural_roll = context.get("natural_roll", roll)
-        
+
         # Get save modifier
         modifier = self._get_save_modifier(candidate)
-        
+
         # Death save special rules
         if self.is_death_save:
             if natural_roll == 20:
@@ -360,14 +360,14 @@ class SavingThrowSpec(Specification):
                     tags=frozenset({"saving_throw", "death_save", "critical"}),
                     data={"natural_1": True, "failures": 2}
                 )
-        
+
         # Normal save
         total = roll + modifier
         passed = total >= self.dc
-        
+
         sign = "+" if modifier >= 0 else ""
         result_word = "passed" if passed else "failed"
-        
+
         return SpecResult(
             rule_id=self.rule_id,
             passed=passed,
@@ -383,20 +383,20 @@ class SavingThrowSpec(Specification):
                 "margin": total - self.dc,
             }
         )
-    
+
     def _get_save_modifier(self, candidate: Any) -> int:
         """Extract saving throw modifier from candidate."""
         if hasattr(candidate, "save_modifiers"):
             return candidate.save_modifiers.get(self.ability, 0)
-        
+
         if hasattr(candidate, "stats"):
             stats = candidate.stats
             if isinstance(stats, dict):
                 # Try save-specific first, then raw ability
                 return stats.get(f"{self.ability}_save", stats.get(self.ability, 0))
-        
+
         return 0
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "type": "SavingThrowSpec",
@@ -404,7 +404,7 @@ class SavingThrowSpec(Specification):
             "dc": self.dc,
             "is_death_save": self.is_death_save,
         }
-    
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> SavingThrowSpec:
         return cls(
@@ -427,7 +427,7 @@ class ContestSpec(Specification):
             defender_skills=["Athletics", "Acrobatics"],  # defender chooses
         )
     """
-    
+
     def __init__(
         self,
         initiator_skill: str,
@@ -435,21 +435,21 @@ class ContestSpec(Specification):
     ):
         self.initiator_skill = initiator_skill
         self.defender_skills = defender_skills
-    
+
     @property
     def rule_id(self) -> str:
         defender = "/".join(self.defender_skills)
         return f"contest_{self.initiator_skill.lower()}_vs_{defender.lower()}"
-    
+
     def is_satisfied_by(self, candidate: Any, context: dict[str, Any] | None = None) -> SpecResult:
         context = context or {}
-        
+
         # Need both rolls
         initiator_roll = context.get("initiator_roll")
         defender_roll = context.get("defender_roll")
         defender = context.get("defender")
         defender_skill_used = context.get("defender_skill", self.defender_skills[0])
-        
+
         if initiator_roll is None or defender_roll is None:
             return SpecResult(
                 rule_id=self.rule_id,
@@ -458,17 +458,17 @@ class ContestSpec(Specification):
                 suggested_fix="Provide both rolls in context",
                 tags=frozenset({"contest", "missing_roll"}),
             )
-        
+
         # Get modifiers
         init_mod = self._get_modifier(candidate, self.initiator_skill)
         def_mod = self._get_modifier(defender, defender_skill_used) if defender else 0
-        
+
         init_total = initiator_roll + init_mod
         def_total = defender_roll + def_mod
-        
+
         # Initiator wins ties in 5e contests
         passed = init_total >= def_total
-        
+
         return SpecResult(
             rule_id=self.rule_id,
             passed=passed,
@@ -485,7 +485,7 @@ class ContestSpec(Specification):
                 "defender_total": def_total,
             }
         )
-    
+
     def _get_modifier(self, entity: Any, skill: str) -> int:
         if entity is None:
             return 0
@@ -494,7 +494,7 @@ class ContestSpec(Specification):
         if isinstance(entity, dict):
             return entity.get("skill_modifiers", {}).get(skill, 0)
         return 0
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "type": "ContestSpec",

@@ -1,7 +1,8 @@
 import pytest
-from network.sync import serialize_world, serialize_entity, compute_delta, apply_delta
-from models.world.world import World
+
 from models.entities.game_entity import GameEntity
+from models.world.world import World
+from network.sync import apply_delta, compute_delta, serialize_entity, serialize_world
 
 
 @pytest.fixture
@@ -108,7 +109,7 @@ class TestComputeDelta:
         old = {"tiles": {}, "entities": {}, "lore": {}, "turn": {}}
         new = {"tiles": {}, "entities": {"1,1": [{"name": "Orc"}]}, "lore": {}, "turn": {}}
         changes = compute_delta(old, new)
-        assert any(c["op"] == "add" and "entities/1,1" == c["path"] for c in changes)
+        assert any(c["op"] == "add" and c["path"] == "entities/1,1" for c in changes)
 
     def test_lore_change(self):
         old = {"tiles": {}, "entities": {}, "lore": {"time": "day"}, "turn": {}}

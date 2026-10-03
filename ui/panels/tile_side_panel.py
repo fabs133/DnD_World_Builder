@@ -1,13 +1,18 @@
-from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-    QStackedWidget, QToolButton, QButtonGroup,
-)
 from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (
+    QButtonGroup,
+    QHBoxLayout,
+    QLabel,
+    QStackedWidget,
+    QToolButton,
+    QVBoxLayout,
+    QWidget,
+)
 
+from ui.panels.color_mode_dialog import ColorModeDialog
 from ui.panels.core_values_panel import CoreValuesPanel
 from ui.panels.entities_panel import EntitiesPanel
 from ui.panels.trigger_panel import TriggerPanel
-from ui.panels.color_mode_dialog import ColorModeDialog
 
 
 class TileSidePanel(QWidget):

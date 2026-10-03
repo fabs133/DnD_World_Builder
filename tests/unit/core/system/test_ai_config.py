@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-import pytest
-
 from core.system.ai_config import AIConfig, AIMode, ModelConfig
-from core.system.hardware_profile import AITier, HardwareProfile
+from core.system.hardware_profile import HardwareProfile
 
 
 def _hw(ram: float = 16, vram: float = 0, ollama: bool = True) -> HardwareProfile:

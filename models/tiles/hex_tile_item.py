@@ -1,12 +1,13 @@
 import math
-from core.logger import app_logger
+
+from PyQt5.QtCore import QPointF, Qt
+from PyQt5.QtGui import QBrush, QColor, QImageReader, QPainterPath, QPen, QPixmap, QPolygonF
 from PyQt5.QtWidgets import QGraphicsPolygonItem
-from PyQt5.QtGui import QBrush, QPen, QColor, QPolygonF, QPixmap, QPainterPath, QImageReader
-from PyQt5.QtCore import Qt, QPointF
+
+from core.logger import app_logger
 from models.tiles.base_tile_item import BaseTileItem
-from models.tiles.tile_data import TileData
-from ui.commands.tile_edit_command import TileEditCommand
 from ui.commands.color_paint_command import ColorPaintCommand
+
 
 class HexTileItem(QGraphicsPolygonItem, BaseTileItem):
     """

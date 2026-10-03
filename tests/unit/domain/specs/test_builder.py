@@ -1,23 +1,21 @@
 """Tests for domain.specs.builder — Rule builder and mask templates."""
 
-import json
 
 import pytest
 
 from domain.specs.base import Specification
 from domain.specs.builder import (
     CompositionType,
+    MaskLibrary,
+    RuleBuilder,
     RuleComponent,
     RuleMask,
-    RuleBuilder,
-    MaskLibrary,
-    trap_template,
-    zone_effect_template,
     combat_prerequisite_template,
     get_default_library,
+    trap_template,
+    zone_effect_template,
 )
 from domain.specs.registry import RuleCategory, RuleRegistry, get_default_registry
-
 
 # ── RuleComponent ────────────────────────────────────────────────────────────
 

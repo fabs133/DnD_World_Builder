@@ -1,11 +1,10 @@
 import pytest
 
 import models.tiles.tile_data as td_mod
-from models.tiles.tile_data import (
-    TileData, TerrainType, TileTag
-)
-from core.gameCreation.trigger import Trigger
 from core.gameCreation.event_bus import EventBus
+from core.gameCreation.trigger import Trigger
+from models.tiles.tile_data import TerrainType, TileData, TileTag
+
 
 # A dummy GameEntity for testing occupancy, to_dict/from_dict
 class DummyEntity:

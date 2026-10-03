@@ -3,25 +3,28 @@
 from __future__ import annotations
 
 import random
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import requests
 
-from core.logger import app_logger
-from core.engine.input_adapter import InputAdapter
-from core.engine.game_state import GameState
-from core.engine.ai.ollama_client import OllamaClient
-from core.engine.ai.action_parser import ActionParser, ParseError
 from core.engine.actions.end_turn_action import EndTurnAction
-from models.flow.action.action import Action
-from models.ai.personality import EntityPersonality
+from core.engine.ai.action_parser import ActionParser, ParseError
+from core.engine.ai.ollama_client import OllamaClient
+from core.engine.game_state import GameState
+from core.engine.input_adapter import InputAdapter
+from core.logger import app_logger
 from models.ai.alignment import Alignment
+from models.ai.personality import EntityPersonality
 from models.ai.prompt_builder import (
-    TacticalPromptBuilder,
-    CombatantInfo,
     ActionOption,
+    CombatantInfo,
     CombatMemory,
+    TacticalPromptBuilder,
 )
+from models.flow.action.action import Action
+
+if TYPE_CHECKING:
+    from core.engine.ai.heuristic_adapter import HeuristicAIAdapter
 
 # Connection errors that indicate Ollama is unreachable (not a parse/logic bug).
 _CONNECTION_ERRORS = (
@@ -68,7 +71,7 @@ class AIAdapter(InputAdapter):
         self._combat_memories: dict[str, CombatMemory] = {}
 
         # Lazily created heuristic fallback (activated on first connection failure)
-        self._fallback: "HeuristicAIAdapter | None" = None
+        self._fallback: HeuristicAIAdapter | None = None
         self._using_fallback = False
 
     def choose_action(
@@ -164,19 +167,19 @@ class AIAdapter(InputAdapter):
         """Choose a target based on personality."""
         if not valid_targets:
             return ""
-        
+
         actor = self._get_actor(entity_name)
         personality = self._get_personality(actor)
         memory = self._get_or_create_memory(entity_name)
-        
+
         # Check for grudge target
         grudge = memory.get_grudge_target()
         if grudge and grudge in valid_targets:
             app_logger.debug(f"[AI] {entity_name} targeting grudge: {grudge}")
             return grudge
-        
+
         weights = personality.tactical_weights
-        
+
         # Target priority: high = biggest threats, low = weakest targets
         if weights.target_priority < 0.4:
             # Target weakest (lowest HP)
@@ -194,11 +197,11 @@ class AIAdapter(InputAdapter):
         """Choose movement based on personality."""
         if not valid_positions:
             return (0, 0)
-        
+
         actor = self._get_actor(entity_name)
         personality = self._get_personality(actor)
         weights = personality.tactical_weights
-        
+
         # Simple heuristic based on aggression
         if weights.aggression > 0.6:
             # Move toward enemies
@@ -225,7 +228,7 @@ class AIAdapter(InputAdapter):
         # Victim remembers who hurt them
         victim_memory = self._get_or_create_memory(victim_name)
         victim_memory.record_damage_taken(attacker_name, amount)
-        
+
         # Witnesses remember
         for witness in (witnessed_by or []):
             if witness != victim_name and witness != attacker_name:
@@ -236,7 +239,7 @@ class AIAdapter(InputAdapter):
         """Record a kill for combat memory."""
         killer_memory = self._get_or_create_memory(killer_name)
         killer_memory.record_kill(victim_name)
-        
+
         # All allies of victim see them fall
         # (Would need faction info to implement fully)
 
@@ -318,12 +321,12 @@ class AIAdapter(InputAdapter):
         """Check if two entity types are allied."""
         player_types = {"player", "ally", "companion"}
         enemy_types = {"enemy", "monster", "hostile"}
-        
+
         a_is_player = type_a in player_types
         b_is_player = type_b in player_types
         a_is_enemy = type_a in enemy_types
         b_is_enemy = type_b in enemy_types
-        
+
         return (a_is_player and b_is_player) or (a_is_enemy and b_is_enemy)
 
     def _build_action_options(self, action_names: list[str]) -> list[ActionOption]:
@@ -450,7 +453,7 @@ class AIAdapter(InputAdapter):
 
         return max(valid_positions, key=min_enemy_distance)
 
-    def _get_fallback(self) -> "HeuristicAIAdapter":
+    def _get_fallback(self) -> HeuristicAIAdapter:
         """Return (and lazily create) the heuristic fallback adapter."""
         if self._fallback is None:
             from core.engine.ai.heuristic_adapter import HeuristicAIAdapter

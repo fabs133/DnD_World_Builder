@@ -1,10 +1,12 @@
-import re
 import logging
+import re
+
 import pytest
 
 import models.flow.action.action as action_mod
-from models.flow.action.action import Action
 from core.logger import app_logger
+from models.flow.action.action import Action
+
 
 class DummyAction(Action):
     def validate(self, game_state=None):

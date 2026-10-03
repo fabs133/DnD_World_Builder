@@ -5,9 +5,9 @@ Draws highlighted tiles along a measured path on the QGraphicsScene.
 
 from __future__ import annotations
 
-from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsTextItem
-from PyQt5.QtGui import QBrush, QColor, QPen, QFont
 from PyQt5.QtCore import QRectF
+from PyQt5.QtGui import QBrush, QColor, QFont, QPen
+from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsTextItem
 
 
 class MeasureOverlay:

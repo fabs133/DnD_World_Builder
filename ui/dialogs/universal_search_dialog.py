@@ -1,11 +1,21 @@
 # dialogs/universal_search_dialog.py
 
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QComboBox,
-    QLineEdit, QListWidget, QPushButton, QLabel, QMessageBox
+    QComboBox,
+    QDialog,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QListWidget,
+    QMessageBox,
+    QPushButton,
+    QVBoxLayout,
 )
+
 from core.rulebook.import_manager import RulebookImporter
+
 from .entity_preview_dialog import EntityPreviewDialog
+
 
 class UniversalSearchDialog(QDialog):
     """

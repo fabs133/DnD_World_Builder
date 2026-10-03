@@ -25,19 +25,18 @@ Each pack lives in its own directory under packs/.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any, Callable
-from enum import Enum
-from datetime import datetime
-from pathlib import Path
 import json
-import urllib.request
-import urllib.error
-import tempfile
 import os
+import tempfile
+import urllib.error
+import urllib.request
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from pathlib import Path
+from typing import Any
 
-from domain.specs.pack import RulePack, PackCategory, PackStats, PackAuthor
-
+from domain.specs.pack import PackCategory, PackStats, RulePack
 
 # Default repository URL (can be overridden)
 DEFAULT_REPO_URL = "https://raw.githubusercontent.com/dnd-worldbuilder/community-rules/main"
@@ -71,15 +70,15 @@ class PackListing:
     stats: PackStats
     updated_at: str
     download_url: str
-    
+
     @property
     def downloads(self) -> int:
         return self.stats.downloads
-    
+
     @property
     def stars(self) -> int:
         return self.stats.stars
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "pack_id": self.pack_id,
@@ -93,7 +92,7 @@ class PackListing:
             "updated_at": self.updated_at,
             "download_url": self.download_url,
         }
-    
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> PackListing:
         return cls(
@@ -121,9 +120,9 @@ class RepositoryIndex:
     packs: list[PackListing] = field(default_factory=list)
     last_updated: str = ""
     repository_version: str = "1.0"
-    
+
     def search(
-        self, 
+        self,
         query: str = "",
         category: PackCategory | None = None,
         tags: list[str] | None = None,
@@ -134,7 +133,7 @@ class RepositoryIndex:
         Search and filter packs.
         """
         results = list(self.packs)
-        
+
         # Filter by query
         if query:
             query = query.lower()
@@ -144,18 +143,18 @@ class RepositoryIndex:
                     query in p.description.lower() or
                     any(query in t.lower() for t in p.tags))
             ]
-        
+
         # Filter by category
         if category:
             results = [p for p in results if p.category == category]
-        
+
         # Filter by tags
         if tags:
             results = [
                 p for p in results
                 if any(t in p.tags for t in tags)
             ]
-        
+
         # Sort
         if sort_by == SortOrder.NEWEST:
             results.sort(key=lambda p: p.updated_at, reverse=True)
@@ -167,23 +166,23 @@ class RepositoryIndex:
             results.sort(key=lambda p: p.name.lower())
         elif sort_by == SortOrder.RECENTLY_UPDATED:
             results.sort(key=lambda p: p.updated_at, reverse=True)
-        
+
         return results[:limit]
-    
+
     def get(self, pack_id: str) -> PackListing | None:
         """Get a specific pack listing."""
         for pack in self.packs:
             if pack.pack_id == pack_id:
                 return pack
         return None
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "packs": [p.to_dict() for p in self.packs],
             "last_updated": self.last_updated,
             "repository_version": self.repository_version,
         }
-    
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> RepositoryIndex:
         return cls(
@@ -216,26 +215,26 @@ class RepositoryClient:
         # Install it
         pack_manager.install(pack)
     """
-    
+
     def __init__(
-        self, 
+        self,
         base_url: str = DEFAULT_REPO_URL,
         cache_dir: str | Path | None = None,
         github_token: str | None = None,
     ):
         self.base_url = base_url.rstrip("/")
         self.github_token = github_token or os.environ.get("GITHUB_TOKEN")
-        
+
         # Setup cache
         if cache_dir:
             self.cache_dir = Path(cache_dir)
         else:
             self.cache_dir = Path(tempfile.gettempdir()) / "dnd_rules_cache"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
-        
+
         self._index: RepositoryIndex | None = None
         self._index_etag: str | None = None
-    
+
     def fetch_index(self, force_refresh: bool = False) -> RepositoryIndex:
         """
         Fetch the repository index.
@@ -243,11 +242,11 @@ class RepositoryClient:
         Uses caching to avoid repeated downloads.
         """
         cache_file = self.cache_dir / "index.json"
-        
+
         # Check cache
         if not force_refresh and self._index:
             return self._index
-        
+
         if not force_refresh and cache_file.exists():
             # Check if cache is recent (< 1 hour)
             age = datetime.now().timestamp() - cache_file.stat().st_mtime
@@ -256,18 +255,18 @@ class RepositoryClient:
                     json.loads(cache_file.read_text())
                 )
                 return self._index
-        
+
         # Fetch from repository
         try:
             url = f"{self.base_url}/index.json"
             data = self._fetch_json(url)
             self._index = RepositoryIndex.from_dict(data)
-            
+
             # Update cache
             cache_file.write_text(json.dumps(data, indent=2))
-            
+
             return self._index
-        
+
         except urllib.error.URLError as e:
             # Fall back to cache if available
             if cache_file.exists():
@@ -276,7 +275,7 @@ class RepositoryClient:
                 )
                 return self._index
             raise ConnectionError(f"Failed to fetch index: {e}")
-    
+
     def download_pack(self, pack_id: str) -> RulePack:
         """
         Download a full pack from the repository.
@@ -284,14 +283,14 @@ class RepositoryClient:
         # Get the listing for download URL
         index = self.fetch_index()
         listing = index.get(pack_id)
-        
+
         if not listing:
             raise ValueError(f"Pack not found: {pack_id}")
-        
+
         # Download pack manifest
         pack_url = listing.download_url or f"{self.base_url}/packs/{pack_id}"
         manifest_data = self._fetch_json(f"{pack_url}/manifest.json")
-        
+
         # Download masks
         masks = []
         masks_url = f"{pack_url}/masks"
@@ -303,7 +302,7 @@ class RepositoryClient:
                 masks.append(mask_data)
         except Exception:
             pass  # No masks directory
-        
+
         # Download rulesets
         rulesets = []
         rulesets_url = f"{pack_url}/rulesets"
@@ -314,38 +313,38 @@ class RepositoryClient:
                 rulesets.append(rs_data)
         except Exception:
             pass  # No rulesets directory
-        
+
         # Build pack
         manifest_data["masks"] = masks
         manifest_data["rulesets"] = rulesets
-        
+
         # Update stats
         self._increment_download_count(pack_id)
-        
+
         return RulePack.from_dict(manifest_data)
-    
+
     def _fetch_json(self, url: str) -> dict:
         """Fetch JSON from URL."""
         request = urllib.request.Request(url)
         request.add_header("Accept", "application/json")
-        
+
         if self.github_token:
             request.add_header("Authorization", f"token {self.github_token}")
-        
+
         with urllib.request.urlopen(request, timeout=30) as response:
             return json.loads(response.read().decode())
-    
+
     def _list_files(self, url: str, extension: str) -> list[str]:
         """List files in a directory (simplified)."""
         # For GitHub raw URLs, we can't list directories
         # This would need to use GitHub API
         # For now, return empty - full implementation would use API
         return []
-    
+
     def _increment_download_count(self, pack_id: str):
         """Track download (would call stats API in real implementation)."""
         pass  # TODO: Implement stats tracking
-    
+
     def search(
         self,
         query: str = "",
@@ -355,7 +354,7 @@ class RepositoryClient:
         """Search the repository."""
         index = self.fetch_index()
         return index.search(query=query, category=category, sort_by=sort_by)
-    
+
     def get_categories(self) -> dict[PackCategory, int]:
         """Get category counts."""
         index = self.fetch_index()
@@ -363,7 +362,7 @@ class RepositoryClient:
         for pack in index.packs:
             counts[pack.category] = counts.get(pack.category, 0) + 1
         return counts
-    
+
     def get_popular_tags(self, limit: int = 20) -> list[tuple[str, int]]:
         """Get most popular tags."""
         index = self.fetch_index()
@@ -371,7 +370,7 @@ class RepositoryClient:
         for pack in index.packs:
             for tag in pack.tags:
                 tag_counts[tag] = tag_counts.get(tag, 0) + 1
-        
+
         sorted_tags = sorted(tag_counts.items(), key=lambda x: x[1], reverse=True)
         return sorted_tags[:limit]
 
@@ -402,7 +401,7 @@ class PackPublisher:
     
     The PR is then reviewed by maintainers before merging.
     """
-    
+
     def __init__(
         self,
         github_token: str,
@@ -413,7 +412,7 @@ class PackPublisher:
         self.repo_owner = repo_owner
         self.repo_name = repo_name
         self.api_base = f"https://api.github.com/repos/{repo_owner}/{repo_name}"
-    
+
     def publish(self, pack: RulePack) -> PublishResult:
         """
         Publish a pack to the repository.
@@ -422,56 +421,56 @@ class PackPublisher:
         """
         from domain.specs.pack import PackValidator
         from domain.specs.registry import get_default_registry
-        
+
         # Validate first
         validator = PackValidator(get_default_registry())
         validation = validator.validate(pack)
-        
+
         if not validation.valid:
             return PublishResult(
                 success=False,
                 message="Pack validation failed",
                 errors=validation.errors,
             )
-        
+
         try:
             # Create branch
             branch_name = f"add-pack-{pack.pack_id}-{pack.version}"
             self._create_branch(branch_name)
-            
+
             # Add pack files
             self._add_pack_to_branch(pack, branch_name)
-            
+
             # Update index
             self._update_index(pack, branch_name)
-            
+
             # Create PR
             pr_url = self._create_pull_request(
                 branch_name,
                 title=f"Add pack: {pack.name} v{pack.version}",
                 body=self._generate_pr_body(pack),
             )
-            
+
             return PublishResult(
                 success=True,
                 message="Pull request created successfully",
                 pr_url=pr_url,
             )
-        
+
         except Exception as e:
             return PublishResult(
                 success=False,
                 message=f"Publishing failed: {str(e)}",
                 errors=[str(e)],
             )
-    
+
     def _create_branch(self, branch_name: str):
         """Create a new branch from main."""
         # Get main branch SHA
         # Create new branch
         # (GitHub API calls)
         pass
-    
+
     def _add_pack_to_branch(self, pack: RulePack, branch: str):
         """Add pack files to the branch."""
         # Create pack directory structure
@@ -480,7 +479,7 @@ class PackPublisher:
         # Add rulesets/*.json
         # (GitHub API calls)
         pass
-    
+
     def _update_index(self, pack: RulePack, branch: str):
         """Update index.json with new pack."""
         # Fetch current index
@@ -488,13 +487,13 @@ class PackPublisher:
         # Commit updated index
         # (GitHub API calls)
         pass
-    
+
     def _create_pull_request(self, branch: str, title: str, body: str) -> str:
         """Create a pull request."""
         # Create PR via GitHub API
         # Return PR URL
         return f"https://github.com/{self.repo_owner}/{self.repo_name}/pull/999"
-    
+
     def _generate_pr_body(self, pack: RulePack) -> str:
         """Generate PR description."""
         return f"""
@@ -530,26 +529,26 @@ class IndexGenerator:
     
     Run this after merging new packs to update the index.
     """
-    
+
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
         self.packs_dir = self.repo_path / "packs"
-    
+
     def generate(self) -> RepositoryIndex:
         """Generate index from pack directories."""
         listings = []
-        
+
         for pack_dir in self.packs_dir.iterdir():
             if not pack_dir.is_dir():
                 continue
-            
+
             manifest_file = pack_dir / "manifest.json"
             if not manifest_file.exists():
                 continue
-            
+
             try:
                 manifest = json.loads(manifest_file.read_text())
-                
+
                 listing = PackListing(
                     pack_id=manifest["pack_id"],
                     name=manifest["name"],
@@ -563,15 +562,15 @@ class IndexGenerator:
                     download_url=f"packs/{pack_dir.name}",
                 )
                 listings.append(listing)
-            
+
             except Exception as e:
                 print(f"Error processing {pack_dir}: {e}")
-        
+
         return RepositoryIndex(
             packs=listings,
             last_updated=datetime.utcnow().isoformat(),
         )
-    
+
     def save_index(self):
         """Generate and save index.json."""
         index = self.generate()
@@ -596,7 +595,7 @@ class Collection:
     description: str
     pack_ids: list[str]
     icon: str = "📚"
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "collection_id": self.collection_id,
@@ -605,7 +604,7 @@ class Collection:
             "pack_ids": self.pack_ids,
             "icon": self.icon,
         }
-    
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Collection:
         return cls(**data)

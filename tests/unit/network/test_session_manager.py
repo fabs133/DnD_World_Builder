@@ -1,12 +1,13 @@
 """Tests for SessionManager using InMemory transport."""
-import asyncio
 import time
+
 import pytest
 from PyQt5.QtWidgets import QApplication
-from network.session_manager import SessionManager
-from network.transport import InMemoryServer, InMemoryClient
-from models.game_master import Gamemaster
+
 from models.entities.game_entity import GameEntity
+from models.game_master import Gamemaster
+from network.session_manager import SessionManager
+from network.transport import InMemoryClient, InMemoryServer
 
 
 def _wait_for_signals(seconds=0.5, steps=10):
@@ -133,6 +134,20 @@ class TestSessionManagerJoin:
 
         assert len(chat_received) == 1
         assert chat_received[0] == ("Alice", "Hello!")
+
+    def test_turn_change_signal_wiring(self, gamemaster):
+        """The _on_turn_change callback emits turn_changed(entity, round)."""
+        from network.protocol import make_turn_change
+
+        sm = SessionManager(gamemaster=gamemaster)
+        received = []
+        sm.signals.turn_changed.connect(lambda name, rnd: received.append((name, rnd)))
+
+        sm._on_turn_change(make_turn_change("Goblin", 3))
+
+        _wait_for_signals(0.2)
+
+        assert received == [("Goblin", 3)]
 
 
 class TestSessionManagerSignals:

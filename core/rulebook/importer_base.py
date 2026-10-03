@@ -1,5 +1,7 @@
 import re
-from core.db_api_handler import LocalAPIHandler  # Make sure this import is correct
+
+from core.db_api_handler import LocalAPIHandler  # noqa: F401  (patched by tests)
+
 
 class BaseImporter:
     """

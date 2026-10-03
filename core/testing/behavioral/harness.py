@@ -2,23 +2,23 @@
 
 from __future__ import annotations
 
+import concurrent.futures
 import random
 import re
 import time
-import concurrent.futures
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any
 
-from models.game_master import Gamemaster
-from models.world.world import World
-from models.ai.alignment import Alignment
-from models.ai.personality import EntityPersonality
+from core.engine.actions.attack_action import AttackAction
 from core.engine.game_session import GameSession
 from core.engine.input_adapter import InputAdapter
-from core.engine.actions.attack_action import AttackAction
-from core.testing.behavioral.stats import BehaviorEvent, EntityRunStats, BehaviorStats
 from core.testing.behavioral.mock_ai import MockAIAdapter
-
+from core.testing.behavioral.stats import BehaviorEvent, BehaviorStats, EntityRunStats
+from models.ai.alignment import Alignment
+from models.ai.personality import EntityPersonality
+from models.game_master import Gamemaster
+from models.world.world import World
 
 # ---------------------------------------------------------------------------
 # Lightweight entity for behavioral testing

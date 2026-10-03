@@ -1,7 +1,9 @@
 import logging
+
 import pytest
-from models.flow.condition.condition_list import AlwaysTrue, PerceptionCheck
+
 from core.logger import app_logger
+from models.flow.condition.condition_list import AlwaysTrue, PerceptionCheck
 
 
 def test_always_true():
@@ -46,7 +48,6 @@ def test_perception_check_serialization_roundtrip():
     assert isinstance(loaded, PerceptionCheck)
     assert loaded.dc == 13
 
-import pytest
 
 @pytest.mark.parametrize("dc,perception,expected", [
     (10, 15, True),

@@ -1,18 +1,16 @@
 """Integration test: full combat with mocked AI responses (no real LLM needed)."""
 
-import pytest
+import random
 from unittest.mock import MagicMock
-from core.engine.game_session import GameSession
-from core.engine.input_adapter import TestAdapter
+
+from core.engine.actions.attack_action import AttackAction
+from core.engine.ai import AGGRESSIVE
 from core.engine.ai.ai_adapter import AIAdapter
 from core.engine.ai.ollama_client import OllamaClient
-from core.engine.ai import AGGRESSIVE
-from core.engine.actions.end_turn_action import EndTurnAction
-from core.engine.actions.attack_action import AttackAction
+from core.engine.game_session import GameSession
+from core.engine.input_adapter import TestAdapter
 from models.game_master import Gamemaster
 from models.world.world import World
-
-import random
 
 
 class SimpleEntity:

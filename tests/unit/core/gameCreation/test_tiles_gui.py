@@ -1,9 +1,10 @@
-import json
-import pytest
 from pathlib import Path as RealPath
+
+import pytest
 from PyQt5.QtWidgets import QInputDialog, QMessageBox, QPushButton
-from ui.scenario_overview import ScenarioOverviewWidget
+
 from core.gameCreation.tiles_gui import MainMenuDialog
+from ui.scenario_overview import ScenarioOverviewWidget
 
 
 class DummySettings:

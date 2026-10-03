@@ -1,15 +1,12 @@
 import json
 import math
-import tempfile
-from pathlib import Path
 
 import pytest
-from PyQt5.QtCore import QPointF
 
-import ui.main_window
-from ui.main_window import MainWindow, hex_tile_center
-from models.tiles.square_tile_item import SquareTileItem
 from models.tiles.hex_tile_item import HexTileItem
+from models.tiles.square_tile_item import SquareTileItem
+from ui.main_window import MainWindow, hex_tile_center
+
 
 @pytest.fixture
 def dummy_settings(tmp_path):

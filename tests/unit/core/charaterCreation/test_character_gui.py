@@ -1,8 +1,10 @@
 # tests/unit/core/characterCreation/test_character_gui.py
 
 import json
+
 import pytest
-from PyQt5.QtWidgets import QInputDialog, QApplication
+from PyQt5.QtWidgets import QApplication, QInputDialog
+
 from core.characterCreation.character_gui import CharacterCreationWindow
 
 
@@ -33,12 +35,12 @@ class DummyAPI:
                 {"name": "Light", "url": "/api/subclasses/light", "class": {"name": "Cleric"}}
             ]
         return []
-    
+
     def get_raw(self, path):
         if path.startswith("/api/races/"):
             return {"speed": 25, "ability_bonuses": [{"bonus": 2}]}
         return {}
-    
+
     def list_categories(self):
         return ["languages", "classes", "races", "levels", "subclasses"]
 

@@ -1,5 +1,7 @@
 import pytest
+
 from utils.string.slugify import slugify
+
 
 @pytest.mark.parametrize("input_str, expected", [
     ("Dragon Turtle",       "dragon-turtle"),

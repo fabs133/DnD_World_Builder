@@ -1,4 +1,5 @@
-from models.flow.action.action import roll, apply_effect
+from models.flow.action.action import apply_effect, roll
+
 
 class Spell:
     """

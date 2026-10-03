@@ -1,6 +1,8 @@
+import json
+
 from models.entities.enemy import Enemy
 from models.spell import Spell
-import json
+
 
 class NamedEnemy(Enemy):
     """
@@ -71,7 +73,7 @@ class NamedEnemy(Enemy):
             resistances, immunities, vulnerabilities, condition_immunities,
             challenge_rating, xp, conditions, initiative, spells
         )
-        
+
         self.backstory = backstory
         self.legendary_actions = legendary_actions
         self.lair_actions = lair_actions

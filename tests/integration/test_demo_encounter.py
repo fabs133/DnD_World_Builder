@@ -1,16 +1,14 @@
 """Integration test for the demo encounter scenario."""
 
-import pytest
+import random
 from unittest.mock import MagicMock
-from core.engine.scenarios.demo_encounter import build_demo_encounter, DemoEntity
-from core.engine.input_adapter import TestAdapter
+
+from core.engine.actions.end_turn_action import EndTurnAction
+from core.engine.ai import AGGRESSIVE
 from core.engine.ai.ai_adapter import AIAdapter
 from core.engine.ai.ollama_client import OllamaClient
-from core.engine.ai import AGGRESSIVE
-from core.engine.actions.attack_action import AttackAction
-from core.engine.actions.end_turn_action import EndTurnAction
-
-import random
+from core.engine.input_adapter import TestAdapter
+from core.engine.scenarios.demo_encounter import DemoEntity, build_demo_encounter
 
 
 class TestDemoEncounter:

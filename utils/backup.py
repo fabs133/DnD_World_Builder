@@ -1,5 +1,6 @@
-import shutil
 import os
+import shutil
+
 from core.logger import app_logger
 
 
@@ -17,7 +18,7 @@ def create_backup(path):
     """
     if not os.path.exists(path):
         raise FileNotFoundError(f"Cannot backup: {path} not found")
-    
+
     backup_path = f"{path}.bak"
     shutil.copy2(path, backup_path)
     app_logger.info(f"Backup created: {backup_path}")

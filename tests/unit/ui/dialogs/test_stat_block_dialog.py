@@ -1,8 +1,9 @@
 import pytest
-from ui.dialogs.stat_block_dialog import StatBlockDialog
-from models.entities.game_entity import GameEntity
+
 from models.entities.enemy import Enemy
+from models.entities.game_entity import GameEntity
 from models.entities.named_enemy import NamedEnemy
+from ui.dialogs.stat_block_dialog import StatBlockDialog
 
 
 @pytest.fixture

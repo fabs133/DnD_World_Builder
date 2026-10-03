@@ -15,8 +15,9 @@ Design principles (from Agent Specification Pattern):
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Generic, TypeVar, Callable
+from typing import Any, Generic, TypeVar
 
 # Type variable for the candidate being evaluated
 T = TypeVar("T")
@@ -47,15 +48,15 @@ class SpecResult:
     suggested_fix: str | None = None
     tags: frozenset[str] = field(default_factory=frozenset)
     data: dict[str, Any] = field(default_factory=dict)
-    
+
     def __bool__(self) -> bool:
         """Allow using SpecResult directly in boolean context."""
         return self.passed
-    
+
     def __repr__(self) -> str:
         status = "✓" if self.passed else "✗"
         return f"SpecResult({status} {self.rule_id}: {self.message})"
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Serialize for logging/storage."""
         return {
@@ -66,7 +67,7 @@ class SpecResult:
             "tags": list(self.tags),
             "data": self.data,
         }
-    
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> SpecResult:
         """Deserialize from dict."""
@@ -114,7 +115,7 @@ class Specification(ABC, Generic[T]):
                     data={"required": self.required, "available": available}
                 )
     """
-    
+
     @property
     @abstractmethod
     def rule_id(self) -> str:
@@ -129,7 +130,7 @@ class Specification(ABC, Generic[T]):
         Should be deterministic based on spec parameters.
         """
         pass
-    
+
     @abstractmethod
     def is_satisfied_by(self, candidate: T, context: dict[str, Any] | None = None) -> SpecResult:
         """
@@ -149,22 +150,22 @@ class Specification(ABC, Generic[T]):
             - MUST NOT mutate candidate or context
         """
         pass
-    
+
     def __and__(self, other: Specification[T]) -> AndSpec[T]:
         """Compose with AND: both must pass."""
         return AndSpec(self, other)
-    
+
     def __or__(self, other: Specification[T]) -> OrSpec[T]:
         """Compose with OR: at least one must pass."""
         return OrSpec(self, other)
-    
+
     def __invert__(self) -> NotSpec[T]:
         """Negate: passes when inner fails."""
         return NotSpec(self)
-    
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.rule_id})"
-    
+
     def to_dict(self) -> dict[str, Any]:
         """
         Serialize the specification for storage.
@@ -172,7 +173,7 @@ class Specification(ABC, Generic[T]):
         Override in subclasses to include parameters.
         """
         return {"type": self.__class__.__name__}
-    
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Specification:
         """
@@ -196,18 +197,18 @@ class AndSpec(Specification[T]):
     
     Short-circuits on first failure for efficiency.
     """
-    
+
     def __init__(self, left: Specification[T], right: Specification[T]):
         self.left = left
         self.right = right
-    
+
     @property
     def rule_id(self) -> str:
         return f"({self.left.rule_id} AND {self.right.rule_id})"
-    
+
     def is_satisfied_by(self, candidate: T, context: dict[str, Any] | None = None) -> SpecResult:
         left_result = self.left.is_satisfied_by(candidate, context)
-        
+
         if not left_result.passed:
             # Short-circuit: return the failure
             return SpecResult(
@@ -218,9 +219,9 @@ class AndSpec(Specification[T]):
                 tags=left_result.tags | frozenset({"and_failed_left"}),
                 data={"failed_rule": self.left.rule_id, "result": left_result.to_dict()}
             )
-        
+
         right_result = self.right.is_satisfied_by(candidate, context)
-        
+
         if not right_result.passed:
             return SpecResult(
                 rule_id=self.rule_id,
@@ -230,7 +231,7 @@ class AndSpec(Specification[T]):
                 tags=right_result.tags | frozenset({"and_failed_right"}),
                 data={"failed_rule": self.right.rule_id, "result": right_result.to_dict()}
             )
-        
+
         # Both passed
         return SpecResult(
             rule_id=self.rule_id,
@@ -242,7 +243,7 @@ class AndSpec(Specification[T]):
                 "right": right_result.to_dict()
             }
         )
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "type": "AndSpec",
@@ -257,18 +258,18 @@ class OrSpec(Specification[T]):
     
     Short-circuits on first success.
     """
-    
+
     def __init__(self, left: Specification[T], right: Specification[T]):
         self.left = left
         self.right = right
-    
+
     @property
     def rule_id(self) -> str:
         return f"({self.left.rule_id} OR {self.right.rule_id})"
-    
+
     def is_satisfied_by(self, candidate: T, context: dict[str, Any] | None = None) -> SpecResult:
         left_result = self.left.is_satisfied_by(candidate, context)
-        
+
         if left_result.passed:
             # Short-circuit: return the success
             return SpecResult(
@@ -278,9 +279,9 @@ class OrSpec(Specification[T]):
                 tags=left_result.tags | frozenset({"or_passed_left"}),
                 data={"passed_rule": self.left.rule_id, "result": left_result.to_dict()}
             )
-        
+
         right_result = self.right.is_satisfied_by(candidate, context)
-        
+
         if right_result.passed:
             return SpecResult(
                 rule_id=self.rule_id,
@@ -289,7 +290,7 @@ class OrSpec(Specification[T]):
                 tags=right_result.tags | frozenset({"or_passed_right"}),
                 data={"passed_rule": self.right.rule_id, "result": right_result.to_dict()}
             )
-        
+
         # Both failed - combine failure info
         return SpecResult(
             rule_id=self.rule_id,
@@ -302,7 +303,7 @@ class OrSpec(Specification[T]):
                 "right": right_result.to_dict()
             }
         )
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "type": "OrSpec",
@@ -315,17 +316,17 @@ class NotSpec(Specification[T]):
     """
     Inverts the inner specification: passes when inner fails.
     """
-    
+
     def __init__(self, inner: Specification[T]):
         self.inner = inner
-    
+
     @property
     def rule_id(self) -> str:
         return f"(NOT {self.inner.rule_id})"
-    
+
     def is_satisfied_by(self, candidate: T, context: dict[str, Any] | None = None) -> SpecResult:
         inner_result = self.inner.is_satisfied_by(candidate, context)
-        
+
         return SpecResult(
             rule_id=self.rule_id,
             passed=not inner_result.passed,
@@ -334,7 +335,7 @@ class NotSpec(Specification[T]):
             tags=inner_result.tags | frozenset({"negated"}),
             data={"inner_result": inner_result.to_dict()}
         )
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "type": "NotSpec",
@@ -355,35 +356,35 @@ class AllOf(Specification[T]):
     - Returns a list of all failures in data
     - Useful for validation where you want all errors at once
     """
-    
+
     def __init__(self, *specs: Specification[T], short_circuit: bool = False):
         self.specs = list(specs)
         self.short_circuit = short_circuit
-    
+
     @property
     def rule_id(self) -> str:
         inner = ", ".join(s.rule_id for s in self.specs)
         return f"AllOf({inner})"
-    
+
     def is_satisfied_by(self, candidate: T, context: dict[str, Any] | None = None) -> SpecResult:
         results: list[SpecResult] = []
         failures: list[SpecResult] = []
-        
+
         for spec in self.specs:
             result = spec.is_satisfied_by(candidate, context)
             results.append(result)
-            
+
             if not result.passed:
                 failures.append(result)
                 if self.short_circuit:
                     break
-        
+
         if failures:
             # Aggregate failure messages
             messages = [f.message for f in failures]
             first_fix = next((f.suggested_fix for f in failures if f.suggested_fix), None)
             all_tags = frozenset().union(*(f.tags for f in failures))
-            
+
             return SpecResult(
                 rule_id=self.rule_id,
                 passed=False,
@@ -397,7 +398,7 @@ class AllOf(Specification[T]):
                     "failures": [f.to_dict() for f in failures],
                 }
             )
-        
+
         return SpecResult(
             rule_id=self.rule_id,
             passed=True,
@@ -405,7 +406,7 @@ class AllOf(Specification[T]):
             tags=frozenset().union(*(r.tags for r in results)),
             data={"total": len(self.specs), "results": [r.to_dict() for r in results]}
         )
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "type": "AllOf",
@@ -422,29 +423,29 @@ class AnyOf(Specification[T]):
     - Can short-circuit on first success (default) or evaluate all
     - Returns which spec(s) passed in data
     """
-    
+
     def __init__(self, *specs: Specification[T], short_circuit: bool = True):
         self.specs = list(specs)
         self.short_circuit = short_circuit
-    
+
     @property
     def rule_id(self) -> str:
         inner = ", ".join(s.rule_id for s in self.specs)
         return f"AnyOf({inner})"
-    
+
     def is_satisfied_by(self, candidate: T, context: dict[str, Any] | None = None) -> SpecResult:
         results: list[SpecResult] = []
         successes: list[SpecResult] = []
-        
+
         for spec in self.specs:
             result = spec.is_satisfied_by(candidate, context)
             results.append(result)
-            
+
             if result.passed:
                 successes.append(result)
                 if self.short_circuit:
                     break
-        
+
         if successes:
             first = successes[0]
             return SpecResult(
@@ -457,12 +458,12 @@ class AnyOf(Specification[T]):
                     "successes": [s.to_dict() for s in successes],
                 }
             )
-        
+
         # All failed
         messages = [r.message for r in results]
         fixes = [r.suggested_fix for r in results if r.suggested_fix]
         all_tags = frozenset().union(*(r.tags for r in results))
-        
+
         return SpecResult(
             rule_id=self.rule_id,
             passed=False,
@@ -474,7 +475,7 @@ class AnyOf(Specification[T]):
                 "failures": [r.to_dict() for r in results],
             }
         )
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "type": "AnyOf",
@@ -489,11 +490,11 @@ class AnyOf(Specification[T]):
 
 class AlwaysTrue(Specification[T]):
     """Specification that always passes. Useful for testing and as a default."""
-    
+
     @property
     def rule_id(self) -> str:
         return "always_true"
-    
+
     def is_satisfied_by(self, candidate: T, context: dict[str, Any] | None = None) -> SpecResult:
         return SpecResult(
             rule_id=self.rule_id,
@@ -501,10 +502,10 @@ class AlwaysTrue(Specification[T]):
             message="Always passes",
             tags=frozenset({"constant"})
         )
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {"type": "AlwaysTrue"}
-    
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> AlwaysTrue:
         return cls()
@@ -512,15 +513,15 @@ class AlwaysTrue(Specification[T]):
 
 class AlwaysFalse(Specification[T]):
     """Specification that always fails. Useful for testing and blocking."""
-    
+
     def __init__(self, message: str = "Always fails", suggested_fix: str | None = None):
         self._message = message
         self._suggested_fix = suggested_fix
-    
+
     @property
     def rule_id(self) -> str:
         return "always_false"
-    
+
     def is_satisfied_by(self, candidate: T, context: dict[str, Any] | None = None) -> SpecResult:
         return SpecResult(
             rule_id=self.rule_id,
@@ -529,14 +530,14 @@ class AlwaysFalse(Specification[T]):
             suggested_fix=self._suggested_fix,
             tags=frozenset({"constant", "blocker"})
         )
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "type": "AlwaysFalse",
             "message": self._message,
             "suggested_fix": self._suggested_fix,
         }
-    
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> AlwaysFalse:
         return cls(
@@ -559,7 +560,7 @@ class LambdaSpec(Specification[T]):
             fail_message="Must be 18 or older"
         )
     """
-    
+
     def __init__(
         self,
         rule_id: str,
@@ -575,11 +576,11 @@ class LambdaSpec(Specification[T]):
         self._fail_message = fail_message
         self._suggested_fix = suggested_fix
         self._tags = tags or frozenset()
-    
+
     @property
     def rule_id(self) -> str:
         return self._rule_id
-    
+
     def is_satisfied_by(self, candidate: T, context: dict[str, Any] | None = None) -> SpecResult:
         passed = self._predicate(candidate, context)
         return SpecResult(

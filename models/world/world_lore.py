@@ -1,5 +1,7 @@
 import json
+
 from core.logger import app_logger
+
 
 class WorldLore:
     """

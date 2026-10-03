@@ -1,9 +1,9 @@
 import pytest
-from PyQt5.QtWidgets import QListWidgetItem
-from models.entities.game_entity import GameEntity
 
 import ui.dialogs.entity_editor_dialog as ed_mod
+from models.entities.game_entity import GameEntity
 from ui.dialogs.entity_editor_dialog import EntityEditorDialog
+
 
 class DummyEntity(GameEntity):
     def __init__(self, name, etype):
@@ -33,7 +33,8 @@ def test_initial_list_empty(dlg):
 
 def test_add_and_remove_entity(monkeypatch, dlg, tile_data):
     # Define and inject FakeNewDialog before calling add_entity
-    import sys, types
+    import sys
+    import types
     added = DummyEntity("Goblin", "enemy")
     class FakeNewDialog:
         def exec_(self): return True
@@ -58,7 +59,7 @@ def test_import_from_rulebook(monkeypatch, dlg, tile_data):
     # Stub UniversalSearchDialog
     monster = DummyEntity("Ogre", "enemy")
     class FakeSearch:
-        def __init__(self, mode): 
+        def __init__(self, mode):
             assert mode == "monster"
         def exec_(self): return True
         def get_selected_object(self): return monster
@@ -97,7 +98,8 @@ def test_remove_nothing_when_none_selected(dlg, tile_data):
 
 def test_add_entity_cancel(monkeypatch, dlg, tile_data):
     # Define FakeNewDialog returning False, then inject
-    import sys, types
+    import sys
+    import types
     class FakeNewDialog:
         def exec_(self): return False
     fake_mod_cancel = types.SimpleNamespace(NewEntityDialog=FakeNewDialog)

@@ -1,6 +1,5 @@
 """Tests for MoveAction."""
 
-import pytest
 from core.engine.actions.move_action import MoveAction
 from models.world.world_tile_manager import WorldTileManager
 

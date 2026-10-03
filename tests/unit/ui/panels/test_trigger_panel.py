@@ -1,8 +1,9 @@
 """Tests for TriggerPanel: load, list, filter, add/delete."""
 
-import pytest
 from types import SimpleNamespace
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
+
+import pytest
 
 from ui.panels.trigger_panel import TriggerPanel
 

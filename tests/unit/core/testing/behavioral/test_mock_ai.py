@@ -1,13 +1,11 @@
 """Tests for MockAIAdapter deterministic AI."""
 
 import random
-import pytest
 
-from core.testing.behavioral.mock_ai import MockAIAdapter
-from core.testing.behavioral.stats import BehaviorEvent, EntityRunStats
 from core.engine.actions.attack_action import AttackAction
 from core.engine.actions.end_turn_action import EndTurnAction
-from core.engine.game_state import GameState
+from core.testing.behavioral.mock_ai import MockAIAdapter
+from core.testing.behavioral.stats import BehaviorEvent, EntityRunStats
 from models.ai.alignment import Alignment
 from models.ai.personality import EntityPersonality
 

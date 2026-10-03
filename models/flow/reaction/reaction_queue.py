@@ -1,5 +1,6 @@
 from core.logger import app_logger
 
+
 class ReactionQueue:
     """
     A queue to manage and resolve reaction objects.

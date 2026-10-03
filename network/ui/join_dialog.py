@@ -7,8 +7,11 @@ connect to a hosted multiplayer session.
 """
 
 from PyQt5.QtWidgets import (
-    QDialog, QFormLayout, QLineEdit, QSpinBox,
+    QDialog,
     QDialogButtonBox,
+    QFormLayout,
+    QLineEdit,
+    QSpinBox,
 )
 
 

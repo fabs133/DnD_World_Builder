@@ -1,5 +1,6 @@
-from models.flow.reaction.reactions import Reactions
 from core.logger import app_logger
+from models.flow.reaction.reactions import Reactions
+
 
 class ApplyDamage(Reactions):
     """

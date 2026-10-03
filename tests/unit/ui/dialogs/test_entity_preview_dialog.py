@@ -1,7 +1,9 @@
 import pytest
-from PyQt5.QtWidgets import QLineEdit, QTextEdit, QComboBox
+from PyQt5.QtWidgets import QComboBox, QLineEdit, QTextEdit
+
 from models.entities.game_entity import GameEntity
 from ui.dialogs.entity_preview_dialog import EntityPreviewDialog
+
 
 class DummyEntity(GameEntity):
     def __init__(self, name, etype, stats, inventory):

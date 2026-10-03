@@ -1,11 +1,11 @@
-from versioning.migrations import user_profile, settings, map_data
+from versioning.migrations import user_profile
 
 #: Registry mapping data types to their migration functions by version.
-#: 
+#:
 #: The structure is:
-#: 
+#:
 #: .. code-block:: python
-#: 
+#:
 #:     {
 #:         "DataType": {
 #:             version_number: migration_function_or_None,
@@ -13,7 +13,7 @@ from versioning.migrations import user_profile, settings, map_data
 #:         },
 #:         ...
 #:     }
-#: 
+#:
 #: Each migration function should accept the old data format and return the new format.
 update_registry = {
     "UserProfile": {

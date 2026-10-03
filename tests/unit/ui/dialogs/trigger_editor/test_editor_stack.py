@@ -1,8 +1,8 @@
 """Tests for TriggerEditorStack view switching."""
 
-import pytest
 from unittest.mock import MagicMock
 
+import pytest
 from PyQt5.QtWidgets import QStackedWidget, QWidget
 
 

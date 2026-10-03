@@ -1,18 +1,15 @@
 """Tests for AIAdapter fallback to HeuristicAIAdapter on connection failure."""
 
 import logging
-
-import pytest
 from unittest.mock import MagicMock
+
 import requests
 
-from core.engine.ai.ai_adapter import AIAdapter
-from core.engine.ai.heuristic_adapter import HeuristicAIAdapter
-from core.engine.ai.ollama_client import OllamaClient
-from core.engine.game_state import GameState, EntitySnapshot
 from core.engine.actions.attack_action import AttackAction
-from core.engine.actions.move_action import MoveAction
 from core.engine.actions.end_turn_action import EndTurnAction
+from core.engine.ai.ai_adapter import AIAdapter
+from core.engine.ai.ollama_client import OllamaClient
+from core.engine.game_state import EntitySnapshot, GameState
 
 
 class SimpleEntity:

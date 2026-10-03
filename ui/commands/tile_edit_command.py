@@ -1,5 +1,7 @@
-from PyQt5.QtWidgets import QUndoCommand
 from copy import deepcopy
+
+from PyQt5.QtWidgets import QUndoCommand
+
 
 class TileEditCommand(QUndoCommand):
     """

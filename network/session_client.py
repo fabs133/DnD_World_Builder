@@ -10,12 +10,17 @@ and chat messages. Players send actions through this client.
 """
 
 import logging
-from network.transport import TransportClient
+
 from network.protocol import (
-    Message, MessageType,
-    make_hello, make_disconnect, make_claim_entity,
-    make_chat, make_action_request,
+    Message,
+    MessageType,
+    make_action_request,
+    make_chat,
+    make_claim_entity,
+    make_disconnect,
+    make_hello,
 )
+from network.transport import TransportClient
 
 logger = logging.getLogger(__name__)
 
@@ -88,7 +93,8 @@ class SessionClient:
 
         Call after :meth:`connect`. Updates :attr:`world_state` and
         :attr:`turn_state` from FULL_STATE and STATE_DELTA messages,
-        and fires registered callbacks via :meth:`on`.
+        and fires registered callbacks via :meth:`on` for every message type,
+        including ``TURN_CHANGE`` broadcasts.
         """
         while self.conn and not self.conn.closed:
             try:

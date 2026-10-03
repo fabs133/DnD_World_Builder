@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from domain.specs.base import SpecResult, AllOf
+from domain.specs.base import SpecResult
 from domain.specs.entity import CanTakeAction, IsAlive
 from models.flow.action.action import Action
 
@@ -19,6 +19,7 @@ class ActionResult:
     spec_results: list[SpecResult] = field(default_factory=list)
     execution_log: list[str] = field(default_factory=list)
     error: str | None = None
+    data: dict[str, Any] = field(default_factory=dict)  #: Payload returned by ``action.execute()``
 
 
 class ActionExecutor:
@@ -38,8 +39,9 @@ class ActionExecutor:
 
         1. Build spec chain for this action type
         2. Evaluate all specs
-        3. If all pass, call action.execute()
-        4. Return structured ActionResult
+        3. Check the action's own rules via ``action.validate()``
+        4. If all pass, call action.execute()
+        5. Return structured ActionResult
         """
         spec_results = self.validate_only(action, actor, game_state, context)
         failures = [r for r in spec_results if not r.passed]
@@ -53,13 +55,26 @@ class ActionExecutor:
                 error=failures[0].message,
             )
 
+        # Action-level rules (path, range, speed). Only an explicit False rejects:
+        # the base Action.validate() returns None.
+        if action.validate(game_state) is False:
+            log = list(action.execution_log)
+            return ActionResult(
+                success=False,
+                action=action,
+                spec_results=spec_results,
+                execution_log=log,
+                error=log[-1] if log else f"{action.__class__.__name__} is not valid",
+            )
+
         try:
-            result = action.execute(game_state)
+            data = action.execute(game_state) or {}
             return ActionResult(
                 success=True,
                 action=action,
                 spec_results=spec_results,
                 execution_log=list(action.execution_log),
+                data=data,
             )
         except Exception as exc:
             return ActionResult(

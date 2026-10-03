@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import QMainWindow, QStackedWidget
+
+from core.settings_manager import SettingsManager
 from ui.main_window import MainWindow
 from ui.scenario_overview import ScenarioOverviewWidget
-from core.settings_manager import SettingsManager
 
 
 class MainController(QMainWindow):

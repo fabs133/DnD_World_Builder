@@ -42,7 +42,7 @@ def _heuristic(
 def find_path(
     start: tuple[int, int],
     goal: tuple[int, int],
-    tile_map: "WorldTileManager",
+    tile_map: WorldTileManager,
 ) -> list[tuple[int, int]] | None:
     """Return the shortest path from *start* to *goal*, or ``None``.
 
@@ -91,7 +91,7 @@ def find_path(
 def reachable_tiles(
     origin: tuple[int, int],
     budget: int,
-    tile_map: "WorldTileManager",
+    tile_map: WorldTileManager,
 ) -> dict[tuple[int, int], int]:
     """Dijkstra flood-fill: tiles reachable within *budget* movement cost.
 
@@ -128,7 +128,7 @@ def reachable_tiles(
 
 def path_cost(
     path: list[tuple[int, int]],
-    tile_map: "WorldTileManager",
+    tile_map: WorldTileManager,
 ) -> int:
     """Sum of movement costs along *path* (excludes the start tile)."""
     if len(path) < 2:

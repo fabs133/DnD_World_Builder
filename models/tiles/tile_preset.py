@@ -1,7 +1,7 @@
 from copy import deepcopy
-from models.tiles.tile_data import TerrainType, TileTag, TileData
-from core.gameCreation.trigger import Trigger
-from models.entities.game_entity import GameEntity
+
+from models.tiles.tile_data import TileData
+
 
 class TilePreset:
     """

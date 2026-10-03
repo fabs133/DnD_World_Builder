@@ -1,9 +1,9 @@
 """Tests for GameState immutable snapshots."""
 
 import pytest
-from core.engine.game_state import GameState, EntitySnapshot, TileSnapshot, _infer_faction
+
+from core.engine.game_state import EntitySnapshot, GameState, _infer_faction
 from models.game_master import Gamemaster
-from models.entities.game_entity import GameEntity
 
 
 class SimpleEntity:

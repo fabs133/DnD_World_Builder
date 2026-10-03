@@ -1,4 +1,3 @@
-import pytest
 from models.flow.reaction.play_sound import PlaySound
 
 

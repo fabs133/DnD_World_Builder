@@ -1,5 +1,6 @@
 # trigger_editor/list_view.py
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel
+from PyQt5.QtWidgets import QLabel, QListWidget, QVBoxLayout, QWidget
+
 
 class TriggerListView(QWidget):
     """

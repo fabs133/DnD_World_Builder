@@ -3,15 +3,15 @@
 from __future__ import annotations
 
 import random
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any
 
-from core.logger import app_logger
-from models.game_master import Gamemaster
+from core.engine.action_executor import ActionExecutor, ActionResult
 from core.engine.game_state import GameState
 from core.engine.initiative import InitiativeTracker
-from core.engine.action_executor import ActionExecutor, ActionResult
 from core.engine.input_adapter import InputAdapter
+from models.game_master import Gamemaster
 
 
 @dataclass

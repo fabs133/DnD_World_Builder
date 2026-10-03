@@ -1,26 +1,20 @@
 """Tests for domain.specs.ruleset — Ruleset management."""
 
-import json
-import tempfile
-from pathlib import Path
 
-import pytest
 
-from domain.specs.base import Specification, AlwaysTrue
-from domain.specs.builder import RuleMask, RuleComponent, CompositionType
-from domain.specs.registry import RuleCategory, RuleScope, get_default_registry
+from domain.specs.base import Specification
+from domain.specs.builder import RuleComponent, RuleMask
+from domain.specs.registry import get_default_registry
 from domain.specs.ruleset import (
-    RuleInstanceState,
     RuleInstance,
-    CustomRule,
+    RuleInstanceState,
     Ruleset,
     RulesetManager,
     TriggerRuleBinding,
     create_default_ruleset,
-    create_minimal_ruleset,
     create_dungeon_crawl_ruleset,
+    create_minimal_ruleset,
 )
-
 
 # ── RuleInstance ─────────────────────────────────────────────────────────────
 

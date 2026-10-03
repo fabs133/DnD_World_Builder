@@ -1,6 +1,8 @@
 import asyncio
+
 import pytest
-from network.transport import InMemoryTransportPair, InMemoryServer, InMemoryClient
+
+from network.transport import InMemoryClient, InMemoryServer, InMemoryTransportPair
 
 
 @pytest.fixture

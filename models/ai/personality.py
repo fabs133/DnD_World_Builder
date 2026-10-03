@@ -11,9 +11,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from .alignment import Alignment, LawChaos, GoodEvil
+from .alignment import Alignment
 from .tactical_weights import TacticalWeights
-
 
 # =============================================================================
 # ALIGNMENT BEHAVIORAL PROFILES
@@ -51,7 +50,7 @@ ALIGNMENT_BEHAVIORS: dict[tuple[str, str], dict[str, Any]] = {
             "We fight as one!",
         ],
     },
-    
+
     ("neutral", "good"): {
         "archetype": "Benefactor",
         "tagline": "I help those in need, my way.",
@@ -79,7 +78,7 @@ ALIGNMENT_BEHAVIORS: dict[tuple[str, str], dict[str, Any]] = {
             "The mission can wait — people first.",
         ],
     },
-    
+
     ("chaotic", "good"): {
         "archetype": "Rebel",
         "tagline": "Rules be damned, I'm doing the right thing.",
@@ -107,7 +106,7 @@ ALIGNMENT_BEHAVIORS: dict[tuple[str, str], dict[str, Any]] = {
             "Your rules mean nothing here!",
         ],
     },
-    
+
     # -------------------------------------------------------------------------
     # NEUTRAL
     # -------------------------------------------------------------------------
@@ -138,7 +137,7 @@ ALIGNMENT_BEHAVIORS: dict[tuple[str, str], dict[str, Any]] = {
             "The mission comes first.",
         ],
     },
-    
+
     ("neutral", "neutral"): {
         "archetype": "Pragmatist",
         "tagline": "Whatever works.",
@@ -166,7 +165,7 @@ ALIGNMENT_BEHAVIORS: dict[tuple[str, str], dict[str, Any]] = {
             "Interesting proposition...",
         ],
     },
-    
+
     ("chaotic", "neutral"): {
         "archetype": "Free Spirit",
         "tagline": "Don't fence me in.",
@@ -194,7 +193,7 @@ ALIGNMENT_BEHAVIORS: dict[tuple[str, str], dict[str, Any]] = {
             "Sure, why not?",
         ],
     },
-    
+
     # -------------------------------------------------------------------------
     # EVIL
     # -------------------------------------------------------------------------
@@ -225,7 +224,7 @@ ALIGNMENT_BEHAVIORS: dict[tuple[str, str], dict[str, Any]] = {
             "I am inevitable.",
         ],
     },
-    
+
     ("neutral", "evil"): {
         "archetype": "Mercenary",
         "tagline": "Nothing personal, just business.",
@@ -253,7 +252,7 @@ ALIGNMENT_BEHAVIORS: dict[tuple[str, str], dict[str, Any]] = {
             "Pleasure doing business.",
         ],
     },
-    
+
     ("chaotic", "evil"): {
         "archetype": "Agent of Chaos",
         "tagline": "Watch it all burn.",
@@ -311,61 +310,61 @@ class EntityPersonality:
         >>> "sacrifice underlings" in str(personality.behaviors['will_do'])
         True
     """
-    
+
     alignment: Alignment
-    
+
     # Optional roleplay flavor (D&D 5e background system)
     trait: str = ""    # Personality trait
     bond: str = ""     # What they care about / protect
     flaw: str = ""     # Exploitable weakness
     ideal: str = ""    # Core belief
-    
+
     # Relationships with other entities (entity_name -> relationship)
     relationships: dict[str, str] = field(default_factory=dict)
-    
+
     # Optional custom weights (if None, derived from alignment)
     _custom_weights: TacticalWeights | None = None
-    
+
     # -------------------------------------------------------------------------
     # Computed Properties
     # -------------------------------------------------------------------------
-    
+
     @property
     def archetype(self) -> str:
         """The iconic archetype name for this alignment."""
         return self.behaviors.get("archetype", "Unknown")
-    
+
     @property
     def tagline(self) -> str:
         """A short motto for this alignment."""
         return self.behaviors.get("tagline", "")
-    
+
     @property
     def behaviors(self) -> dict[str, Any]:
         """Get the full behavior profile for this alignment."""
         key = (self.alignment.law_chaos.value, self.alignment.good_evil.value)
         return ALIGNMENT_BEHAVIORS.get(key, {})
-    
+
     @property
     def tactics_description(self) -> str:
         """Natural language description of tactical tendencies."""
         return self.behaviors.get("tactics", "No specific tactics.")
-    
+
     @property
     def will_do(self) -> list[str]:
         """List of things this personality WILL do."""
         return self.behaviors.get("will_do", [])
-    
+
     @property
     def wont_do(self) -> list[str]:
         """List of things this personality WON'T do."""
         return self.behaviors.get("wont_do", [])
-    
+
     @property
     def voice_lines(self) -> list[str]:
         """Example combat voice lines for flavor."""
         return self.behaviors.get("voice_lines", [])
-    
+
     @property
     def tactical_weights(self) -> TacticalWeights:
         """
@@ -374,19 +373,19 @@ class EntityPersonality:
         if self._custom_weights is not None:
             return self._custom_weights
         return self.alignment.to_tactical_weights()
-    
+
     # -------------------------------------------------------------------------
     # Methods
     # -------------------------------------------------------------------------
-    
+
     def set_custom_weights(self, weights: TacticalWeights) -> None:
         """Override alignment-derived weights with custom values."""
         self._custom_weights = weights
-    
+
     def clear_custom_weights(self) -> None:
         """Remove custom weights, reverting to alignment-based."""
         self._custom_weights = None
-    
+
     def add_relationship(self, entity_name: str, relationship: str) -> None:
         """
         Add or update a relationship with another entity.
@@ -396,11 +395,11 @@ class EntityPersonality:
             relationship: Description like "sworn to protect", "blood enemy"
         """
         self.relationships[entity_name] = relationship
-    
+
     def get_relationship(self, entity_name: str) -> str | None:
         """Get the relationship with a specific entity, if any."""
         return self.relationships.get(entity_name)
-    
+
     def format_for_prompt(self) -> str:
         """
         Format personality information for inclusion in an AI prompt.
@@ -414,20 +413,20 @@ class EntityPersonality:
             f"TACTICS: {self.tactics_description}",
             "",
         ]
-        
+
         # Add will do / won't do
         if self.will_do:
             lines.append("WILL DO:")
             for item in self.will_do[:4]:  # Limit to 4 for prompt length
                 lines.append(f"  • {item}")
             lines.append("")
-        
+
         if self.wont_do:
             lines.append("WON'T DO:")
             for item in self.wont_do[:4]:
                 lines.append(f"  • {item}")
             lines.append("")
-        
+
         # Add roleplay traits if present
         if self.trait:
             lines.append(f"PERSONALITY: {self.trait}")
@@ -437,20 +436,20 @@ class EntityPersonality:
             lines.append(f"FLAW: {self.flaw}")
         if self.ideal:
             lines.append(f"IDEAL: {self.ideal}")
-        
+
         # Add relationships
         if self.relationships:
             lines.append("")
             lines.append("RELATIONSHIPS:")
             for name, rel in self.relationships.items():
                 lines.append(f"  • {name}: {rel}")
-        
+
         return "\n".join(lines)
-    
+
     # -------------------------------------------------------------------------
     # Serialization
     # -------------------------------------------------------------------------
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Serialize to dictionary."""
         data = {
@@ -464,12 +463,12 @@ class EntityPersonality:
         if self._custom_weights is not None:
             data["custom_weights"] = self._custom_weights.to_dict()
         return data
-    
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> EntityPersonality:
         """Deserialize from dictionary."""
         alignment = Alignment.from_dict(data["alignment"])
-        
+
         personality = cls(
             alignment=alignment,
             trait=data.get("trait", ""),
@@ -478,16 +477,16 @@ class EntityPersonality:
             ideal=data.get("ideal", ""),
             relationships=data.get("relationships", {}),
         )
-        
+
         if "custom_weights" in data:
             personality._custom_weights = TacticalWeights.from_dict(data["custom_weights"])
-        
+
         return personality
-    
+
     # -------------------------------------------------------------------------
     # Presets (Common Archetypes)
     # -------------------------------------------------------------------------
-    
+
     @classmethod
     def goblin_grunt(cls) -> EntityPersonality:
         """Cowardly goblin minion."""
@@ -499,7 +498,7 @@ class EntityPersonality:
         )
         p.set_custom_weights(TacticalWeights.cowardly_minion())
         return p
-    
+
     @classmethod
     def goblin_shaman(cls) -> EntityPersonality:
         """Cunning goblin spellcaster who protects the tribe."""
@@ -511,7 +510,7 @@ class EntityPersonality:
         )
         p.add_relationship("goblin guards", "must be protected as assets")
         return p
-    
+
     @classmethod
     def orc_berserker(cls) -> EntityPersonality:
         """Rage-driven orc warrior."""
@@ -521,7 +520,7 @@ class EntityPersonality:
             bond="Strength is all that matters",
             flaw="Cannot retreat, ever",
         )
-    
+
     @classmethod
     def paladin_companion(cls) -> EntityPersonality:
         """Noble paladin ally."""
@@ -533,7 +532,7 @@ class EntityPersonality:
             ideal="Justice and mercy are not opposed",
         )
         return p
-    
+
     @classmethod
     def rogue_companion(cls) -> EntityPersonality:
         """Pragmatic rogue ally."""
@@ -543,7 +542,7 @@ class EntityPersonality:
             bond="Loyal to friends, not causes",
             flaw="Can't resist a dramatic moment",
         )
-    
+
     @classmethod
     def undead_minion(cls) -> EntityPersonality:
         """Mindless undead with no self-preservation."""
@@ -566,6 +565,6 @@ class EntityPersonality:
             flee_threshold=0.0,    # Never flees
         ))
         return p
-    
+
     def __repr__(self) -> str:
         return f"EntityPersonality({self.alignment.name}, archetype={self.archetype!r})"

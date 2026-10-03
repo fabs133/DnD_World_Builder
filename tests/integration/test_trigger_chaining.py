@@ -1,9 +1,11 @@
 import pytest
+
 from core.gameCreation.event_bus import EventBus
 from core.gameCreation.trigger import Trigger
+from models.entities.game_entity import GameEntity
 from models.flow.condition.condition_list import AlwaysTrue
 from models.flow.reaction.reactions_list import ApplyDamage
-from models.entities.game_entity import GameEntity
+
 
 class ChainEntity(GameEntity):
     def __init__(self, *args, **kwargs):

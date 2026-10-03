@@ -1,8 +1,11 @@
 # tests/unit/db/test_db_init.py
 import sqlite3
 from sqlite3 import Connection
+
 import pytest
+
 from core.characterCreation import db_init
+
 
 @pytest.fixture(autouse=True)
 def in_memory_db(monkeypatch):
