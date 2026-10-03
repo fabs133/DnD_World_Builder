@@ -156,6 +156,15 @@ pytest --cov
 
 When hosting, joined players see the current turn and round as it changes.
 
+### Fog of War
+
+**View > Player View (Fog of War)** (Ctrl+Shift+F) shows the map as the players see it: tiles
+no living player entity can see are covered (dark = never seen, translucent = explored earlier),
+and enemy/NPC tokens on tiles out of sight are hidden. Tiles tagged `BLOCKS_VISION` stop line of
+sight. Range comes from the entity's `vision_range` in tiles (default 12). Switch the option off
+to return to the full DM view; **Reset Explored Area** forgets what was explored. The fog only
+affects this window; multiplayer clients are not filtered yet.
+
 ---
 
 ## Multiplayer Quick Start

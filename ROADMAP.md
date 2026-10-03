@@ -61,8 +61,11 @@ Remaining follow-ups:
 - Then move on to the Stage 4 features below.
 
 ### Stage 4 (after Stage 3)
-1. Fog of war: the `BLOCKS_VISION` tile tag and the pathfinder already exist; add visibility
-   computation and rendering.
+1. Fog of war: DONE. Engine in `core/engine/vision.py` (line of sight, `BLOCKS_VISION`,
+   explored memory) plus a GUI player view (`ui/fog_overlay.py`, View menu).
+   Limitations: the view is per window only (multiplayer clients do not get fog-filtered state
+   yet; see item 2); vision uses `entity.vision_range` in tiles with a 12-tile default; no
+   lighting or darkvision rules.
 2. Player-only view in multiplayer: hosts send each player only what their characters can see.
 3. Dice roller in chat.
 4. Browser demo deployment: publish `browser-demo/` to GitHub Pages and/or itch.io. The
