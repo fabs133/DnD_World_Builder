@@ -165,6 +165,15 @@ sight. Range comes from the entity's `vision_range` in tiles (default 12). Switc
 to return to the full DM view; **Reset Explored Area** forgets what was explored. The fog only
 affects this window; multiplayer clients are not filtered yet.
 
+### Dice Roller
+
+**View > Dice Roller** (Ctrl+Shift+D) opens a dock with an expression box, quick buttons
+(d4 to d100, **Adv**, **Dis**) and a roll history. Supported syntax: `d20`, `2d6+3`,
+`1d8+2d6-1`, `2d20kh1` (keep highest, advantage), `2d20kl1` (keep lowest, disadvantage); up to
+100 dice with 2 to 1000 sides. Offline the panel rolls locally. In a multiplayer session, type
+`/roll 2d6+3` in the session chat (or use the dock): the host rolls and everyone sees
+`🎲 Alice: 2d6+3: [4, 2] +3 = 9`. Invalid expressions are reported to the sender only.
+
 ---
 
 ## Multiplayer Quick Start

@@ -67,7 +67,9 @@ Remaining follow-ups:
    yet; see item 2); vision uses `entity.vision_range` in tiles with a 12-tile default; no
    lighting or darkvision rules.
 2. Player-only view in multiplayer: hosts send each player only what their characters can see.
-3. Dice roller in chat.
+3. Dice roller in chat: DONE. Engine in `core/engine/dice.py`; `/roll <expr>` in session chat is
+   rolled by the host and broadcast to everyone; a Dice dock (View > Dice Roller, Ctrl+Shift+D)
+   rolls locally offline and through the host in a session.
 4. Browser demo deployment: publish `browser-demo/` to GitHub Pages and/or itch.io. The
    archived itch.io plan describes packaging and a staged desktop-then-browser release.
 
