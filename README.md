@@ -140,6 +140,16 @@ pytest --cov
 
 ---
 
+## Running an Encounter
+
+1. Place entities on the map, then open the **Encounter** menu.
+2. **Start Encounter** (Ctrl+Shift+E) rolls initiative and opens the Initiative panel (Ctrl+I toggles it).
+3. **Next Turn** (Ctrl+Shift+N, or the panel button) advances the turn; **End Encounter** (Ctrl+Shift+Q) stops it.
+
+When hosting, joined players see the current turn and round as it changes.
+
+---
+
 ## Multiplayer Quick Start
 
 ### Hosting (DM)

@@ -11,8 +11,8 @@ planning. Older planning documents are kept in [`docs/archive/`](docs/archive/) 
 | Map editor, triggers, character creator | Done | Square and hex grids, visual trigger editor |
 | Known UI bugs (v1 list) | Fixed | All six verified fixed in code |
 | Multiplayer, phases 1-5 | Done | Protocol, sync, host-validated actions, UI, tests and README guide |
-| Headless engine (`core/engine/`) | Built, not wired in | Not used by the GUI yet |
-| Initiative panel | Docked, empty | `ui/panels/initiative_panel.py` is never populated |
+| Headless engine (`core/engine/`) | Wired into GUI and host | `Encounter` drives the GUI, the multiplayer host and the bridges |
+| Initiative panel | Done | Populated from the Encounter menu; joined players see turn changes |
 | Browser demo (`browser-demo/`) | Builds | Vite + Preact, not yet deployed |
 | CI | Tests, coverage, mypy (advisory), ruff gate | Ruff checks syntax, undefined names, unused imports |
 
@@ -42,18 +42,22 @@ planning. Older planning documents are kept in [`docs/archive/`](docs/archive/) 
 
 ## What is next
 
-### Stage 3: unify the GUI and the headless engine
-The GUI currently runs on `models/flow/turn_system.py`, `models/flow/combat_system.py` and
-`models/game_master.py`, while the tested engine lives in `core/engine/`. The two are separate
-code paths.
+### Stage 3: unify the GUI and the headless engine (mostly done)
+Done:
+- `Encounter` (`core/engine/encounter.py`) is the single turn-order source for the GUI, the
+  multiplayer host and the bridges.
+- `ActionExecutor` now enforces `action.validate()`.
+- GUI Encounter menu (Start, Next Turn, End) drives the initiative panel; one gamemaster is
+  shared by the local panel and a hosted session.
+- Joined clients receive `TURN_CHANGE` broadcasts and show the current turn and round.
 
-Goals:
-- Drive GUI combat from `GameSession` so there is one rules implementation.
-- Populate the initiative panel from `InitiativeTracker`.
-- Use the engine's AI adapters (heuristic and Ollama) for NPC turns in the GUI.
-- Keep existing behavior covered by the current test suite while migrating.
+Remaining follow-ups:
+- Delete the now-unused `models/flow/turn_system.py` and `models/flow/combat_system.py`
+  (and their tests), pending owner approval.
+- AI-controlled enemy turns in the GUI (`HeuristicAIAdapter`, Ollama adapter) are not wired yet.
+- Then move on to the Stage 4 features below.
 
-### After Stage 3
+### Stage 4 (after Stage 3)
 1. Fog of war: the `BLOCKS_VISION` tile tag and the pathfinder already exist; add visibility
    computation and rendering.
 2. Player-only view in multiplayer: hosts send each player only what their characters can see.
