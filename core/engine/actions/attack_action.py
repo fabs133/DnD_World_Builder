@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import random
-import re
 from typing import Any
 
+from core.engine.dice import roll as roll_dice
 from core.logger import app_logger
 from models.flow.action.action import Action
 
@@ -91,11 +91,4 @@ class AttackAction(Action):
 
     def _roll_damage(self) -> int:
         """Roll damage dice using the instance's seeded RNG."""
-        match = re.match(r"(\d*)d(\d+)([+-]?\d*)", self.damage_expr.replace(" ", ""))
-        if not match:
-            raise ValueError(f"Invalid dice expression: {self.damage_expr}")
-        num_dice = int(match.group(1)) if match.group(1) else 1
-        dice_sides = int(match.group(2))
-        modifier = int(match.group(3)) if match.group(3) else 0
-        rolls = [self._rng.randint(1, dice_sides) for _ in range(num_dice)]
-        return sum(rolls) + modifier
+        return roll_dice(self.damage_expr, self._rng).total

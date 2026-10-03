@@ -1,7 +1,7 @@
 import random
-import re
 from abc import ABC, abstractmethod
 
+from core.engine.dice import roll as roll_dice
 from core.logger import app_logger
 
 
@@ -70,16 +70,8 @@ class Action(ABC):
         :rtype: int
         :raises ValueError: If the dice expression is invalid.
         """
-        match = re.match(r"(\d*)d(\d+)([+-]?\d*)", expression.replace(" ", ""))
-        if not match:
-            raise ValueError(f"Invalid dice expression: {expression}")
-
-        num_dice = int(match.group(1)) if match.group(1) else 1
-        dice_sides = int(match.group(2))
-        modifier = int(match.group(3)) if match.group(3) else 0
-
-        rolls = [random.randint(1, dice_sides) for _ in range(num_dice)]
-        total = sum(rolls) + modifier
+        result = roll_dice(expression, random)
+        rolls, modifier, total = result.rolls, result.modifier, result.total
         app_logger.debug(f"Rolling {expression}: {rolls} + {modifier} = {total}")
         return total
 
