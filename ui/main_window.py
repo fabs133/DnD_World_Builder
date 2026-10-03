@@ -3,7 +3,7 @@ import math
 from datetime import datetime
 from pathlib import Path
 
-from PyQt5.QtCore import QPointF, Qt, QTimer
+from PyQt5.QtCore import QObject, QPointF, Qt, QTimer, pyqtSignal
 from PyQt5.QtWidgets import (
     QAction,
     QDockWidget,
@@ -25,6 +25,12 @@ from models.tiles.hex_tile_item import HexTileItem
 from models.tiles.square_tile_item import SquareTileItem
 from models.tiles.tile_data import TileData
 from ui.map_view import MapView
+
+
+class _EncounterSignals(QObject):
+    """Bridges encounter listener calls (any thread) onto the Qt GUI thread."""
+
+    turn_changed = pyqtSignal(object)
 
 
 def hex_tile_center(row, col, hex_size):
@@ -148,6 +154,12 @@ class MainWindow(QMainWindow):
         self.addDockWidget(Qt.RightDockWidgetArea, self._initiative_dock)
         self._initiative_dock.hide()
 
+        # One gamemaster (and thus one encounter) per window; see get_gamemaster().
+        self.gamemaster = None
+        self._encounter_signals = _EncounterSignals()
+        self._encounter_signals.turn_changed.connect(self._on_turn_changed)
+        self.initiative_panel.next_turn_button.clicked.connect(self.next_turn)
+
         self.statusBar().showMessage(
             "Right-click a tile to edit attributes  |  Ctrl+Z Undo  |  Ctrl+Y Redo"
         )
@@ -175,6 +187,24 @@ class MainWindow(QMainWindow):
         initiative_toggle.setText("&Initiative Tracker")
         initiative_toggle.setShortcut("Ctrl+I")
         view_menu.addAction(initiative_toggle)
+
+        # --- Encounter menu ---
+        encounter_menu = menubar.addMenu("Encounter")
+        self._start_encounter_action = QAction("&Start Encounter", self)
+        self._start_encounter_action.setShortcut("Ctrl+Shift+E")
+        self._start_encounter_action.triggered.connect(self.start_encounter)
+        encounter_menu.addAction(self._start_encounter_action)
+
+        self._next_turn_action = QAction("&Next Turn", self)
+        self._next_turn_action.setShortcut("Ctrl+Shift+N")
+        self._next_turn_action.triggered.connect(self.next_turn)
+        encounter_menu.addAction(self._next_turn_action)
+
+        self._end_encounter_action = QAction("&End Encounter", self)
+        self._end_encounter_action.setShortcut("Ctrl+Shift+Q")
+        self._end_encounter_action.triggered.connect(self.end_encounter)
+        encounter_menu.addAction(self._end_encounter_action)
+        self._update_encounter_actions()
 
         # --- Session menu ---
         session_menu = menubar.addMenu("Session")
@@ -430,7 +460,7 @@ class MainWindow(QMainWindow):
     def _start_hosting(self, port):
         from network.session_manager import SessionManager
 
-        gm = self._build_gamemaster_from_scene()
+        gm = self.get_gamemaster()
         self.session_manager = SessionManager(gamemaster=gm, settings=self.settings)
         self.session_manager.signals.chat_received.connect(self.session_panel.append_chat)
         self.session_manager.signals.disconnected.connect(self._on_session_ended)
@@ -488,6 +518,82 @@ class MainWindow(QMainWindow):
         if self.session_manager:
             self.session_manager.send_chat(message)
 
+    # ------------------------------------------------------------------
+    # Encounter
+    # ------------------------------------------------------------------
+
+    def get_gamemaster(self):
+        """Return the window's gamemaster, building it from the scene if needed.
+
+        An existing gamemaster is kept while an encounter is active or a hosted
+        session uses it; otherwise it is rebuilt so scene edits are picked up.
+        """
+        gm = self.gamemaster
+        if gm is not None:
+            hosting = bool(self.session_manager and self.session_manager.is_hosting)
+            if gm.encounter.is_active or hosting:
+                return gm
+            gm.encounter.remove_listener(self._encounter_listener)
+        gm = self._build_gamemaster_from_scene()
+        gm.encounter.add_listener(self._encounter_listener)
+        self.gamemaster = gm
+        return gm
+
+    def _encounter_listener(self, info):
+        # May run on the host's asyncio thread: only emit a signal (queued to the GUI thread).
+        self._encounter_signals.turn_changed.emit(info)
+
+    def _update_encounter_actions(self):
+        active = bool(self.gamemaster and self.gamemaster.encounter.is_active)
+        self._start_encounter_action.setEnabled(not active)
+        self._next_turn_action.setEnabled(active)
+        self._end_encounter_action.setEnabled(active)
+        self.initiative_panel.next_turn_button.setEnabled(active)
+
+    def start_encounter(self):
+        from core.engine.encounter import EncounterError
+
+        gm = self.get_gamemaster()
+        try:
+            order = gm.encounter.start()
+        except EncounterError:
+            self.statusBar().showMessage("Cannot start an encounter: no entities on the map")
+            self._update_encounter_actions()
+            return
+        self.initiative_panel.set_initiative_order(order)
+        self._initiative_dock.show()
+        self._update_encounter_actions()
+        self.statusBar().showMessage("Encounter started")
+
+    def next_turn(self):
+        from core.engine.encounter import EncounterError
+
+        if not (self.gamemaster and self.gamemaster.encounter.is_active):
+            return
+        try:
+            self.gamemaster.encounter.next_turn()
+        except EncounterError:
+            return
+        self._refresh_initiative_hp()
+
+    def end_encounter(self):
+        if self.gamemaster and self.gamemaster.encounter.is_active:
+            self.gamemaster.encounter.end()
+            self.statusBar().showMessage("Encounter ended")
+
+    def _refresh_initiative_hp(self):
+        for entry in self.gamemaster.encounter.order():
+            if entry["hp"] is not None and entry["max_hp"] is not None:
+                self.initiative_panel.update_entity_hp(entry["name"], entry["hp"], entry["max_hp"])
+
+    def _on_turn_changed(self, info):
+        """GUI-thread slot for encounter notifications."""
+        if info.entity_name is not None:
+            self.initiative_panel.set_current_turn(info.entity_name, info.round_number)
+        else:
+            self.initiative_panel.clear()
+        self._update_encounter_actions()
+
     def _build_gamemaster_from_scene(self):
         """Create a Gamemaster populated from the current scene."""
         from models.game_master import Gamemaster
@@ -510,7 +616,12 @@ class MainWindow(QMainWindow):
             width=self.settings.get("default_cols", 25),
             height=self.settings.get("default_rows", 25),
             tile_type=self.grid_type,
+            description="",
+            map_data={},
+            time_of_day="",
+            weather_conditions="",
         )
         gm.world.tile_manager = tile_manager
+        gm.world_tile_manager = tile_manager
 
         return gm
