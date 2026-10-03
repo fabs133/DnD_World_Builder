@@ -146,6 +146,14 @@ pytest --cov
 2. **Start Encounter** (Ctrl+Shift+E) rolls initiative and opens the Initiative panel (Ctrl+I toggles it).
 3. **Next Turn** (Ctrl+Shift+N, or the panel button) advances the turn; **End Encounter** (Ctrl+Shift+Q) stops it.
 
+4. Entities appear as colored tokens on the map (blue player, red enemy, green NPC, amber other;
+   grey when dead). Hover a token for name, type and HP.
+5. **Auto-play Enemy Turns** (Encounter menu, on by default): when it is an enemy's turn, the
+   heuristic AI plays it after a short pause and the result shows in the status bar. Enemies
+   claimed by a network player are never auto-played, and nothing is auto-played when no living
+   player is left. Uncheck the option to control enemies manually with Next Turn. The Ollama/LLM
+   adapter is not used in the GUI yet.
+
 When hosting, joined players see the current turn and round as it changes.
 
 ---
