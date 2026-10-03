@@ -45,10 +45,9 @@ def _make_mock_gamemaster():
     gm.world.turn_manager = MagicMock()
     gm.world.turn_manager.current_turn = 0
     gm.game_entities = []
-    gm.turn_system = MagicMock()
-    gm.turn_system.current_turn = 0
-    gm.turn_system.round_number = 1
-    gm.turn_system.turn_order = []
+    gm.encounter = MagicMock()
+    gm.encounter.current_entity_name = "Hero"
+    gm.encounter.round_number = 1
     return gm
 
 
@@ -206,6 +205,7 @@ class TestTurnBridge:
             call_args = host.broadcast.call_args
             msg = call_args[0][0]
             assert msg.payload.get("round") == 1
+            assert msg.payload.get("current_entity") == "Hero"
 
         event_loop.run_until_complete(_test())
 

@@ -210,9 +210,10 @@ class EventBridge:
                 {"name": e.name, "position": list(e.position) if e.position else None}
                 for e in self.gamemaster.game_entities
             ]
+            encounter = self.gamemaster.encounter
             turn_data = {
-                "current_turn": self.gamemaster.turn_system.current_turn,
-                "round_number": self.gamemaster.turn_system.round_number,
+                "current_entity": encounter.current_entity_name,
+                "round_number": encounter.round_number,
             }
 
             from network.protocol import make_full_state
@@ -292,15 +293,10 @@ class TurnBridge:
     async def _broadcast_turn_update(self):
         """Broadcast the current turn state to all connected players."""
         try:
-            turn_system = self.gamemaster.turn_system
-
-            current_entity = None
-            if turn_system.turn_order and turn_system.current_turn < len(turn_system.turn_order):
-                current_entity = turn_system.turn_order[turn_system.current_turn].name
-
+            encounter = self.gamemaster.encounter
             msg = make_turn_change(
-                current_entity=current_entity,
-                round_number=turn_system.round_number,
+                current_entity=encounter.current_entity_name,
+                round_number=encounter.round_number,
             )
             await self.session_host.broadcast(msg)
 

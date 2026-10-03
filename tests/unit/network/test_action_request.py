@@ -41,8 +41,10 @@ def gamemaster():
     gm.world_tile_manager.place_entity(hero, 0, 0)
     gm.world_tile_manager.place_entity(goblin, 1, 0)
 
-    # Populate turn system so current_turn=0 → Hero's turn
-    gm.turn_system.entities = [hero, goblin]
+    # Hero acts first: override initiative so the order is deterministic
+    gm.encounter.start([hero, goblin])
+    if gm.encounter.current_entity_name != "Hero":
+        gm.encounter.next_turn()
     return gm
 
 
@@ -171,6 +173,7 @@ class TestActionRequestValidation:
 
             assert response.type == MessageType.ACTION_RESULT
             assert response.payload["success"] is True
+            assert gamemaster.encounter.current_entity_name == "Goblin"
 
             await host.stop()
 

@@ -1,7 +1,6 @@
+from core.engine.encounter import Encounter
 from core.gameCreation.event_bus import EventBus
 from core.logger import app_logger
-from models.flow.combat_system import CombatSystem
-from models.flow.turn_system import TurnSystem
 from models.world.world import World
 
 
@@ -18,11 +17,8 @@ class Gamemaster:
         self.stat_blocks = {}  # Dictionary to store stat blocks of entities
         self.world_items = []  # List to store items in the world
         self.temp_obstacles = []  # List to store temporary obstacles
-        # Store core systems as attributes, using minimal “empty” defaults
-        # CombatSystem expects (player, enemy)
-        self.combat_system = CombatSystem(None, None)
-        # TurnSystem expects a list of entities
-        self.turn_system   = TurnSystem([])
+        # Initiative and turn order; inactive until encounter.start() is called
+        self.encounter = Encounter(self)
         # Provide minimal defaults to World and WorldLore so no __init__ errors
         self.world           = World(
             world_version=1,
@@ -46,7 +42,7 @@ class Gamemaster:
         self.game_entities.append(entity)
         self.stat_blocks[entity.name] = entity.stats
 
-    def encounter(self, entity):
+    def announce_encounter(self, entity):
         """
         Handle an encounter with an entity.
 

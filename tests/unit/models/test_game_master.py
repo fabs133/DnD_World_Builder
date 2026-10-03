@@ -37,7 +37,7 @@ def test_encounter_and_event_prints(caplog):
 
     e = DummyEntity("Orc")
     with caplog.at_level(logging.DEBUG, logger=app_logger.name):
-        gm.encounter(e)
+        gm.announce_encounter(e)
     assert "Encounter with Orc!" in caplog.text
 
     caplog.clear()
