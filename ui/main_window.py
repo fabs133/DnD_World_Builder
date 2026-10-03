@@ -580,21 +580,18 @@ class MainWindow(QMainWindow):
             self.gamemaster.encounter.next_turn()
         except EncounterError:
             return
-        self._refresh_initiative_hp()
 
     def end_encounter(self):
         if self.gamemaster and self.gamemaster.encounter.is_active:
             self.gamemaster.encounter.end()
             self.statusBar().showMessage("Encounter ended")
 
-    def _refresh_initiative_hp(self):
-        for entry in self.gamemaster.encounter.order():
-            if entry["hp"] is not None and entry["max_hp"] is not None:
-                self.initiative_panel.update_entity_hp(entry["name"], entry["hp"], entry["max_hp"])
-
     def _on_turn_changed(self, info):
         """GUI-thread slot for encounter notifications."""
         if info.entity_name is not None:
+            # Re-read the order so HP changes (local or from network actions) are shown.
+            if self.gamemaster is not None:
+                self.initiative_panel.set_initiative_order(self.gamemaster.encounter.order())
             self.initiative_panel.set_current_turn(info.entity_name, info.round_number)
         else:
             self.initiative_panel.clear()

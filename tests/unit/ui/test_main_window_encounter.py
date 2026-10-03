@@ -132,3 +132,13 @@ def test_remote_turn_change_shows_dock_and_highlight(mw):
     assert not mw._initiative_dock.isHidden()
     assert mw.initiative_panel._current_entity == "Goblin"
     assert mw.initiative_panel._round_label.text() == "Round: 4"
+
+
+def test_turn_change_refreshes_hp(mw):
+    goblin = GameEntity("Goblin", "enemy", stats={"hp": 7})
+    _place(mw, GameEntity("Hero", "player"), goblin)
+    mw.start_encounter()
+    goblin.take_damage(3)
+    mw.next_turn()
+    entry = next(e for e in mw.initiative_panel._entries if e["name"] == "Goblin")
+    assert entry["hp"] == 4
