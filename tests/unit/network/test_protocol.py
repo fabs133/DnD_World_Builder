@@ -1,11 +1,22 @@
 import pytest
+
 from network.protocol import (
-    Message, MessageType, ErrorCode, PROTOCOL_VERSION,
-    make_hello, make_welcome, make_error, make_chat,
-    make_claim_entity, make_entity_claimed,
-    make_full_state, make_state_delta,
-    make_action_request, make_action_result,
-    make_turn_change, make_disconnect,
+    PROTOCOL_VERSION,
+    ErrorCode,
+    Message,
+    MessageType,
+    make_action_request,
+    make_action_result,
+    make_chat,
+    make_claim_entity,
+    make_disconnect,
+    make_entity_claimed,
+    make_error,
+    make_full_state,
+    make_hello,
+    make_state_delta,
+    make_turn_change,
+    make_welcome,
 )
 
 

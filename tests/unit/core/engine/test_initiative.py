@@ -1,6 +1,5 @@
 """Tests for the D&D 5e initiative tracker."""
 
-import pytest
 from core.engine.initiative import InitiativeTracker, _get_dex_modifier
 
 

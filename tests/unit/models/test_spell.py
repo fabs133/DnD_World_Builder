@@ -1,8 +1,10 @@
 import pytest
 
+import models.spell as spell_mod
+
 # Import from wherever your Spell class actually lives
 from models.spell import Spell
-import models.spell as spell_mod
+
 
 class DummyTarget:
     def __init__(self):

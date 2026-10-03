@@ -1,8 +1,7 @@
-import pytest
 import PyQt5.QtCore as qc
+import pytest
 
-from ui.dialogs.trigger_editor.graph_view import TriggerGraphView, COLUMN_WIDTH
-
+from ui.dialogs.trigger_editor.graph_view import COLUMN_WIDTH, TriggerGraphView
 
 # ---------------------------------------------------------------------------
 # Stubs

@@ -1,14 +1,13 @@
 """Integration test: full headless combat scenario with TestAdapter."""
 
-import pytest
-from core.engine.game_session import GameSession
-from core.engine.input_adapter import TestAdapter
+import random
+
 from core.engine.actions.attack_action import AttackAction
 from core.engine.actions.end_turn_action import EndTurnAction
+from core.engine.game_session import GameSession
+from core.engine.input_adapter import TestAdapter
 from models.game_master import Gamemaster
 from models.world.world import World
-
-import random
 
 
 class SimpleEntity:

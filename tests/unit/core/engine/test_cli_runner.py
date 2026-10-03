@@ -1,13 +1,11 @@
 """Tests for cli_runner.main() entry point."""
 
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
-from core.engine.cli_runner import main, _on_round_start, _on_action_result
-from core.engine.game_state import GameState, EntitySnapshot
 from core.engine.action_executor import ActionResult
 from core.engine.actions.end_turn_action import EndTurnAction
-
+from core.engine.cli_runner import _on_action_result, _on_round_start, main
+from core.engine.game_state import EntitySnapshot, GameState
 
 # ── Helpers ──────────────────────────────────────────────────────────────
 

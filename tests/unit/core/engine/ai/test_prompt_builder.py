@@ -1,8 +1,8 @@
 """Tests for TacticalPromptBuilder (alignment-based prompt system)."""
 
-from core.engine.ai.prompt_builder import TacticalPromptBuilder, CombatantInfo, ActionOption
-from core.engine.ai import AGGRESSIVE, DEFENSIVE, EntityPersonality, Alignment
-from core.engine.game_state import GameState, EntitySnapshot
+from core.engine.ai import AGGRESSIVE, DEFENSIVE, Alignment, EntityPersonality
+from core.engine.ai.prompt_builder import ActionOption, CombatantInfo, TacticalPromptBuilder
+from core.engine.game_state import EntitySnapshot, GameState
 
 
 def _make_state():

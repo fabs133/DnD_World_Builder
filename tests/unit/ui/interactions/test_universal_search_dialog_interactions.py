@@ -1,9 +1,10 @@
 # tests/unit/ui/interactions/test_universal_search_dialog_interactions.py
 import pytest
-from PyQt5.QtCore    import Qt
-from PyQt5.QtWidgets import QPushButton
-from ui.dialogs.universal_search_dialog import UniversalSearchDialog
+from PyQt5.QtCore import Qt
+
 from models.entities.game_entity import GameEntity
+from ui.dialogs.universal_search_dialog import UniversalSearchDialog
+
 
 @pytest.fixture
 def search_dialog(qtbot, mocker):

@@ -1,8 +1,10 @@
-import sqlite3
 import random
+import sqlite3
+
 import pytest
 
 from models.entities.player import Player
+
 
 # A minimal stand‐in for your Character
 class DummyCharacter:

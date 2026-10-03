@@ -1,5 +1,7 @@
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
+from PyQt5.QtWidgets import QDialog, QHBoxLayout, QLabel, QPushButton, QVBoxLayout
+
 from core.gameCreation.event_bus import EventBus  # Assuming EventBus is defined in event_bus.py
+
 
 class TriggerEditorDialog(QDialog):
     """

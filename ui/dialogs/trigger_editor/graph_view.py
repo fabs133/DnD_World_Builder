@@ -1,13 +1,18 @@
-from PyQt5.QtCore import QTimer, Qt, QPointF, pyqtSignal, QObject
-from PyQt5.QtGui import QBrush, QPen, QColor
+
+from PyQt5.QtCore import QObject, Qt, QTimer, pyqtSignal
+from PyQt5.QtGui import QColor, QPen
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QGraphicsView, QGraphicsScene,
+    QGraphicsScene,
     QGraphicsTextItem,
+    QGraphicsView,
+    QVBoxLayout,
+    QWidget,
 )
-from .trigger_node import TriggerNodeItem
-from core.logger import app_logger
+
 from core import theme_palette as tp
-from typing import List
+from core.logger import app_logger
+
+from .trigger_node import TriggerNodeItem
 
 COLUMN_WIDTH = 220   # horizontal spacing between columns (matches node spacing)
 ROW_HEIGHT   = 120   # vertical space between rows
@@ -88,7 +93,7 @@ class TriggerGraphView(QWidget):
     def __init__(self, context=None):
         super().__init__()
         self.context = context
-        self.node_items: List[TriggerNodeItem] = []
+        self.node_items: list[TriggerNodeItem] = []
 
         # Drag-connect state
         self._drag_line = None

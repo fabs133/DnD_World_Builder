@@ -1,8 +1,10 @@
 import logging
+
 import pytest
 
-from models.flow.reaction.reaction_queue import ReactionQueue
 from core.logger import app_logger
+from models.flow.reaction.reaction_queue import ReactionQueue
+
 
 class DummyReaction:
     def __init__(self):

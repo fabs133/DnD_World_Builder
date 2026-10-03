@@ -134,8 +134,8 @@ class SessionManager:
         future.add_done_callback(self._on_host_started)
 
     async def _start_hosting(self, port):
-        from network.session_host import SessionHost
         from network.event_bridge import EventBridge, TurnBridge
+        from network.session_host import SessionHost
 
         if self._transport_factory:
             self._server = self._transport_factory(port=port)

@@ -1,13 +1,12 @@
 """Tests for AIAdapter with mocked Ollama."""
 
-import pytest
-from unittest.mock import MagicMock, patch
-from core.engine.ai.ai_adapter import AIAdapter
-from core.engine.ai.ollama_client import OllamaClient
-from core.engine.ai import TACTICAL
-from core.engine.game_state import GameState, EntitySnapshot
+from unittest.mock import MagicMock
+
 from core.engine.actions.attack_action import AttackAction
 from core.engine.actions.end_turn_action import EndTurnAction
+from core.engine.ai.ai_adapter import AIAdapter
+from core.engine.ai.ollama_client import OllamaClient
+from core.engine.game_state import EntitySnapshot, GameState
 
 
 class SimpleEntity:

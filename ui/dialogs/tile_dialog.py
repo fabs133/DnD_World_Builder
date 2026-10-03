@@ -1,15 +1,29 @@
-from PyQt5.QtWidgets import (
-    QDialog, QFormLayout, QLabel, QLineEdit, QComboBox, QVBoxLayout,
-    QPushButton, QTextEdit, QCheckBox, QColorDialog, QHBoxLayout,
-    QFileDialog, QGroupBox, QMessageBox,
-)
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor, QPixmap, QImageReader
-from models.tiles.tile_data import TileTag, TerrainType, TileData
+from PyQt5.QtGui import QColor, QImageReader, QPixmap
+from PyQt5.QtWidgets import (
+    QCheckBox,
+    QColorDialog,
+    QComboBox,
+    QDialog,
+    QFileDialog,
+    QFormLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QMessageBox,
+    QPushButton,
+    QTextEdit,
+    QVBoxLayout,
+)
+
 from core.logger import app_logger
+from models.tiles.tile_data import TerrainType, TileTag
+
 from .entity_editor_dialog import EntityEditorDialog
-from .trigger_editor.editor_dialog import TriggerEditorDialog
 from .tile_edit.tile_edit_command import TileEditCommand
+from .trigger_editor.editor_dialog import TriggerEditorDialog
+
 
 class TileDialog(QDialog):
     """
@@ -76,7 +90,7 @@ class TileDialog(QDialog):
         """
         super().__init__(*args, **kwargs)
         self.tile_data = tile_data  # Set directly to the passed TileData
-        self.setWindowTitle(f"Tile Attributes")
+        self.setWindowTitle("Tile Attributes")
         self.main_window = main_window
         self.tile_item = tile_item
         self._original_state = tile_data.to_dict()  # Save for undo
@@ -130,7 +144,6 @@ class TileDialog(QDialog):
         layout.addRow("Note:", self.note_input)
 
         # --- OVERLAY COLOR ---
-        from PyQt5.QtWidgets import QHBoxLayout
 
         self.overlay_input = QLineEdit(tile_data.overlay_color or "#CCCCCC")
         self.color_button = QPushButton("Pick Color")
@@ -255,7 +268,7 @@ class TileDialog(QDialog):
         td.last_updated = datetime.now().isoformat()
 
         new_state = td.to_dict()
-        
+
         if self.main_window:
             cmd = TileEditCommand(td, self._original_state, new_state, tile_item=self.tile_item)
             self.main_window.undo_stack.push(cmd)

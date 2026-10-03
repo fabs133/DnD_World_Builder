@@ -1,11 +1,15 @@
+from PyQt5.QtCore import QPointF, Qt
+from PyQt5.QtGui import QBrush, QColor, QPen
 from PyQt5.QtWidgets import (
-    QGraphicsItemGroup, QGraphicsRectItem, QGraphicsTextItem,
-    QGraphicsEllipseItem, QGraphicsItem,
+    QGraphicsEllipseItem,
+    QGraphicsItem,
+    QGraphicsItemGroup,
+    QGraphicsRectItem,
+    QGraphicsTextItem,
 )
-from PyQt5.QtGui import QBrush, QPen, QColor
-from PyQt5.QtCore import QRectF, Qt, QPointF
-from core.logger import app_logger
+
 from core import theme_palette as tp
+from core.logger import app_logger
 
 PORT_RADIUS = 6
 

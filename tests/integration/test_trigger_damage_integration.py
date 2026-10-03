@@ -1,7 +1,7 @@
 from core.gameCreation.event_bus import EventBus
 from core.gameCreation.trigger import Trigger
-from models.flow.reaction.reactions_list import ApplyDamage
 from models.entities.game_entity import GameEntity
+from models.flow.reaction.reactions_list import ApplyDamage
 
 
 def test_trigger_applies_damage():

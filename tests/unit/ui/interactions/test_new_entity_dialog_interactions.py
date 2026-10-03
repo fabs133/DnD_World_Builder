@@ -1,18 +1,16 @@
-from PyQt5.QtWidgets import QPushButton
-from PyQt5.QtCore    import Qt
 import pytest
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QPushButton
 
-from ui.dialogs.new_entity_dialog import NewEntityDialog
-from models.entities.game_entity import GameEntity
 from core.gameCreation.trigger import Trigger
+from models.entities.game_entity import GameEntity
 from models.flow.condition.condition_list import AlwaysTrue
 from models.flow.reaction.reactions_list import AlertGamemaster
+from ui.dialogs.new_entity_dialog import NewEntityDialog
+
 
 @pytest.fixture
 def new_entity_dialog(qtbot, mocker):
-    from core.gameCreation.trigger import Trigger
-    from models.flow.condition.condition_list import AlwaysTrue
-    from models.flow.reaction.reactions_list import AlertGamemaster
 
     # Build a dummy Trigger
     dummy = Trigger(

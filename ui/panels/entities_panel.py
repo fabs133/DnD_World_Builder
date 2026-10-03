@@ -1,16 +1,27 @@
 import copy
 
-from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QSplitter,
-    QPushButton, QListWidget, QListWidgetItem,
-    QFormLayout, QLineEdit, QComboBox, QTextEdit,
-    QLabel, QFileDialog, QMessageBox, QScrollArea,
-)
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QPixmap
-from models.entities.game_entity import GameEntity
-from ui.panels.entity_list_item import EntityListItem
+from PyQt5.QtWidgets import (
+    QComboBox,
+    QFileDialog,
+    QFormLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QListWidget,
+    QListWidgetItem,
+    QMessageBox,
+    QPushButton,
+    QScrollArea,
+    QSplitter,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
+)
+
 from core.logger import app_logger
+from ui.panels.entity_list_item import EntityListItem
 
 
 class _EntityEditPanel(QWidget):

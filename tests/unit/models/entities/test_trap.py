@@ -1,7 +1,7 @@
-import pytest
 
-from models.entities.trap import Trap
 from models.entities.game_entity import GameEntity
+from models.entities.trap import Trap
+
 
 def test_trap_initialization_and_inheritance():
     trap = Trap(name="Spike Pit", damage=10, trigger_range=2)

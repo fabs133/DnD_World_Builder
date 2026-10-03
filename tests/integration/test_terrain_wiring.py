@@ -1,10 +1,9 @@
 """Integration tests: YAML terrain config → tile_map → pathfinder → engine."""
 
-import pytest
 
-from core.engine.scenarios.scenario_loader import ScenarioLoader
-from core.engine.pathfinder import find_path
 from core.engine.actions.move_action import MoveAction
+from core.engine.pathfinder import find_path
+from core.engine.scenarios.scenario_loader import ScenarioLoader
 
 
 class TestTerrainWiring:

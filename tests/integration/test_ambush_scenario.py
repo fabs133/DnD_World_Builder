@@ -1,12 +1,15 @@
 # tests/integration/test_ambush_scenario.py
 import logging
+
 import pytest
+
 from core.gameCreation.event_bus import EventBus
-from models.world.world import World
-from models.entities.game_entity import GameEntity
 from core.gameCreation.trigger import Trigger
+from models.entities.game_entity import GameEntity
 from models.flow.condition.condition_list import AlwaysTrue
 from models.flow.reaction.reactions_list import AlertGamemaster
+from models.world.world import World
+
 
 # Custom reaction: when trap activates, emit TRAP_ALERT only if not disarmed
 def trap_activate_reaction(data):

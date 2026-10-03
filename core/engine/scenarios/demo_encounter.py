@@ -2,16 +2,14 @@
 
 from __future__ import annotations
 
-from typing import Any
-
-from models.game_master import Gamemaster
-from models.world.world import World
-from core.engine.game_session import GameSession
-from core.engine.input_adapter import InputAdapter
+from core.engine.ai import AGGRESSIVE, TACTICAL
 from core.engine.ai.ai_adapter import AIAdapter
 from core.engine.ai.heuristic_adapter import HeuristicAIAdapter
 from core.engine.ai.ollama_client import OllamaClient, OllamaConfig
-from core.engine.ai import TACTICAL, AGGRESSIVE
+from core.engine.game_session import GameSession
+from core.engine.input_adapter import InputAdapter
+from models.game_master import Gamemaster
+from models.world.world import World
 
 
 class DemoEntity:

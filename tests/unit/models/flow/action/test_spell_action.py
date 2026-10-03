@@ -3,6 +3,7 @@ import pytest
 import models.flow.action.spell_action as sa_mod
 from models.flow.action.spell_action import SpellAction
 
+
 class DummySpell:
     def __init__(self, dmg=None, heal=None, eff=None):
         # damage/healing should be dicts or None

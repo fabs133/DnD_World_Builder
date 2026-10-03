@@ -1,7 +1,8 @@
 import pytest
-from core.rulebook.spell_importer import SpellImporter
-from core.rulebook.importer_base import BaseImporter
+
 from core.rulebook.rulebook_spell import RulebookSpell
+from core.rulebook.spell_importer import SpellImporter
+
 
 class DummyAPI:
     def __init__(self):

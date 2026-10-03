@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
-from typing import List, Tuple, Optional
 from enum import Enum
-from models.entities.game_entity import GameEntity  # Ensure this has to_dict/from_dict implemented
+
 from core.gameCreation.trigger import Trigger  # Ensure this has to_dict/from_dict implemented
+from models.entities.game_entity import GameEntity  # Ensure this has to_dict/from_dict implemented
+
 
 class TerrainType(Enum):
     """
@@ -80,17 +81,17 @@ class TileData:
     """
 
     tile_id: str = "new_tile"
-    position: Tuple[int, int] = (0, 0)
+    position: tuple[int, int] = (0, 0)
     terrain: TerrainType = TerrainType.FLOOR
-    entities: List[GameEntity] = field(default_factory=list)
-    note: Optional[str] = None
-    user_label: Optional[str] = None
-    overlay_color: Optional[str] = None
-    tags: List[TileTag] = field(default_factory=list)
-    last_updated: Optional[str] = None
-    triggers: List[Trigger] = field(default_factory=list)
-    background_image: Optional[str] = None
-    ambient_audio: Optional[str] = None
+    entities: list[GameEntity] = field(default_factory=list)
+    note: str | None = None
+    user_label: str | None = None
+    overlay_color: str | None = None
+    tags: list[TileTag] = field(default_factory=list)
+    last_updated: str | None = None
+    triggers: list[Trigger] = field(default_factory=list)
+    background_image: str | None = None
+    ambient_audio: str | None = None
     movement_cost: int = 5
 
     def is_occupied(self) -> bool:
@@ -142,7 +143,7 @@ class TileData:
         """
         if entity in self.entities:
             self.entities.remove(entity)
-    
+
     def register_trigger(self, trigger):
         """
         Register a trigger to the tile and subscribe it to the EventBus.

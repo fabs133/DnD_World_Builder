@@ -1,9 +1,9 @@
-import pytest
-from types import SimpleNamespace
 
-from PyQt5.QtWidgets import QPushButton, QDialog, QWidget, QVBoxLayout
-import ui.dialogs.trigger_editor.editor_dialog as te_mod
+import pytest
+from PyQt5.QtWidgets import QDialog, QPushButton, QVBoxLayout, QWidget
+
 from ui.dialogs.trigger_editor.editor_dialog import TriggerEditorDialog
+
 
 # Dummy trigger, minimal fields
 class DummyTrigger:
@@ -47,8 +47,8 @@ def stub_editor_stack(monkeypatch):
     Replace the real EditorStack (and its child views) with a simple
     widget that puts one Remove button per trigger.
     """
-    import ui.dialogs.trigger_editor.editor_stack as es_mod
     import core.gameCreation.event_bus as eb_mod
+    import ui.dialogs.trigger_editor.editor_stack as es_mod
 
     class FakeStack(QWidget):
         def __init__(self, registry):

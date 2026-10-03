@@ -3,18 +3,13 @@
 import pytest
 
 from domain.specs.base import (
-    Specification,
-    SpecResult,
-    AndSpec,
-    OrSpec,
-    NotSpec,
     AllOf,
-    AnyOf,
-    AlwaysTrue,
     AlwaysFalse,
+    AlwaysTrue,
+    AnyOf,
     LambdaSpec,
+    SpecResult,
 )
-
 
 # ── SpecResult ──────────────────────────────────────────────────────────────
 

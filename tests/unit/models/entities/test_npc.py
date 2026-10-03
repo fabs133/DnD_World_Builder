@@ -1,7 +1,8 @@
 import pytest
 
-from models.entities.npc import NPC
 from models.entities.game_entity import GameEntity
+from models.entities.npc import NPC
+
 
 @pytest.mark.parametrize("behavior", ["friendly", "neutral", "hostile", "confused"])
 def test_npc_initialization_and_inheritance(behavior):

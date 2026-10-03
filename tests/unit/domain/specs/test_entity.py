@@ -3,22 +3,21 @@
 import pytest
 
 from domain.specs.entity import (
-    Condition,
-    INCAPACITATING_CONDITIONS,
     ATTACK_DISADVANTAGE_CONDITIONS,
-    HasCondition,
-    IsIncapacitated,
-    IsAlive,
-    HasHP,
-    HasSpellSlot,
-    HasAbilityUse,
-    IsEntityType,
-    HasFaction,
+    INCAPACITATING_CONDITIONS,
     CanTakeAction,
     CanTakeBonusAction,
     CanTakeReaction,
+    Condition,
+    HasAbilityUse,
+    HasCondition,
+    HasFaction,
+    HasHP,
+    HasSpellSlot,
+    IsAlive,
+    IsEntityType,
+    IsIncapacitated,
 )
-
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 

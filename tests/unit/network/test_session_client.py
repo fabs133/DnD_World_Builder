@@ -1,11 +1,13 @@
 import asyncio
+
 import pytest
-from network.transport import InMemoryServer, InMemoryClient
-from network.session_host import SessionHost
-from network.session_client import SessionClient
-from network.protocol import Message, MessageType
-from models.game_master import Gamemaster
+
 from models.entities.game_entity import GameEntity
+from models.game_master import Gamemaster
+from network.protocol import MessageType
+from network.session_client import SessionClient
+from network.session_host import SessionHost
+from network.transport import InMemoryClient, InMemoryServer
 
 
 @pytest.fixture

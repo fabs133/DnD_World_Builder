@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class EntityType(Enum):
     """
     Enumeration of possible entity types in the DnD project.

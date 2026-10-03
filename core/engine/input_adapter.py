@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from models.flow.action.action import Action
 from core.engine.game_state import GameState
+from models.flow.action.action import Action
 
 
 class InputAdapter(ABC):

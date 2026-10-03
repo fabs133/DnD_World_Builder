@@ -3,6 +3,7 @@ import pytest
 from core.rulebook.rulebook_spell import RulebookSpell
 from models.spell import Spell
 
+
 @pytest.fixture
 def sample_api_data():
     return {

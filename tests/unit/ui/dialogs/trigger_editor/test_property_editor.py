@@ -1,8 +1,9 @@
 """Tests for TriggerPropertyEditor: field building, context, save."""
 
-import pytest
 from types import SimpleNamespace
 from unittest.mock import MagicMock
+
+import pytest
 
 from ui.dialogs.trigger_editor.property_editor import TriggerPropertyEditor
 

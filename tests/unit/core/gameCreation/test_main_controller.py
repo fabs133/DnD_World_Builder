@@ -1,9 +1,9 @@
-import pytest
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton
+# Before import, monkeypatch the UI classes
 from pathlib import Path
 
-# Before import, monkeypatch the UI classes
-import importlib
+import pytest
+from PyQt5.QtWidgets import QApplication, QPushButton, QWidget
+
 
 def setup_ui_mocks(monkeypatch):
     # Dummy ScenarioOverviewWidget

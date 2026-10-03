@@ -1,20 +1,29 @@
-from PyQt5.QtWidgets import (
-    QMainWindow, QGraphicsScene, QVBoxLayout, QHBoxLayout,
-    QPushButton, QWidget, QAction, QFileDialog, QLabel, QSplitter,
-    QDockWidget,
-)
-from PyQt5.QtCore import Qt, QPointF, QTimer
-from PyQt5.QtWidgets import QUndoStack
 import json
 import math
 from datetime import datetime
 from pathlib import Path
 
-from models.tiles.tile_data import TileData
-from models.tiles.square_tile_item import SquareTileItem
-from models.tiles.hex_tile_item import HexTileItem
+from PyQt5.QtCore import QPointF, Qt, QTimer
+from PyQt5.QtWidgets import (
+    QAction,
+    QDockWidget,
+    QFileDialog,
+    QGraphicsScene,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QPushButton,
+    QSplitter,
+    QUndoStack,
+    QVBoxLayout,
+    QWidget,
+)
+
 from core.backup_manager import BackupManager
 from core.logger import app_logger
+from models.tiles.hex_tile_item import HexTileItem
+from models.tiles.square_tile_item import SquareTileItem
+from models.tiles.tile_data import TileData
 from ui.map_view import MapView
 
 
@@ -331,7 +340,7 @@ class MainWindow(QMainWindow):
         self.scene.clear()
 
         try:
-            with open(filename, "r", encoding="utf-8") as f:
+            with open(filename, encoding="utf-8") as f:
                 raw_data = json.load(f)
         except Exception as e:
             app_logger.error(f"[Load Error] Could not read file: {e}")

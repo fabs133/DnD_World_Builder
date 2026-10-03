@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-from core.engine.input_adapter import InputAdapter
-from core.engine.game_state import GameState, EntitySnapshot
-from core.engine.actions.attack_action import AttackAction
-from core.engine.actions.move_action import MoveAction
-from core.engine.actions.end_turn_action import EndTurnAction
-from models.flow.action.action import Action
-
 import random
+
+from core.engine.actions.attack_action import AttackAction
+from core.engine.actions.end_turn_action import EndTurnAction
+from core.engine.actions.move_action import MoveAction
+from core.engine.game_state import GameState
+from core.engine.input_adapter import InputAdapter
+from models.flow.action.action import Action
 
 
 class CLIAdapter(InputAdapter):
@@ -94,19 +94,19 @@ class CLIAdapter(InputAdapter):
 
         enemies = state.get_enemies_of(perspective)
         if enemies:
-            print(f"\n  Enemies:")
+            print("\n  Enemies:")
             for e in enemies:
                 dist = abs(e.position[0] - me.position[0]) + abs(e.position[1] - me.position[1])
                 print(f"    {e.name}: HP {e.hp}/{e.max_hp}, AC {e.armor_class}, dist {dist}")
 
         allies = state.get_allies_of(perspective)
         if allies:
-            print(f"\n  Allies:")
+            print("\n  Allies:")
             for a in allies:
                 print(f"    {a.name}: HP {a.hp}/{a.max_hp}")
 
     def _display_actions(self, actions: list[str]) -> None:
-        print(f"\n  Actions:")
+        print("\n  Actions:")
         for i, a in enumerate(actions, 1):
             print(f"    {i}. {a}")
 

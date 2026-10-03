@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import QGraphicsView
-from PyQt5.QtCore import Qt, QPointF
+from PyQt5.QtCore import QPointF, Qt
 from PyQt5.QtGui import QPainter
+from PyQt5.QtWidgets import QGraphicsView
 
 
 class MapView(QGraphicsView):

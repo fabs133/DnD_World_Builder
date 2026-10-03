@@ -1,8 +1,6 @@
-import pytest
-from versioning.update_registry import update_registry
 import versioning.migrations.user_profile as up_mod
-import versioning.migrations.settings as settings_mod
-import versioning.migrations.map_data as map_mod
+from versioning.update_registry import update_registry
+
 
 def test_top_level_keys():
     assert set(update_registry.keys()) == {"UserProfile", "Settings", "Map"}

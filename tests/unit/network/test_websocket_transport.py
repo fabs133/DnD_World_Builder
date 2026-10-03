@@ -1,7 +1,9 @@
 """Tests for the aiohttp WebSocket transport layer."""
 import asyncio
+
 import pytest
-from network.websocket_transport import WebSocketServer, WebSocketClient
+
+from network.websocket_transport import WebSocketClient, WebSocketServer
 
 
 @pytest.fixture

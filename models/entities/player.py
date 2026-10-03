@@ -1,5 +1,6 @@
 from models.entities.game_entity import GameEntity
 
+
 class Player(GameEntity):
     """
     Represents a player in the game.

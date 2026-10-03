@@ -1,9 +1,8 @@
 import json
 import logging
-import os
-import pytest
 
-from core.settings_manager import SettingsManager, DEFAULT_SETTINGS, CONFIG_VERSION
+from core.settings_manager import CONFIG_VERSION, DEFAULT_SETTINGS, SettingsManager
+
 
 def test_default_config_created(tmp_path, caplog):
     config_file = tmp_path / "config" / "settings.json"

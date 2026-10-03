@@ -1,9 +1,8 @@
 import pytest
 
-from models.flow.reaction.reactions_list import ApplyDamage, AlertGamemaster
-from registries.reaction_registry import (
-    ReactionRegistry, reaction_registry
-)
+from models.flow.reaction.reactions_list import AlertGamemaster, ApplyDamage
+from registries.reaction_registry import ReactionRegistry, reaction_registry
+
 
 def test_manual_register_and_get_class():
     reg = ReactionRegistry()

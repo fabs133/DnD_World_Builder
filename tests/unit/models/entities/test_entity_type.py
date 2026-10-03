@@ -1,5 +1,5 @@
-import pytest
 from models.entities.entity_type import EntityType
+
 
 def test_enum_members_exist():
     # Check that all expected members are present

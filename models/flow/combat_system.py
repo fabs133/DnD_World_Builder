@@ -1,5 +1,6 @@
 from core.logger import app_logger
 
+
 class CombatSystem:
     """
     Handles the flow of combat between a player and an enemy.

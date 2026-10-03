@@ -3,6 +3,7 @@ import pytest
 from models.flow.condition.condition_list import AlwaysTrue, PerceptionCheck
 from registries.condition_registry import ConditionRegistry, condition_registry
 
+
 def test_manual_register_and_get_class():
     reg = ConditionRegistry()
     # Initially empty

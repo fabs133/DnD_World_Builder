@@ -28,7 +28,8 @@ Usage:
 
 from __future__ import annotations
 
-from typing import Any, Callable, TYPE_CHECKING
+from collections.abc import Callable
+from typing import Any
 
 from domain.specs.base import Specification, SpecResult
 
@@ -45,7 +46,7 @@ class LegacyConditionAdapter(Specification):
         rule_id: Identifier for this condition
         description: Human-readable description for messages
     """
-    
+
     def __init__(
         self,
         condition: Callable[[dict], bool],
@@ -57,11 +58,11 @@ class LegacyConditionAdapter(Specification):
         self._rule_id = rule_id
         self._description = description
         self._suggested_fix = suggested_fix
-    
+
     @property
     def rule_id(self) -> str:
         return self._rule_id
-    
+
     def is_satisfied_by(self, candidate: Any, context: dict[str, Any] | None = None) -> SpecResult:
         """
         Evaluate the legacy condition.
@@ -71,19 +72,19 @@ class LegacyConditionAdapter(Specification):
         """
         # Build event_data dict that legacy conditions expect
         event_data = dict(context or {})
-        
+
         # Add candidate to event_data if it has attributes legacy code expects
         if hasattr(candidate, "__dict__"):
             for key, value in candidate.__dict__.items():
                 if key not in event_data:
                     event_data[key] = value
-        
+
         # Also try common attribute patterns
         if hasattr(candidate, "stats"):
             event_data["character_stats"] = candidate.stats
         if hasattr(candidate, "skill_modifiers"):
             event_data["character_stats"] = candidate.skill_modifiers
-        
+
         try:
             passed = self._condition(event_data)
         except Exception as e:
@@ -95,7 +96,7 @@ class LegacyConditionAdapter(Specification):
                 tags=frozenset({"legacy", "error"}),
                 data={"error": str(e)}
             )
-        
+
         return SpecResult(
             rule_id=self._rule_id,
             passed=passed,
@@ -103,7 +104,7 @@ class LegacyConditionAdapter(Specification):
             suggested_fix=None if passed else self._suggested_fix,
             tags=frozenset({"legacy"}),
         )
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "type": "LegacyConditionAdapter",
@@ -125,21 +126,21 @@ class LegacySkillCheckAdapter(Specification):
         - Takes roll from context (for determinism)
         - Falls back to calling attempt() if no roll provided
     """
-    
+
     def __init__(self, legacy_skill_check: Any):
         """
         Args:
             legacy_skill_check: Instance of models.flow.skill_check.SkillCheck
         """
         self._skill_check = legacy_skill_check
-    
+
     @property
     def rule_id(self) -> str:
         return f"legacy_skill_check_{self._skill_check.skill_name.lower()}_dc{self._skill_check.dc}"
-    
+
     def is_satisfied_by(self, candidate: Any, context: dict[str, Any] | None = None) -> SpecResult:
         context = context or {}
-        
+
         # Get character stats
         character_stats = {}
         if hasattr(candidate, "stats"):
@@ -148,18 +149,18 @@ class LegacySkillCheckAdapter(Specification):
             character_stats = candidate.skill_modifiers
         elif "character_stats" in context:
             character_stats = context["character_stats"]
-        
+
         # Check for advantage/disadvantage
         advantage = context.get("advantage", False)
         disadvantage = context.get("disadvantage", False)
-        
+
         # If roll is provided in context, calculate result deterministically
         if "roll" in context:
             roll = context["roll"]
             modifier = character_stats.get(self._skill_check.skill_name, 0)
             total = roll + modifier
             passed = total >= self._skill_check.dc
-            
+
             return SpecResult(
                 rule_id=self.rule_id,
                 passed=passed,
@@ -174,14 +175,14 @@ class LegacySkillCheckAdapter(Specification):
                     "total": total,
                 }
             )
-        
+
         # Fall back to legacy behavior (rolls dice)
         passed = self._skill_check.attempt(
             character_stats,
             advantage=advantage,
             disadvantage=disadvantage
         )
-        
+
         return SpecResult(
             rule_id=self.rule_id,
             passed=passed,
@@ -193,7 +194,7 @@ class LegacySkillCheckAdapter(Specification):
                 "warning": "Result was rolled, not deterministic",
             }
         )
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "type": "LegacySkillCheckAdapter",
@@ -225,24 +226,24 @@ def adapt_legacy_condition(
         Specification wrapping the legacy condition
     """
     condition_class = condition.__class__.__name__
-    
+
     # Handle SkillCheck specially (has attempt() method)
     if hasattr(condition, "attempt") and hasattr(condition, "skill_name"):
         return LegacySkillCheckAdapter(condition)
-    
+
     # Generate default rule_id from class name
     if rule_id is None:
         rule_id = f"legacy_{condition_class.lower()}"
         # Add DC if present
         if hasattr(condition, "dc"):
             rule_id += f"_dc{condition.dc}"
-    
+
     # Generate description
     if description is None:
         description = condition_class
         if hasattr(condition, "dc"):
             description += f" (DC {condition.dc})"
-    
+
     # Wrap callable conditions
     if callable(condition):
         return LegacyConditionAdapter(
@@ -250,11 +251,11 @@ def adapt_legacy_condition(
             rule_id=rule_id,
             description=description,
         )
-    
+
     raise TypeError(f"Cannot adapt condition of type {condition_class}")
 
 
-def adapt_legacy_trigger(legacy_trigger: Any) -> "TriggerSpec":
+def adapt_legacy_trigger(legacy_trigger: Any) -> TriggerSpec:
     """
     Convert a legacy Trigger to a TriggerSpec.
     
@@ -269,14 +270,14 @@ def adapt_legacy_trigger(legacy_trigger: Any) -> "TriggerSpec":
     Returns:
         TriggerSpec using adapted conditions
     """
-    from domain.specs.triggers import TriggerSpec, EventType, ReactionResult
-    
+    from domain.specs.triggers import EventType, ReactionResult, TriggerSpec
+
     # Adapt the condition
     pre_specs = []
     if hasattr(legacy_trigger, "condition") and legacy_trigger.condition is not None:
         adapted = adapt_legacy_condition(legacy_trigger.condition)
         pre_specs.append(adapted)
-    
+
     # Wrap the reaction
     def wrapped_reaction(entity: Any, context: dict) -> ReactionResult:
         if hasattr(legacy_trigger, "reaction") and legacy_trigger.reaction is not None:
@@ -284,27 +285,27 @@ def adapt_legacy_trigger(legacy_trigger: Any) -> "TriggerSpec":
             event_data = dict(context)
             if hasattr(entity, "__dict__"):
                 event_data.update(entity.__dict__)
-            
+
             legacy_trigger.reaction(event_data)
-            
+
             return ReactionResult(
                 success=True,
-                description=f"Legacy reaction executed",
+                description="Legacy reaction executed",
             )
         return ReactionResult(success=True, description="No reaction defined")
-    
+
     # Handle chained triggers
     next_trigger = None
     if hasattr(legacy_trigger, "next_trigger") and legacy_trigger.next_trigger is not None:
         next_trigger = adapt_legacy_trigger(legacy_trigger.next_trigger)
-    
+
     # Map event type
     event_type_str = getattr(legacy_trigger, "event_type", "custom")
     try:
         event_type = EventType(event_type_str.lower())
     except ValueError:
         event_type = EventType.CUSTOM
-    
+
     return TriggerSpec(
         trigger_id=getattr(legacy_trigger, "label", "legacy_trigger") or "legacy_trigger",
         event_type=event_type,
@@ -334,23 +335,26 @@ class SpecRegistry:
         data = {"type": "SkillCheckSpec", "skill": "Perception", "dc": 15}
         spec = registry.from_dict(data)
     """
-    
+
     def __init__(self):
         self._specs: dict[str, type[Specification]] = {}
         self._register_builtins()
-    
+
     def _register_builtins(self):
         """Register built-in spec types."""
-        from domain.specs.base import AlwaysTrue, AlwaysFalse
-        from domain.specs.checks import SkillCheckSpec, SavingThrowSpec, ContestSpec
-        from domain.specs.movement import (
-            HasMovementRemaining, TileIsPassable, TileNotOccupied, InRange
-        )
+        from domain.specs.base import AlwaysFalse, AlwaysTrue
+        from domain.specs.checks import ContestSpec, SavingThrowSpec, SkillCheckSpec
         from domain.specs.entity import (
-            HasCondition, IsIncapacitated, IsAlive, HasHP,
-            HasSpellSlot, IsEntityType, CanTakeAction
+            CanTakeAction,
+            HasCondition,
+            HasHP,
+            HasSpellSlot,
+            IsAlive,
+            IsEntityType,
+            IsIncapacitated,
         )
-        
+        from domain.specs.movement import HasMovementRemaining, InRange, TileIsPassable, TileNotOccupied
+
         builtins = [
             AlwaysTrue, AlwaysFalse,
             SkillCheckSpec, SavingThrowSpec, ContestSpec,
@@ -358,14 +362,14 @@ class SpecRegistry:
             HasCondition, IsIncapacitated, IsAlive, HasHP,
             HasSpellSlot, IsEntityType, CanTakeAction,
         ]
-        
+
         for spec_class in builtins:
             self.register(spec_class.__name__, spec_class)
-    
+
     def register(self, type_name: str, spec_class: type[Specification]):
         """Register a spec type for deserialization."""
         self._specs[type_name] = spec_class
-    
+
     def from_dict(self, data: dict[str, Any]) -> Specification:
         """
         Deserialize a specification from a dict.
@@ -373,39 +377,39 @@ class SpecRegistry:
         Handles composite specs (AndSpec, OrSpec, etc.) recursively.
         """
         type_name = data.get("type")
-        
+
         if type_name is None:
             raise ValueError("Spec dict must have 'type' field")
-        
+
         # Handle composite specs
         if type_name == "AndSpec":
             left = self.from_dict(data["left"])
             right = self.from_dict(data["right"])
             return left & right
-        
+
         if type_name == "OrSpec":
             left = self.from_dict(data["left"])
             right = self.from_dict(data["right"])
             return left | right
-        
+
         if type_name == "NotSpec":
             inner = self.from_dict(data["inner"])
             return ~inner
-        
+
         if type_name == "AllOf":
             specs = [self.from_dict(s) for s in data["specs"]]
             from domain.specs.base import AllOf
             return AllOf(*specs, short_circuit=data.get("short_circuit", False))
-        
+
         if type_name == "AnyOf":
             specs = [self.from_dict(s) for s in data["specs"]]
             from domain.specs.base import AnyOf
             return AnyOf(*specs, short_circuit=data.get("short_circuit", True))
-        
+
         # Look up registered spec type
         if type_name not in self._specs:
             raise ValueError(f"Unknown spec type: {type_name}")
-        
+
         spec_class = self._specs[type_name]
         return spec_class.from_dict(data)
 

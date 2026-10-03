@@ -1,8 +1,7 @@
 import json
 import zipfile
-import shutil
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 
 class ExportManager:
@@ -17,7 +16,7 @@ class ExportManager:
 
     def export_bundle(self, map_path: Path, profile_dir: Path = None, media_dir: Path = None):
         # Load map to extract metadata
-        with open(map_path, "r", encoding="utf-8") as f:
+        with open(map_path, encoding="utf-8") as f:
             map_data = json.load(f)
 
         meta = map_data.get("meta", {})

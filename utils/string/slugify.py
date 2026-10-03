@@ -1,5 +1,6 @@
 import re
 
+
 def slugify(name: str) -> str:
     """
     Converts a display name like 'Dragon Turtle' to 'dragon-turtle',

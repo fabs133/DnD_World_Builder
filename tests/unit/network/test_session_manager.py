@@ -1,12 +1,13 @@
 """Tests for SessionManager using InMemory transport."""
-import asyncio
 import time
+
 import pytest
 from PyQt5.QtWidgets import QApplication
-from network.session_manager import SessionManager
-from network.transport import InMemoryServer, InMemoryClient
-from models.game_master import Gamemaster
+
 from models.entities.game_entity import GameEntity
+from models.game_master import Gamemaster
+from network.session_manager import SessionManager
+from network.transport import InMemoryClient, InMemoryServer
 
 
 def _wait_for_signals(seconds=0.5, steps=10):

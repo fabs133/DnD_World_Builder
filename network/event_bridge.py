@@ -11,8 +11,8 @@ import time
 from typing import TYPE_CHECKING
 
 from core.gameCreation.event_bus import EventBus
-from network.sync import serialize_world, compute_delta
 from network.protocol import make_state_delta, make_turn_change
+from network.sync import compute_delta, serialize_world
 
 if TYPE_CHECKING:
     from network.session_host import SessionHost
@@ -72,14 +72,14 @@ class EventBridge:
         self.session_host = session_host
         self.gamemaster = gamemaster
         self.throttle_ms = throttle_ms
-        
+
         self._last_state = None
         self._pending_sync = False
         self._last_sync_time = 0
         self._running = False
         self._loop = None
         self._subscribed_events = []
-    
+
     def start(self):
         """Start listening to :class:`~core.gameCreation.event_bus.EventBus` events.
 
@@ -89,37 +89,37 @@ class EventBridge:
         """
         if self._running:
             return
-            
+
         self._running = True
         self._last_state = serialize_world(self.gamemaster.world)
-        
+
         # Get or create event loop
         try:
             self._loop = asyncio.get_running_loop()
         except RuntimeError:
             self._loop = asyncio.get_event_loop()
-        
+
         # Subscribe to all sync events
         for event_type in SYNC_EVENTS:
             EventBus.subscribe(event_type, self._on_event)
             self._subscribed_events.append(event_type)
-        
+
         logger.info(f"EventBridge started, watching {len(SYNC_EVENTS)} event types")
-    
+
     def stop(self):
         """Stop listening and unsubscribe from all events."""
         if not self._running:
             return
-            
+
         self._running = False
-        
+
         # Unsubscribe from all events
         for event_type in self._subscribed_events:
             EventBus.unsubscribe(event_type, self._on_event)
         self._subscribed_events.clear()
-        
+
         logger.info("EventBridge stopped")
-    
+
     def _on_event(self, data: dict):
         """Handle an EventBus event.
 
@@ -131,7 +131,7 @@ class EventBridge:
         """
         if not self._running:
             return
-        
+
         # Throttle: don't sync more than once per throttle_ms
         now = time.time() * 1000
         if now - self._last_sync_time < self.throttle_ms:
@@ -143,25 +143,25 @@ class EventBridge:
                     self._maybe_sync,
                 )
             return
-        
+
         self._schedule_sync()
-    
+
     def _maybe_sync(self):
         """Called after throttle delay to check if sync is still needed."""
         if self._pending_sync and self._running:
             self._schedule_sync()
-    
+
     def _schedule_sync(self):
         """Schedule the async sync operation."""
         self._pending_sync = False
         self._last_sync_time = time.time() * 1000
-        
+
         if self._loop and self._running:
             asyncio.run_coroutine_threadsafe(
                 self._broadcast_delta(),
                 self._loop,
             )
-    
+
     async def _broadcast_delta(self):
         """Compute and broadcast a state delta to all connected players.
 
@@ -171,30 +171,30 @@ class EventBridge:
         """
         if not self._running:
             return
-        
+
         try:
             new_state = serialize_world(self.gamemaster.world)
-            
+
             if self._last_state is None:
                 self._last_state = new_state
                 return
-            
+
             changes = compute_delta(self._last_state, new_state)
-            
+
             if not changes:
                 return
-            
+
             self._last_state = new_state
-            
+
             # Broadcast to all players
             msg = make_state_delta(changes)
             await self.session_host.broadcast(msg)
-            
+
             logger.debug(f"Broadcast {len(changes)} state changes")
-            
+
         except Exception as e:
             logger.error(f"Error broadcasting delta: {e}")
-    
+
     async def force_full_sync(self):
         """Force a :data:`~network.protocol.MessageType.FULL_STATE` broadcast.
 
@@ -203,7 +203,7 @@ class EventBridge:
         """
         if not self._running:
             return
-        
+
         try:
             world_data = serialize_world(self.gamemaster.world)
             entities = [
@@ -214,15 +214,15 @@ class EventBridge:
                 "current_turn": self.gamemaster.turn_system.current_turn,
                 "round_number": self.gamemaster.turn_system.round_number,
             }
-            
+
             from network.protocol import make_full_state
             msg = make_full_state(world_data, entities, turn_data)
             await self.session_host.broadcast(msg)
-            
+
             self._last_state = world_data
-            
+
             logger.info("Broadcast full state sync")
-            
+
         except Exception as e:
             logger.error(f"Error broadcasting full state: {e}")
 
@@ -249,19 +249,19 @@ class TurnBridge:
         """Start listening for turn events on the EventBus."""
         if self._running:
             return
-        
+
         self._running = True
-        
+
         try:
             self._loop = asyncio.get_running_loop()
         except RuntimeError:
             self._loop = asyncio.get_event_loop()
-        
+
         EventBus.subscribe("turn_started", self._on_turn_started)
         EventBus.subscribe("round_started", self._on_round_started)
-        
+
         logger.info("TurnBridge started")
-    
+
     def stop(self):
         """Stop listening and unsubscribe from turn events."""
         if not self._running:
@@ -270,9 +270,9 @@ class TurnBridge:
         self._running = False
         EventBus.unsubscribe("turn_started", self._on_turn_started)
         EventBus.unsubscribe("round_started", self._on_round_started)
-        
+
         logger.info("TurnBridge stopped")
-    
+
     def _on_turn_started(self, data: dict):
         """Handle a ``turn_started`` event by scheduling a broadcast."""
         if self._loop and self._running:
@@ -280,7 +280,7 @@ class TurnBridge:
                 self._broadcast_turn_update(),
                 self._loop,
             )
-    
+
     def _on_round_started(self, data: dict):
         """Handle a ``round_started`` event by scheduling a broadcast."""
         if self._loop and self._running:
@@ -288,21 +288,21 @@ class TurnBridge:
                 self._broadcast_turn_update(),
                 self._loop,
             )
-    
+
     async def _broadcast_turn_update(self):
         """Broadcast the current turn state to all connected players."""
         try:
             turn_system = self.gamemaster.turn_system
-            
+
             current_entity = None
             if turn_system.turn_order and turn_system.current_turn < len(turn_system.turn_order):
                 current_entity = turn_system.turn_order[turn_system.current_turn].name
-            
+
             msg = make_turn_change(
                 current_entity=current_entity,
                 round_number=turn_system.round_number,
             )
             await self.session_host.broadcast(msg)
-            
+
         except Exception as e:
             logger.error(f"Error broadcasting turn update: {e}")

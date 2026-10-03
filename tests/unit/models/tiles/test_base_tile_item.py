@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QGraphicsItem
 
 from models.tiles.base_tile_item import BaseTileItem  # adjust this import if your file lives elsewhere
 
+
 def test_inheritance_and_defaults(qapp):
     # qapp fixture ensures a QApplication is running
     item = BaseTileItem()

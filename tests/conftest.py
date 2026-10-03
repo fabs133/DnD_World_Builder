@@ -1,7 +1,9 @@
-import sys
 import os
+import sys
+
 import pytest
 from PyQt5.QtWidgets import QApplication, QMessageBox
+
 
 @pytest.fixture(scope="session", autouse=True)
 def qapp():
@@ -30,6 +32,6 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     total = terminalreporter._numcollected
     passed = len(terminalreporter.stats.get('passed', []))
     failed = len(terminalreporter.stats.get('failed', []))
-    print(f"\n  Test Summary:")
+    print("\n  Test Summary:")
     print(f"  Passed: {passed}/{total}")
     print(f"  Failed: {failed}/{total}" if failed else "  All tests passed successfully!")

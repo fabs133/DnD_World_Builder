@@ -1,7 +1,7 @@
 """Tests for AttackAction."""
 
 import random
-import pytest
+
 from core.engine.actions.attack_action import AttackAction
 
 

@@ -1,9 +1,8 @@
-import pytest
 import PyQt5.QtCore as qc
-from PyQt5.QtWidgets import QTabWidget, QPushButton
+import pytest
+from PyQt5.QtWidgets import QPushButton, QTabWidget
 
 from ui.dialogs.trigger_editor.editor_dialog import TriggerEditorDialog
-
 
 # ---------------------------------------------------------------------------
 # Minimal stubs

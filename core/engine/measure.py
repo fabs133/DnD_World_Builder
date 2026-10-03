@@ -9,7 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from core.engine.pathfinder import find_path, path_cost, _heuristic
+from core.engine.pathfinder import _heuristic, find_path, path_cost
 
 if TYPE_CHECKING:
     from models.world.world_tile_manager import WorldTileManager
@@ -38,7 +38,7 @@ class MeasureResult:
 def measure_distance(
     start: tuple[int, int],
     end: tuple[int, int],
-    tile_map: "WorldTileManager",
+    tile_map: WorldTileManager,
 ) -> MeasureResult:
     """Compute the shortest-path distance between *start* and *end*.
 

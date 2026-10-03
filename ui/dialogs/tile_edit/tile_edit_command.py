@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QUndoCommand
 
+
 class TileEditCommand(QUndoCommand):
     """
     QUndoCommand for editing a tile's properties.
@@ -55,7 +56,7 @@ class TileEditCommand(QUndoCommand):
         :param state: The state to apply to the tile.
         :type state: dict
         """
-        from models.tiles.tile_data import TileData, TerrainType, TileTag
+        from models.tiles.tile_data import TerrainType, TileTag
         self.tile_data.terrain = TerrainType[state["terrain"]]
         self.tile_data.tags = [TileTag[t] for t in state["tags"]]
         self.tile_data.user_label = state["user_label"]

@@ -1,12 +1,24 @@
-from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QFormLayout, QComboBox, QCheckBox,
-    QLineEdit, QTextEdit, QPushButton, QGroupBox, QScrollArea,
-    QHBoxLayout, QLabel, QFileDialog, QMessageBox,
-)
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor, QPixmap, QImageReader
-from models.tiles.tile_data import TileTag, TerrainType
+from PyQt5.QtGui import QColor, QImageReader, QPixmap
+from PyQt5.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QFileDialog,
+    QFormLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QMessageBox,
+    QPushButton,
+    QScrollArea,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
+)
+
 from core.logger import app_logger
+from models.tiles.tile_data import TerrainType, TileTag
 
 
 class CoreValuesPanel(QWidget):

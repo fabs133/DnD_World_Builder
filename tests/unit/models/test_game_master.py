@@ -1,8 +1,11 @@
 import logging
+
 import pytest
+
 from core.gameCreation.event_bus import EventBus
 from core.logger import app_logger
 from models.game_master import Gamemaster
+
 
 class DummyEntity:
     def __init__(self, name):

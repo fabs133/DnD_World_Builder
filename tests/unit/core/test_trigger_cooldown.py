@@ -1,6 +1,8 @@
 import pytest
+
 from core.gameCreation.trigger import Trigger
 from models.flow.condition.condition_list import AlwaysTrue
+
 
 class DummyTurnManager:
     def __init__(self):

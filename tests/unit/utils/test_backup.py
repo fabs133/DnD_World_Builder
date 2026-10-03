@@ -1,10 +1,11 @@
-import logging
-import os
-import shutil
 import filecmp
+import logging
+
 import pytest
+
 from core.logger import app_logger
 from utils.backup import create_backup
+
 
 def test_backup_nonexistent_path(tmp_path):
     missing = tmp_path / "no_such_file.txt"

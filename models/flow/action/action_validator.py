@@ -1,5 +1,6 @@
 from core.logger import app_logger
 
+
 class ActionValidator:
     @staticmethod
     def validate(action, game_state=None):

@@ -1,9 +1,8 @@
 """Tests for EntitiesPanel: list population, add, delete, duplicate."""
 
-import copy
+from unittest.mock import MagicMock
+
 import pytest
-from types import SimpleNamespace
-from unittest.mock import MagicMock, patch
 
 from models.entities.game_entity import GameEntity
 from models.tiles.tile_data import TileData

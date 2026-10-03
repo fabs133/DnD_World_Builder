@@ -1,7 +1,10 @@
 import logging
+
 import pytest
-from models.flow.combat_system import CombatSystem
+
 from core.logger import app_logger
+from models.flow.combat_system import CombatSystem
+
 
 def test_player_victory(caplog):
     # Enemy stub: starts at 5 HP, should never get its turn

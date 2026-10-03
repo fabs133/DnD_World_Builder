@@ -5,19 +5,19 @@ personality system (Lawful Good → Chaotic Evil), with a deterministic
 heuristic fallback when Ollama is unavailable.
 """
 
+from core.engine.ai.action_parser import ActionParser, ParseError
 from core.engine.ai.ai_adapter import AIAdapter
 from core.engine.ai.heuristic_adapter import HeuristicAIAdapter
 from core.engine.ai.ollama_client import OllamaClient, OllamaConfig
-from core.engine.ai.action_parser import ActionParser, ParseError
-from models.ai.personality import EntityPersonality
-from models.ai.alignment import Alignment, LawChaos, GoodEvil
-from models.ai.tactical_weights import TacticalWeights
 from core.engine.ai.prompt_builder import (
-    TacticalPromptBuilder,
-    CombatantInfo,
     ActionOption,
+    CombatantInfo,
     CombatMemory,
+    TacticalPromptBuilder,
 )
+from models.ai.alignment import Alignment, GoodEvil, LawChaos
+from models.ai.personality import EntityPersonality
+from models.ai.tactical_weights import TacticalWeights
 
 # Backwards compatibility alias
 Personality = EntityPersonality

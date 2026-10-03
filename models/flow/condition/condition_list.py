@@ -1,5 +1,6 @@
-from models.flow.condition.condition import Condition
 from core.logger import app_logger
+from models.flow.condition.condition import Condition
+
 
 class AlwaysTrue(Condition):
     """

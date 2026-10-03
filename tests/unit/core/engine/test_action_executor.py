@@ -1,6 +1,5 @@
 """Tests for the ActionExecutor."""
 
-import pytest
 from core.engine.action_executor import ActionExecutor, ActionResult
 from models.flow.action.action import Action
 

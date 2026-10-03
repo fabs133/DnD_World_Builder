@@ -1,5 +1,6 @@
 from models.flow.condition.condition_list import AlwaysTrue, PerceptionCheck
 
+
 class ConditionRegistry:
     """
     Registry for condition classes.

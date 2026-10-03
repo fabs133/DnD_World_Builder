@@ -1,9 +1,8 @@
 """Tests for YAML rules: section → Ruleset → ActionExecutor pipeline."""
 
-import pytest
 
 from core.engine.scenarios.scenario_loader import ScenarioLoader, _parse_ruleset
-from domain.specs.ruleset import Ruleset, RuleInstance
+from domain.specs.ruleset import Ruleset
 
 
 class TestParseRuleset:

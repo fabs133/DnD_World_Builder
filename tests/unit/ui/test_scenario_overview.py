@@ -1,13 +1,12 @@
 import json
-import shutil
 import zipfile
 from pathlib import Path
 
 import pytest
-from PyQt5.QtWidgets import QFileDialog, QMessageBox, QListWidgetItem
+from PyQt5.QtWidgets import QFileDialog, QMessageBox
 
-import ui.scenario_overview as so_mod
 from ui.scenario_overview import ScenarioOverviewWidget
+
 
 @pytest.fixture(autouse=True)
 def workspace(tmp_path, monkeypatch):
@@ -137,4 +136,4 @@ def test_open_selected_scenario(widget, workspace):
     widget.open_selected_scenario()
     # map_loader is called with the (relative) Path("workspace/.../map.json")
     rel = Path("workspace") / "TestScn" / "map.json"
-    assert getattr(widget_obj, "loaded_path") == rel
+    assert widget_obj.loaded_path == rel

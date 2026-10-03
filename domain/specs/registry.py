@@ -16,29 +16,30 @@ Design:
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any, Callable, Type
-from enum import Enum
 import json
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
-from domain.specs.base import Specification, SpecResult
+from domain.specs.base import Specification
 
 
 class RuleCategory(Enum):
     """Categories for organizing rules in the UI."""
-    
+
     # Core rules - typically always active
     MOVEMENT = "movement"
     COMBAT = "combat"
     SPELLCASTING = "spellcasting"
     CONDITIONS = "conditions"
     RESOURCES = "resources"
-    
+
     # Trigger/event rules
     TRAPS = "traps"
     ENVIRONMENTAL = "environmental"
     SOCIAL = "social"
-    
+
     # Meta categories
     BASE = "base"           # Core rules that should always apply
     OPTIONAL = "optional"   # Standard D&D rules that can be toggled
@@ -68,12 +69,12 @@ class RuleParameter:
     description: str = ""
     default: Any = None
     required: bool = True
-    
+
     # Constraints for validation
     min_value: int | float | None = None
     max_value: int | float | None = None
     choices: list[str] | None = None  # For enum-like parameters
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "name": self.name,
@@ -86,7 +87,7 @@ class RuleParameter:
             "max_value": self.max_value,
             "choices": self.choices,
         }
-    
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> RuleParameter:
         return cls(**data)
@@ -108,26 +109,26 @@ class RuleDefinition:
     description: str
     category: RuleCategory
     scope: RuleScope
-    
+
     # The spec class or factory function
-    spec_class: Type[Specification] | Callable[..., Specification]
-    
+    spec_class: type[Specification] | Callable[..., Specification]
+
     # Parameters that can be configured
     parameters: list[RuleParameter] = field(default_factory=list)
-    
+
     # UI metadata
     icon: str = "📜"  # Emoji or icon name
     tags: list[str] = field(default_factory=list)
-    
+
     # Rule behavior
     is_base_rule: bool = False      # Always available, can't be removed
     is_invertible: bool = True      # Can apply as NOT(rule)
     default_enabled: bool = True    # Enabled by default in new scenarios
-    
+
     # Documentation
     examples: list[str] = field(default_factory=list)
     see_also: list[str] = field(default_factory=list)  # Related rule IDs
-    
+
     def create_spec(self, **kwargs) -> Specification:
         """
         Instantiate the specification with given parameters.
@@ -142,14 +143,14 @@ class RuleDefinition:
         for param in self.parameters:
             if param.name not in kwargs and param.default is not None:
                 kwargs[param.name] = param.default
-        
+
         # Validate required parameters
         for param in self.parameters:
             if param.required and param.name not in kwargs:
                 raise ValueError(f"Missing required parameter: {param.name}")
-        
+
         return self.spec_class(**kwargs)
-    
+
     def validate_params(self, **kwargs) -> list[str]:
         """
         Validate parameters against constraints.
@@ -158,15 +159,15 @@ class RuleDefinition:
             List of error messages (empty if valid)
         """
         errors = []
-        
+
         for param in self.parameters:
             if param.name not in kwargs:
                 if param.required:
                     errors.append(f"Missing required parameter: {param.label}")
                 continue
-            
+
             value = kwargs[param.name]
-            
+
             # Type checking
             if param.param_type == "int" and not isinstance(value, int):
                 errors.append(f"{param.label} must be an integer")
@@ -174,19 +175,19 @@ class RuleDefinition:
                 errors.append(f"{param.label} must be a number")
             elif param.param_type == "str" and not isinstance(value, str):
                 errors.append(f"{param.label} must be text")
-            
+
             # Range checking
             if param.min_value is not None and value < param.min_value:
                 errors.append(f"{param.label} must be at least {param.min_value}")
             if param.max_value is not None and value > param.max_value:
                 errors.append(f"{param.label} must be at most {param.max_value}")
-            
+
             # Choice checking
             if param.choices is not None and value not in param.choices:
                 errors.append(f"{param.label} must be one of: {', '.join(param.choices)}")
-        
+
         return errors
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Serialize for storage (without spec_class)."""
         return {
@@ -225,59 +226,59 @@ class RuleRegistry:
         rule_def = registry.get("skill_check")
         spec = rule_def.create_spec(skill="Perception", dc=15)
     """
-    
+
     def __init__(self):
         self._rules: dict[str, RuleDefinition] = {}
         self._by_category: dict[RuleCategory, list[str]] = {cat: [] for cat in RuleCategory}
-    
+
     def register(self, rule: RuleDefinition):
         """Register a rule definition."""
         self._rules[rule.rule_id] = rule
         self._by_category[rule.category].append(rule.rule_id)
-    
+
     def unregister(self, rule_id: str):
         """Remove a rule definition."""
         if rule_id in self._rules:
             rule = self._rules.pop(rule_id)
             self._by_category[rule.category].remove(rule_id)
-    
+
     def get(self, rule_id: str) -> RuleDefinition | None:
         """Get a rule by ID."""
         return self._rules.get(rule_id)
-    
+
     def get_all(self) -> list[RuleDefinition]:
         """Get all registered rules."""
         return list(self._rules.values())
-    
+
     def get_by_category(self, category: RuleCategory) -> list[RuleDefinition]:
         """Get all rules in a category."""
         return [self._rules[rid] for rid in self._by_category.get(category, [])]
-    
+
     def get_base_rules(self) -> list[RuleDefinition]:
         """Get all base rules (always active)."""
         return [r for r in self._rules.values() if r.is_base_rule]
-    
+
     def get_optional_rules(self) -> list[RuleDefinition]:
         """Get all optional rules (can be toggled)."""
         return [r for r in self._rules.values() if not r.is_base_rule]
-    
+
     def search(self, query: str) -> list[RuleDefinition]:
         """Search rules by name, description, or tags."""
         query = query.lower()
         results = []
-        
+
         for rule in self._rules.values():
-            if (query in rule.name.lower() or 
+            if (query in rule.name.lower() or
                 query in rule.description.lower() or
                 any(query in tag.lower() for tag in rule.tags)):
                 results.append(rule)
-        
+
         return results
-    
+
     def get_by_scope(self, scope: RuleScope) -> list[RuleDefinition]:
         """Get all rules that evaluate a specific scope."""
         return [r for r in self._rules.values() if r.scope == scope]
-    
+
     def register_defaults(self):
         """Register all default D&D 5e rules."""
         _register_base_rules(self)
@@ -285,13 +286,13 @@ class RuleRegistry:
         _register_movement_rules(self)
         _register_condition_rules(self)
         _register_trigger_rules(self)
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Serialize registry (for export)."""
         return {
             "rules": {rid: r.to_dict() for rid, r in self._rules.items()}
         }
-    
+
     def export_json(self, path: str):
         """Export registry to JSON file."""
         with open(path, 'w') as f:
@@ -358,9 +359,8 @@ PARAM_RANGE = RuleParameter(
 
 def _register_base_rules(registry: RuleRegistry):
     """Register core rules that are always available."""
-    from domain.specs.checks import SkillCheckSpec, SavingThrowSpec
-    from domain.specs.entity import IsAlive, CanTakeAction
-    
+    from domain.specs.entity import CanTakeAction, IsAlive
+
     registry.register(RuleDefinition(
         rule_id="is_alive",
         name="Is Alive",
@@ -374,7 +374,7 @@ def _register_base_rules(registry: RuleRegistry):
         is_base_rule=True,
         examples=["Check if a creature can be targeted by most effects"],
     ))
-    
+
     registry.register(RuleDefinition(
         rule_id="can_take_action",
         name="Can Take Action",
@@ -392,10 +392,10 @@ def _register_base_rules(registry: RuleRegistry):
 
 def _register_combat_rules(registry: RuleRegistry):
     """Register combat-related rules."""
-    from domain.specs.checks import SkillCheckSpec, SavingThrowSpec
+    from domain.specs.checks import SavingThrowSpec, SkillCheckSpec
+    from domain.specs.entity import CanTakeReaction, IsIncapacitated
     from domain.specs.movement import InRange, IsAdjacent
-    from domain.specs.entity import IsIncapacitated, HasCondition, CanTakeReaction
-    
+
     registry.register(RuleDefinition(
         rule_id="skill_check",
         name="Skill Check",
@@ -413,7 +413,7 @@ def _register_combat_rules(registry: RuleRegistry):
             "Stealth DC 12 to sneak past guards",
         ],
     ))
-    
+
     registry.register(RuleDefinition(
         rule_id="saving_throw",
         name="Saving Throw",
@@ -430,7 +430,7 @@ def _register_combat_rules(registry: RuleRegistry):
             "WIS save DC 13 to resist charm",
         ],
     ))
-    
+
     registry.register(RuleDefinition(
         rule_id="in_range",
         name="In Range",
@@ -457,7 +457,7 @@ def _register_combat_rules(registry: RuleRegistry):
             "Shortbow range (80 ft)",
         ],
     ))
-    
+
     registry.register(RuleDefinition(
         rule_id="is_adjacent",
         name="Is Adjacent",
@@ -471,7 +471,7 @@ def _register_combat_rules(registry: RuleRegistry):
         is_base_rule=False,
         examples=["Required for melee attacks and opportunity attacks"],
     ))
-    
+
     registry.register(RuleDefinition(
         rule_id="is_incapacitated",
         name="Is Incapacitated",
@@ -486,7 +486,7 @@ def _register_combat_rules(registry: RuleRegistry):
         is_invertible=True,
         examples=["Use ~IsIncapacitated to require entity CAN act"],
     ))
-    
+
     registry.register(RuleDefinition(
         rule_id="can_take_reaction",
         name="Can Take Reaction",
@@ -505,7 +505,7 @@ def _register_combat_rules(registry: RuleRegistry):
 def _register_movement_rules(registry: RuleRegistry):
     """Register movement-related rules."""
     from domain.specs.movement import HasMovementRemaining, TileIsPassable, TileNotOccupied
-    
+
     registry.register(RuleDefinition(
         rule_id="has_movement",
         name="Has Movement Remaining",
@@ -519,7 +519,7 @@ def _register_movement_rules(registry: RuleRegistry):
         is_base_rule=False,
         examples=["Check before allowing movement to a tile"],
     ))
-    
+
     registry.register(RuleDefinition(
         rule_id="tile_passable",
         name="Tile Is Passable",
@@ -540,7 +540,7 @@ def _register_movement_rules(registry: RuleRegistry):
         tags=["terrain", "passable", "blocking"],
         is_base_rule=False,
     ))
-    
+
     registry.register(RuleDefinition(
         rule_id="tile_not_occupied",
         name="Tile Not Occupied",
@@ -566,7 +566,7 @@ def _register_movement_rules(registry: RuleRegistry):
 def _register_condition_rules(registry: RuleRegistry):
     """Register condition-checking rules."""
     from domain.specs.entity import HasCondition, HasHP, HasSpellSlot, IsEntityType
-    
+
     registry.register(RuleDefinition(
         rule_id="has_condition",
         name="Has Condition",
@@ -597,7 +597,7 @@ def _register_condition_rules(registry: RuleRegistry):
             "~HasCondition('invisible') - entity is NOT invisible",
         ],
     ))
-    
+
     registry.register(RuleDefinition(
         rule_id="has_hp",
         name="Has HP",
@@ -619,7 +619,7 @@ def _register_condition_rules(registry: RuleRegistry):
         tags=["hp", "health", "resource"],
         is_base_rule=False,
     ))
-    
+
     registry.register(RuleDefinition(
         rule_id="has_spell_slot",
         name="Has Spell Slot",
@@ -642,7 +642,7 @@ def _register_condition_rules(registry: RuleRegistry):
         tags=["spell", "slot", "resource", "magic"],
         is_base_rule=False,
     ))
-    
+
     registry.register(RuleDefinition(
         rule_id="is_entity_type",
         name="Is Entity Type",
@@ -671,8 +671,7 @@ def _register_condition_rules(registry: RuleRegistry):
 
 def _register_trigger_rules(registry: RuleRegistry):
     """Register trigger/trap template rules."""
-    from domain.specs.triggers import perception_trap, enter_zone_trigger
-    
+
     # These are templates/factories, not direct specs
     # They need special handling in the UI
     pass  # Handled separately in builder.py

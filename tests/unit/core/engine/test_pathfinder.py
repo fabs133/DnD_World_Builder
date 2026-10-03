@@ -1,11 +1,9 @@
 """Tests for A* pathfinding and reachability."""
 
-import pytest
 
+from core.engine.pathfinder import find_path, path_cost, reachable_tiles
+from models.tiles.tile_data import TerrainType, TileTag
 from models.world.world_tile_manager import WorldTileManager
-from models.tiles.tile_data import TileTag, TerrainType
-from core.engine.pathfinder import find_path, reachable_tiles, path_cost
-
 
 # ── Helpers ──────────────────────────────────────────────────────────────
 

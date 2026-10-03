@@ -1,9 +1,11 @@
 """Tests for EventBridge and TurnBridge."""
 import asyncio
+from unittest.mock import AsyncMock, MagicMock
+
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
-from network.event_bridge import EventBridge, TurnBridge, SYNC_EVENTS
+
 from core.gameCreation.event_bus import EventBus
+from network.event_bridge import SYNC_EVENTS, EventBridge, TurnBridge
 
 
 @pytest.fixture(autouse=True)
@@ -221,4 +223,4 @@ class TestSyncEvents:
             "condition_applied", "condition_removed",
             "trigger_fired",
         }
-        assert SYNC_EVENTS == expected
+        assert expected == SYNC_EVENTS

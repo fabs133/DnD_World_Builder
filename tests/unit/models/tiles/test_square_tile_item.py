@@ -1,9 +1,11 @@
 import pytest
-from PyQt5.QtCore import Qt, QRectF
-from PyQt5.QtGui import QColor, QBrush, QPen
-from models.tiles.base_tile_item import BaseTileItem
+from PyQt5.QtCore import QRectF, Qt
+from PyQt5.QtGui import QBrush, QColor, QPen
+
 import models.tiles.square_tile_item as sti_mod
+from models.tiles.base_tile_item import BaseTileItem
 from models.tiles.square_tile_item import SquareTileItem
+
 
 # Dummy TileData to hold position + overlay_color
 class DummyTileData:

@@ -1,11 +1,10 @@
 # dialogs/new_entity_dialog.py
 
-from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QFormLayout,
-    QLineEdit, QComboBox, QPushButton
-)
+from PyQt5.QtWidgets import QComboBox, QDialog, QFormLayout, QLineEdit, QPushButton, QVBoxLayout
+
 from models.entities.game_entity import GameEntity  # adjust if it's under models.entity
 from registries.trigger_presets import trigger_presets  # adjust if it's under models.triggers
+
 
 class NewEntityDialog(QDialog):
     """
@@ -65,7 +64,7 @@ class NewEntityDialog(QDialog):
 
         if name:
             self.entity = GameEntity(name, etype)
-            
+
             # Attach default triggers (if any)
             for t in trigger_presets.get(etype, []):
                 self.entity.register_trigger(t)

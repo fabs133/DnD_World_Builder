@@ -6,10 +6,9 @@ Alignment.to_tactical_weights() with +/-15% margin for 10-run variance.
 
 from __future__ import annotations
 
-from typing import Callable
+from collections.abc import Callable
 
 from core.testing.behavioral.stats import BehaviorEvent, BehaviorStats
-
 
 # Minimum number of relevant opportunities before an assertion applies.
 MIN_SAMPLES = 3

@@ -1,9 +1,10 @@
 """Tests for CoreValuesPanel: load, save, field population."""
 
-import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
-from models.tiles.tile_data import TileData, TerrainType, TileTag
+import pytest
+
+from models.tiles.tile_data import TerrainType, TileData, TileTag
 from ui.panels.core_values_panel import CoreValuesPanel
 
 

@@ -1,11 +1,12 @@
 """Tests for the headless GameSession orchestrator."""
 
 import pytest
-from core.engine.game_session import GameSession, GameSessionResult
-from core.engine.input_adapter import TestAdapter
+
+from core.engine.game_session import GameSession
 from core.engine.game_state import GameState
-from models.game_master import Gamemaster
+from core.engine.input_adapter import TestAdapter
 from models.flow.action.action import Action
+from models.game_master import Gamemaster
 
 
 class SimpleEntity:

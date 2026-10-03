@@ -3,9 +3,11 @@
 # Kept for backwards compatibility. Remove in a future cleanup.
 
 from PyQt5.QtWidgets import QStackedWidget
+
+from .graph_view import TriggerGraphView
 from .list_view import TriggerListView
 from .property_editor import TriggerPropertyEditor
-from .graph_view import TriggerGraphView
+
 
 class TriggerEditorStack(QStackedWidget):
     """

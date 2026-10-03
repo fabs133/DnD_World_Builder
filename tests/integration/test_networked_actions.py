@@ -4,15 +4,18 @@ import asyncio
 
 import pytest
 
-from network.transport import InMemoryServer, InMemoryClient
-from network.session_host import SessionHost
-from network.protocol import (
-    Message, MessageType,
-    make_hello, make_claim_entity, make_action_request,
-)
+from models.entities.game_entity import GameEntity
 from models.game_master import Gamemaster
 from models.world.world import World
-from models.entities.game_entity import GameEntity
+from network.protocol import (
+    Message,
+    MessageType,
+    make_action_request,
+    make_claim_entity,
+    make_hello,
+)
+from network.session_host import SessionHost
+from network.transport import InMemoryClient, InMemoryServer
 
 
 @pytest.fixture
@@ -105,7 +108,7 @@ class TestNetworkedActions:
             for conn in (conn_alice, conn_bob):
                 try:
                     await asyncio.wait_for(conn.recv(), timeout=0.2)
-                except (asyncio.TimeoutError, ConnectionError, asyncio.CancelledError):
+                except (TimeoutError, ConnectionError, asyncio.CancelledError):
                     pass
 
             # Bob tries to act (Goblin) — should be rejected (it's Hero's turn)

@@ -1,5 +1,6 @@
 from models.entities.game_entity import GameEntity
 
+
 class NPC(GameEntity):
     """
     Represents a Non-Player Character (NPC) in the game.

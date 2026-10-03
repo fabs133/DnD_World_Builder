@@ -3,6 +3,7 @@ import pytest
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsView
+
 from models.tiles.square_tile_item import SquareTileItem
 
 

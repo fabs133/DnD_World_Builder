@@ -1,12 +1,13 @@
 # tests/unit/ui/test_undo_redo_and_autosave.py
 import json
 from pathlib import Path
-import pytest
+
 from PyQt5.QtCore import Qt
 
+
 def test_undo_redo_tile_paint(qtbot):
-    from ui.main_window import MainWindow
     from models.tiles.square_tile_item import SquareTileItem
+    from ui.main_window import MainWindow
 
     # Create a 1x1 grid MainWindow
     mw = MainWindow(settings={}, grid_type='square', rows=1, cols=1)
@@ -42,7 +43,6 @@ def test_undo_redo_tile_paint(qtbot):
 
 def test_save_map_triggers_backup(tmp_path):
     from ui.main_window import MainWindow
-    from pathlib import Path
 
     # Initialize MainWindow with a 1x1 grid
     mw = MainWindow(settings={}, grid_type='square', rows=1, cols=1)

@@ -1,10 +1,11 @@
 # core/gameCreation/turn_system.py
 
-from core.logger import app_logger
 from core.gameCreation.event_bus import EventBus
-from .combat_system import CombatSystem
-from .action.action_validator import ActionValidator
+from core.logger import app_logger
 from models.flow.reaction.reaction_queue import ReactionQueue
+
+from .action.action_validator import ActionValidator
+
 
 class TurnSystem:
     """

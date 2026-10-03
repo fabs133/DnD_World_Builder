@@ -1,6 +1,10 @@
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QListWidget, QPushButton
-from .universal_search_dialog import UniversalSearchDialog  # Assuming this is the correct import path for UniversalSearchDialog
+from PyQt5.QtWidgets import QDialog, QListWidget, QPushButton, QVBoxLayout
+
 from .trigger_editor.editor_dialog import TriggerEditorDialog
+from .universal_search_dialog import (
+    UniversalSearchDialog,  # Assuming this is the correct import path for UniversalSearchDialog
+)
+
 
 class EntityEditorDialog(QDialog):
     """

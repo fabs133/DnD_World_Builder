@@ -1,5 +1,6 @@
 from models.entities.game_entity import GameEntity
 
+
 class Trap(GameEntity):
     """
     Represents a trap entity in the game.

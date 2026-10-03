@@ -1,10 +1,14 @@
 import logging
+
 import pytest
-from models.flow.turn_system import TurnSystem
+
+from core.gameCreation.event_bus import (
+    EventBus,  # your EventBus :contentReference[oaicite:0]{index=0}:contentReference[oaicite:1]{index=1}
+)
 from core.logger import app_logger
-from core.gameCreation.event_bus import EventBus    # your EventBus :contentReference[oaicite:0]{index=0}:contentReference[oaicite:1]{index=1}
 from models.flow.action.action_validator import ActionValidator
 from models.flow.reaction.reaction_queue import ReactionQueue
+from models.flow.turn_system import TurnSystem
 
 
 class DummyEntity:

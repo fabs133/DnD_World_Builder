@@ -1,8 +1,8 @@
 import logging
-import pytest
 
-from models.flow.reaction.reaction import Reaction
 from core.logger import app_logger
+from models.flow.reaction.reaction import Reaction
+
 
 class DummyReactor:
     def __init__(self, name):

@@ -1,12 +1,12 @@
 import logging
-import pytest
 
-from models.world.world import World
 from core.gameCreation.event_bus import EventBus
-from models.entities.game_entity import GameEntity
 from core.gameCreation.trigger import Trigger
+from models.entities.game_entity import GameEntity
 from models.flow.condition.condition_list import AlwaysTrue
 from models.flow.reaction.reactions_list import AlertGamemaster
+from models.world.world import World
+
 
 def test_multiple_entities_on_same_tile_all_react(caplog):
     # 1) Create a tiny 2×1 world

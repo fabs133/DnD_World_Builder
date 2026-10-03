@@ -10,8 +10,7 @@ Use ``pytest tests/behavioral/ -m "not slow"`` for fast CI checks.
 import pytest
 
 from core.testing.behavioral.assertions import AlignmentAssertions
-from core.testing.behavioral.harness import ScenarioConfig, HarnessConfig, BehavioralTestHarness
-
+from core.testing.behavioral.harness import ScenarioConfig
 
 # ---------------------------------------------------------------------------
 # Helpers

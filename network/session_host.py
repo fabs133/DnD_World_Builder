@@ -11,15 +11,23 @@ authoritative source of truth for all game state.
 """
 
 import asyncio
-import uuid
 import logging
-from network.transport import TransportServer, TransportConnection
+import uuid
+
 from network.protocol import (
-    Message, MessageType, PROTOCOL_VERSION,
-    make_welcome, make_error, make_entity_claimed,
-    make_full_state, make_action_result, make_chat, ErrorCode,
+    PROTOCOL_VERSION,
+    ErrorCode,
+    Message,
+    MessageType,
+    make_action_result,
+    make_chat,
+    make_entity_claimed,
+    make_error,
+    make_full_state,
+    make_welcome,
 )
-from network.sync import serialize_world, serialize_entity
+from network.sync import serialize_entity, serialize_world
+from network.transport import TransportConnection, TransportServer
 
 logger = logging.getLogger(__name__)
 
@@ -93,7 +101,7 @@ class SessionHost:
         try:
             raw = await asyncio.wait_for(conn.recv(), timeout=10.0)
             msg = Message.from_json(raw)
-        except (asyncio.TimeoutError, ValueError) as e:
+        except (TimeoutError, ValueError) as e:
             error = make_error(ErrorCode.INVALID_MESSAGE, str(e))
             await conn.send(error.to_json())
             await conn.close()
@@ -338,8 +346,8 @@ class SessionHost:
         Returns ``None`` if the action type is unknown.
         """
         from core.engine.actions.attack_action import AttackAction
-        from core.engine.actions.move_action import MoveAction
         from core.engine.actions.end_turn_action import EndTurnAction
+        from core.engine.actions.move_action import MoveAction
 
         if action_type == "ATTACK":
             target_name = params.get("target")

@@ -1,18 +1,16 @@
 """Tests for domain.specs.registry — Rule registry and definitions."""
 
-import pytest
 
-from domain.specs.base import AlwaysTrue, Specification
+from domain.specs.base import AlwaysTrue
 from domain.specs.registry import (
     RuleCategory,
-    RuleScope,
-    RuleParameter,
     RuleDefinition,
+    RuleParameter,
     RuleRegistry,
+    RuleScope,
     get_default_registry,
     register_custom_rule,
 )
-
 
 # ── RuleParameter ────────────────────────────────────────────────────────────
 

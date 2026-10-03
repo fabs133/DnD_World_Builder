@@ -1,5 +1,6 @@
-import os
 import json
+import os
+
 from core.logger import app_logger
 
 CONFIG_VERSION = 3
@@ -58,7 +59,7 @@ class SettingsManager:
             self.save_settings()
         else:
             try:
-                with open(self.path, "r") as f:
+                with open(self.path) as f:
                     self.settings = json.load(f)
 
                 if "config_version" not in self.settings:
@@ -67,7 +68,7 @@ class SettingsManager:
 
                 self._migrate_if_needed()
 
-            except (json.JSONDecodeError, IOError) as e:
+            except (OSError, json.JSONDecodeError) as e:
                 app_logger.error(f"[Settings] Error loading config: {e}")
                 app_logger.info("[Settings] Resetting to default config.")
                 self.settings = DEFAULT_SETTINGS.copy()

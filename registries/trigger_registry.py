@@ -1,6 +1,7 @@
+from core.logger import app_logger
 from registries.condition_registry import ConditionRegistry
 from registries.reaction_registry import ReactionRegistry
-from core.logger import app_logger
+
 
 class TriggerRegistry:
     """
@@ -140,7 +141,7 @@ class TriggerRegistry:
         for t in self._triggers:
             src = self.get_source(t)
             app_logger.debug(f"  {t.event_type} (from: {src})")
-    
+
     def get_triggers_by_source(self, source_name):
         """
         Get all triggers registered from a specific source.

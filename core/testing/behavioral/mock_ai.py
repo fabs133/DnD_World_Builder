@@ -3,16 +3,15 @@
 from __future__ import annotations
 
 import random
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
-from core.engine.input_adapter import InputAdapter
-from core.engine.game_state import GameState
 from core.engine.actions.attack_action import AttackAction
 from core.engine.actions.end_turn_action import EndTurnAction
-from core.engine.actions.move_action import MoveAction
+from core.engine.game_state import GameState
+from core.engine.input_adapter import InputAdapter
 from core.testing.behavioral.stats import BehaviorEvent, EntityRunStats
 from models.ai.tactical_weights import TacticalWeights
-
 
 # Faction helpers
 _PLAYER_TYPES = {"player", "ally", "companion"}

@@ -1,11 +1,18 @@
-from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-    QPushButton, QListWidget, QLineEdit, QSplitter,
-)
 from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QListWidget,
+    QPushButton,
+    QSplitter,
+    QVBoxLayout,
+    QWidget,
+)
+
+from core.logger import app_logger
 from ui.dialogs.trigger_editor.graph_view import TriggerGraphView
 from ui.dialogs.trigger_editor.property_editor import TriggerPropertyEditor
-from core.logger import app_logger
 
 
 class TriggerPanel(QWidget):

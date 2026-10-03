@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from core.engine.scenarios.scenario_loader import ScenarioLoader, _create_entity, PERSONALITY_PRESETS
+from core.engine.scenarios.scenario_loader import PERSONALITY_PRESETS, ScenarioLoader, _create_entity
 from models.ai.alignment import Alignment
 
 SCENARIO_PATH = Path(__file__).resolve().parents[5] / "scenarios" / "goblin_ambush.yaml"

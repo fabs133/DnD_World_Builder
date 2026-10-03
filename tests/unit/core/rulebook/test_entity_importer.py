@@ -1,6 +1,8 @@
 import pytest
+
 from core.rulebook.entity_importer import EntityImporter
 from core.rulebook.rulebook_entity import RulebookEntity
+
 
 class DummyAPI:
     def __init__(self):

@@ -1,7 +1,9 @@
-from .rulebook_entity import RulebookEntity
 from core.db_api_handler import LocalAPIHandler
-from utils.string.slugify import slugify
 from core.rulebook.importer_base import BaseImporter
+from utils.string.slugify import slugify
+
+from .rulebook_entity import RulebookEntity
+
 
 class EntityImporter(BaseImporter):
     """

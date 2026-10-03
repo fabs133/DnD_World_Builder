@@ -1,5 +1,4 @@
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QTextBrowser
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QDialog, QTextBrowser, QVBoxLayout
 
 
 class StatBlockDialog(QDialog):

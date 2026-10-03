@@ -4,16 +4,11 @@ from __future__ import annotations
 
 import time
 
-import pytest
-
 from core.testing import (
     BehavioralTestHarness,
-    ScenarioConfig,
     HarnessConfig,
-    MockAIAdapter,
-    BehavioralEntity,
+    ScenarioConfig,
 )
-from core.engine.game_state import GameState, EntitySnapshot
 
 
 class TestBatchPerformance:

@@ -3,26 +3,25 @@
 from __future__ import annotations
 
 import random
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import yaml
 
-from models.game_master import Gamemaster
-from models.world.world import World
-from models.ai.alignment import Alignment
-from models.ai.personality import EntityPersonality
-from core.engine.game_session import GameSession, GameSessionResult
-from core.engine.game_state import GameState
-from core.engine.input_adapter import InputAdapter
 from core.engine.action_executor import ActionResult
 from core.engine.ai.ai_adapter import AIAdapter
 from core.engine.ai.ollama_client import OllamaClient, OllamaConfig
+from core.engine.game_session import GameSession
+from core.engine.game_state import GameState
+from core.engine.input_adapter import InputAdapter
 from core.testing.behavioral.harness import BehavioralEntity
 from core.testing.behavioral.mock_ai import MockAIAdapter
-from core.testing.behavioral.stats import EntityRunStats
-from domain.specs.ruleset import Ruleset, RuleInstance
-
+from domain.specs.ruleset import Ruleset
+from models.ai.alignment import Alignment
+from models.ai.personality import EntityPersonality
+from models.game_master import Gamemaster
+from models.world.world import World
 
 # Maps preset names to EntityPersonality factory methods
 PERSONALITY_PRESETS: dict[str, Callable[[], EntityPersonality]] = {

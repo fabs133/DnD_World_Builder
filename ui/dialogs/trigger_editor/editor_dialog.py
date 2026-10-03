@@ -1,9 +1,14 @@
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QPushButton, QTabWidget,
+    QDialog,
+    QHBoxLayout,
+    QPushButton,
+    QTabWidget,
+    QVBoxLayout,
 )
+
 from .graph_view import TriggerGraphView
-from .property_editor import TriggerPropertyEditor
 from .list_view import TriggerListView
+from .property_editor import TriggerPropertyEditor
 
 
 class TriggerEditorDialog(QDialog):

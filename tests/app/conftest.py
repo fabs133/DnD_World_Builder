@@ -8,9 +8,9 @@ import pytest
 
 from core.testing import (
     BehavioralTestHarness,
-    ScenarioConfig,
     HarnessConfig,
     HarnessResult,
+    ScenarioConfig,
 )
 
 SCENARIOS_DIR = Path(__file__).resolve().parents[2] / "scenarios"

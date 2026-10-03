@@ -1,9 +1,10 @@
 """Tests for the distance measurement module."""
 
-import pytest
 from unittest.mock import MagicMock
 
-from core.engine.measure import measure_distance, format_measurement, MeasureResult
+import pytest
+
+from core.engine.measure import MeasureResult, format_measurement, measure_distance
 
 
 @pytest.fixture

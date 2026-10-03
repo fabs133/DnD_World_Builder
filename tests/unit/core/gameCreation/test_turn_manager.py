@@ -1,6 +1,5 @@
 """Tests for core.gameCreation.turn_manager — Turn scheduling."""
 
-import pytest
 
 from core.gameCreation.turn_manager import TurnManager
 

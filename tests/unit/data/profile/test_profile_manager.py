@@ -1,9 +1,10 @@
 import json
+
 import pytest
-from pathlib import Path
 
 import data.profile.profile_manager as pm
 from data.profile.profile_manager import UserProfile
+
 
 def test_default_userprofile_data():
     up = UserProfile(name="Alice", profile_version=1)

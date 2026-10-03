@@ -1,17 +1,16 @@
 # trigger_editor/property_editor.py
 
-from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QFormLayout, QComboBox,
-    QLabel, QLineEdit, QSpinBox, QMessageBox
-)
-from PyQt5.QtCore import Qt
-from registries.condition_registry import condition_registry
-from registries.reaction_registry import reaction_registry
-from core.gameCreation.trigger import Trigger
-from core.logger import app_logger
+import copy
 import inspect
 import uuid
-import copy
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QComboBox, QFormLayout, QLabel, QLineEdit, QMessageBox, QSpinBox, QVBoxLayout, QWidget
+
+from core.gameCreation.trigger import Trigger
+from core.logger import app_logger
+from registries.condition_registry import condition_registry
+from registries.reaction_registry import reaction_registry
 
 
 def _editable_params(cls):
@@ -218,7 +217,6 @@ class TriggerPropertyEditor(QWidget):
         """
         Save the current trigger configuration to the context.
         """
-        from core.gameCreation.trigger import Trigger
 
         condition_name = self.condition_input.currentText()
         reaction_name = self.reaction_input.currentText()
@@ -341,7 +339,7 @@ class TriggerPropertyEditor(QWidget):
         reaction_cls = reaction_registry.get_class(self.reaction_input.currentText())
         if reaction_cls:
             self.build_reaction_fields(reaction_cls)
-    
+
     def refresh_next_trigger_choices(self):
         """
         Refresh the list of available next triggers in the dropdown.

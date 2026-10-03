@@ -2,13 +2,10 @@
 
 from __future__ import annotations
 
-import pytest
-
 from core.testing import (
     BehavioralTestHarness,
-    ScenarioConfig,
     HarnessConfig,
-    HarnessResult,
+    ScenarioConfig,
 )
 
 

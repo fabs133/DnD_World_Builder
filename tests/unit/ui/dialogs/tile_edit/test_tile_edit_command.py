@@ -1,9 +1,10 @@
 """Tests for TileEditCommand undo/redo logic."""
 
-import pytest
 from unittest.mock import MagicMock
 
-from models.tiles.tile_data import TileData, TerrainType, TileTag
+import pytest
+
+from models.tiles.tile_data import TerrainType, TileData, TileTag
 from ui.dialogs.tile_edit.tile_edit_command import TileEditCommand
 
 

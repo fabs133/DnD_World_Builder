@@ -1,5 +1,7 @@
 import pytest
+
 from core.rulebook.importer_base import BaseImporter
+
 
 class DummyAPI:
     def __init__(self):

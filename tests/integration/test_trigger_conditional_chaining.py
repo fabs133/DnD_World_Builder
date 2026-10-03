@@ -1,9 +1,10 @@
 import pytest
-from models.entities.game_entity import GameEntity
-from models.flow.reaction.reactions_list import ApplyDamage
-from models.flow.condition.condition_list import PerceptionCheck
-from core.gameCreation.trigger import Trigger
+
 from core.gameCreation.event_bus import EventBus
+from core.gameCreation.trigger import Trigger
+from models.entities.game_entity import GameEntity
+from models.flow.condition.condition_list import PerceptionCheck
+from models.flow.reaction.reactions_list import ApplyDamage
 
 
 class DummyEntity(GameEntity):

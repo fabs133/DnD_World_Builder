@@ -1,10 +1,13 @@
 import math
+
 import pytest
 from PyQt5.QtCore import QPointF, Qt
-from PyQt5.QtGui import QColor, QBrush, QPen, QPolygonF
+from PyQt5.QtGui import QBrush, QColor, QPen, QPolygonF
+
 from models.tiles.base_tile_item import BaseTileItem
-from models.tiles.tile_data import TileData
 from models.tiles.hex_tile_item import HexTileItem
+from models.tiles.tile_data import TileData
+
 
 @pytest.fixture
 def qapp(qapp):

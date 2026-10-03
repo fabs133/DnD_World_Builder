@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from domain.specs.base import SpecResult, AllOf
+from domain.specs.base import SpecResult
 from domain.specs.entity import CanTakeAction, IsAlive
 from models.flow.action.action import Action
 

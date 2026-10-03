@@ -1,4 +1,5 @@
 import pytest
+
 from core.gameCreation.event_bus import EventBus
 from core.gameCreation.trigger import Trigger
 from models.flow.skill_check import SkillCheck

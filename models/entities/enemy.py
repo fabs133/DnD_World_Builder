@@ -1,6 +1,8 @@
-from models.entities.game_entity import GameEntity
-from models.spell import Spell  
 import json
+
+from models.entities.game_entity import GameEntity
+from models.spell import Spell
+
 
 class Enemy(GameEntity):
     """

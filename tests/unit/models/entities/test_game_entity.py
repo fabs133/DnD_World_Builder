@@ -1,7 +1,7 @@
-import pytest
 
 import models.entities.game_entity as ge_mod
 from models.entities.game_entity import GameEntity
+
 
 # Dummy trigger to exercise to_dict and check_and_react
 class DummyTrigger:

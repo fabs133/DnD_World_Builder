@@ -1,5 +1,6 @@
-from models.flow.reaction.reactions_list import ApplyDamage, AlertGamemaster
 from models.flow.reaction.play_sound import PlaySound
+from models.flow.reaction.reactions_list import AlertGamemaster, ApplyDamage
+
 
 class ReactionRegistry:
     """
@@ -57,7 +58,7 @@ class ReactionRegistry:
         :return: The registered class or None if not found.
         """
         return self._registry.get(name)
-    
+
     def list_keys(self):
         """
         Alias for get_all(). Returns all registered reaction names.

@@ -1,5 +1,6 @@
-from models.tiles.tile_data import TileData
 from core.logger import app_logger
+from models.tiles.tile_data import TileData
+
 
 class WorldTileManager:
     """
@@ -85,7 +86,7 @@ class WorldTileManager:
             ]
         elif self.tile_type == "hex":
             adjacent_tiles = [
-                (x + 1, y), (x - 1, y), (x, y - 1), (x, y + 1), 
+                (x + 1, y), (x - 1, y), (x, y - 1), (x, y + 1),
                 (x - 1, y + 1), (x + 1, y - 1)
             ]
         return [tile for tile in adjacent_tiles if self.is_valid_tile(tile[0], tile[1])]
@@ -135,7 +136,7 @@ class WorldTileManager:
 
         A tile blocks if it has the BLOCKS_MOVEMENT tag or WALL terrain.
         """
-        from models.tiles.tile_data import TileTag, TerrainType
+        from models.tiles.tile_data import TerrainType, TileTag
 
         tile = self.tiles.get((x, y))
         if tile is None:

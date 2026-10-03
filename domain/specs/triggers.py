@@ -13,11 +13,12 @@ traceable specification-based approach.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable
 from enum import Enum
+from typing import Any
 
-from domain.specs.base import Specification, SpecResult, AllOf
+from domain.specs.base import Specification, SpecResult
 
 
 class EventType(Enum):
@@ -48,7 +49,7 @@ class TriggerEvent:
     source_entity_id: str | None = None
     target_tile_id: str | None = None
     data: dict[str, Any] = field(default_factory=dict)
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "event_type": self.event_type.value if isinstance(self.event_type, EventType) else self.event_type,
@@ -73,7 +74,7 @@ class ReactionResult:
     healing_done: int = 0
     conditions_applied: list[str] = field(default_factory=list)
     entities_spawned: list[str] = field(default_factory=list)
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "success": self.success,
@@ -99,16 +100,16 @@ class TriggerEvaluation:
     spec_results: list[SpecResult]
     fired: bool
     reaction_result: ReactionResult | None = None
-    chain_evaluations: list["TriggerEvaluation"] = field(default_factory=list)
-    
+    chain_evaluations: list[TriggerEvaluation] = field(default_factory=list)
+
     @property
     def all_passed(self) -> bool:
         return all(r.passed for r in self.spec_results)
-    
+
     @property
     def failed_specs(self) -> list[SpecResult]:
         return [r for r in self.spec_results if not r.passed]
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "trigger_id": self.trigger_id,
@@ -147,7 +148,7 @@ class TriggerSpec:
             cooldown_turns=0,  # Can fire every time
         )
     """
-    
+
     def __init__(
         self,
         trigger_id: str,
@@ -155,7 +156,7 @@ class TriggerSpec:
         pre_specs: list[Specification] | None = None,
         post_specs: list[Specification] | None = None,
         reaction: Callable[[Any, dict], ReactionResult] | None = None,
-        next_trigger: "TriggerSpec | None" = None,
+        next_trigger: TriggerSpec | None = None,
         cooldown_turns: int = 0,
         label: str = "",
         description: str = "",
@@ -169,10 +170,10 @@ class TriggerSpec:
         self.cooldown_turns = cooldown_turns
         self.label = label or trigger_id
         self.description = description
-        
+
         # Runtime state (mutable, not serialized)
         self._cooldown_remaining = 0
-    
+
     def evaluate(
         self,
         event: TriggerEvent,
@@ -195,7 +196,7 @@ class TriggerSpec:
         """
         context = context or {}
         context["event"] = event
-        
+
         # Check cooldown first
         if self._cooldown_remaining > 0:
             return TriggerEvaluation(
@@ -212,16 +213,16 @@ class TriggerSpec:
                 ],
                 fired=False,
             )
-        
+
         # Evaluate all pre_specs
         spec_results: list[SpecResult] = []
-        
+
         for spec in self.pre_specs:
             result = spec.is_satisfied_by(entity, context)
             spec_results.append(result)
-        
+
         all_passed = all(r.passed for r in spec_results)
-        
+
         if not all_passed:
             return TriggerEvaluation(
                 trigger_id=self.trigger_id,
@@ -229,29 +230,29 @@ class TriggerSpec:
                 spec_results=spec_results,
                 fired=False,
             )
-        
+
         # All specs passed - execute reaction
         reaction_result = None
         if self.reaction:
             reaction_result = self.reaction(entity, context)
-            
+
             # Start cooldown
             if self.cooldown_turns > 0:
                 self._cooldown_remaining = self.cooldown_turns
-        
+
         # Evaluate post_specs if present
         if self.post_specs and reaction_result:
             post_context = {**context, "reaction_result": reaction_result}
             for spec in self.post_specs:
                 post_result = spec.is_satisfied_by(entity, post_context)
                 spec_results.append(post_result)
-        
+
         # Chain to next trigger if present
         chain_evaluations = []
         if self.next_trigger and reaction_result and reaction_result.success:
             chain_eval = self.next_trigger.evaluate(event, entity, context)
             chain_evaluations.append(chain_eval)
-        
+
         return TriggerEvaluation(
             trigger_id=self.trigger_id,
             event=event,
@@ -260,16 +261,16 @@ class TriggerSpec:
             reaction_result=reaction_result,
             chain_evaluations=chain_evaluations,
         )
-    
+
     def advance_cooldown(self):
         """Call at end of turn to decrement cooldown."""
         if self._cooldown_remaining > 0:
             self._cooldown_remaining -= 1
-    
+
     def reset_cooldown(self):
         """Reset cooldown (e.g., after long rest)."""
         self._cooldown_remaining = 0
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Serialize trigger definition (not runtime state)."""
         return {
@@ -304,30 +305,30 @@ class TriggerEvaluator:
             if eval.fired:
                 apply_reaction(eval.reaction_result)
     """
-    
+
     def __init__(self):
         self._triggers: dict[str, TriggerSpec] = {}
         self._by_event_type: dict[EventType, list[str]] = {}
-    
+
     def register(self, trigger: TriggerSpec):
         """Register a trigger."""
         self._triggers[trigger.trigger_id] = trigger
-        
+
         if trigger.event_type not in self._by_event_type:
             self._by_event_type[trigger.event_type] = []
         self._by_event_type[trigger.event_type].append(trigger.trigger_id)
-    
+
     def unregister(self, trigger_id: str):
         """Remove a trigger."""
         if trigger_id in self._triggers:
             trigger = self._triggers.pop(trigger_id)
             if trigger.event_type in self._by_event_type:
                 self._by_event_type[trigger.event_type].remove(trigger_id)
-    
+
     def get(self, trigger_id: str) -> TriggerSpec | None:
         """Get a trigger by ID."""
         return self._triggers.get(trigger_id)
-    
+
     def evaluate_all(
         self,
         event: TriggerEvent,
@@ -342,15 +343,15 @@ class TriggerEvaluator:
         """
         event_type = event.event_type if isinstance(event.event_type, EventType) else EventType(event.event_type)
         trigger_ids = self._by_event_type.get(event_type, [])
-        
+
         evaluations = []
         for trigger_id in trigger_ids:
             trigger = self._triggers[trigger_id]
             evaluation = trigger.evaluate(event, entity, context)
             evaluations.append(evaluation)
-        
+
         return evaluations
-    
+
     def evaluate_fired_only(
         self,
         event: TriggerEvent,
@@ -363,12 +364,12 @@ class TriggerEvaluator:
         Use this when you don't need the full trace.
         """
         return [e for e in self.evaluate_all(event, entity, context) if e.fired]
-    
+
     def advance_all_cooldowns(self):
         """Advance cooldowns for all triggers (call at end of round)."""
         for trigger in self._triggers.values():
             trigger.advance_cooldown()
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Serialize all triggers."""
         return {
@@ -394,7 +395,7 @@ def perception_trap(
     """
     from domain.specs.checks import SkillCheckSpec
     from domain.specs.entity import IsEntityType
-    
+
     return TriggerSpec(
         trigger_id=trigger_id,
         event_type=EventType.ENTER_TILE,

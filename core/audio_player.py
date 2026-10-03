@@ -1,9 +1,10 @@
 from pathlib import Path
+
 from core.logger import app_logger
 
 try:
-    from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
     from PyQt5.QtCore import QUrl
+    from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
     _HAS_MULTIMEDIA = True
 except ImportError:
     _HAS_MULTIMEDIA = False

@@ -2,17 +2,14 @@
 
 import random
 
-import pytest
-
-from core.engine.ai.heuristic_adapter import HeuristicAIAdapter
-from core.engine.game_state import GameState, EntitySnapshot
 from core.engine.actions.attack_action import AttackAction
-from core.engine.actions.move_action import MoveAction
 from core.engine.actions.end_turn_action import EndTurnAction
-from models.ai.personality import EntityPersonality
+from core.engine.actions.move_action import MoveAction
+from core.engine.ai.heuristic_adapter import HeuristicAIAdapter
+from core.engine.game_state import EntitySnapshot, GameState
 from models.ai.alignment import Alignment
+from models.ai.personality import EntityPersonality
 from models.ai.tactical_weights import TacticalWeights
-
 
 # ── Helpers ──────────────────────────────────────────────────────────────
 

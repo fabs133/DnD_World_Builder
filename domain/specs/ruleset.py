@@ -15,18 +15,15 @@ maps to use different rule configurations.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any
-from enum import Enum
 import json
+from dataclasses import dataclass, field
+from enum import Enum
 from pathlib import Path
+from typing import Any
 
-from domain.specs.base import Specification, AllOf, AnyOf
-from domain.specs.registry import (
-    RuleRegistry, RuleDefinition, RuleCategory, 
-    get_default_registry
-)
-from domain.specs.builder import RuleMask, MaskLibrary, get_default_library
+from domain.specs.base import AllOf, AnyOf, Specification
+from domain.specs.builder import RuleMask
+from domain.specs.registry import RuleRegistry
 
 
 class RuleInstanceState(Enum):
@@ -59,11 +56,11 @@ class RuleInstance:
     params: dict[str, Any] = field(default_factory=dict)
     inverted: bool = False
     state: RuleInstanceState = RuleInstanceState.ENABLED
-    
+
     # Optional user customization
     custom_name: str | None = None
     custom_description: str | None = None
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "rule_id": self.rule_id,
@@ -73,7 +70,7 @@ class RuleInstance:
             "custom_name": self.custom_name,
             "custom_description": self.custom_description,
         }
-    
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> RuleInstance:
         return cls(
@@ -84,7 +81,7 @@ class RuleInstance:
             custom_name=data.get("custom_name"),
             custom_description=data.get("custom_description"),
         )
-    
+
     def create_spec(self, registry: RuleRegistry) -> Specification | None:
         """
         Create the Specification for this instance.
@@ -93,16 +90,16 @@ class RuleInstance:
         """
         if self.state == RuleInstanceState.DISABLED:
             return None
-        
+
         rule_def = registry.get(self.rule_id)
         if rule_def is None:
             return None
-        
+
         spec = rule_def.create_spec(**self.params)
-        
+
         if self.inverted:
             spec = ~spec
-        
+
         return spec
 
 
@@ -117,7 +114,7 @@ class CustomRule:
     mask: RuleMask
     params: dict[str, Any] = field(default_factory=dict)
     state: RuleInstanceState = RuleInstanceState.ENABLED
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "instance_id": self.instance_id,
@@ -125,7 +122,7 @@ class CustomRule:
             "params": self.params,
             "state": self.state.value,
         }
-    
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> CustomRule:
         return cls(
@@ -134,12 +131,12 @@ class CustomRule:
             params=data.get("params", {}),
             state=RuleInstanceState(data.get("state", "enabled")),
         )
-    
+
     def create_spec(self, registry: RuleRegistry) -> Specification | None:
         """Create the Specification for this custom rule."""
         if self.state == RuleInstanceState.DISABLED:
             return None
-        
+
         return self.mask.instantiate(registry, **self.params)
 
 
@@ -161,21 +158,21 @@ class Ruleset:
     ruleset_id: str
     name: str
     description: str = ""
-    
+
     # Rule configuration
     active_rules: list[RuleInstance] = field(default_factory=list)
     custom_rules: list[CustomRule] = field(default_factory=list)
-    
+
     # Metadata
     version: str = "1.0"
     author: str = ""
-    
+
     # Settings
     enforce_base_rules: bool = True  # Base rules cannot be disabled
-    
+
     def add_rule(
-        self, 
-        rule_id: str, 
+        self,
+        rule_id: str,
         inverted: bool = False,
         **params: Any
     ) -> RuleInstance:
@@ -188,11 +185,11 @@ class Ruleset:
         )
         self.active_rules.append(instance)
         return instance
-    
+
     def add_custom_rule(self, mask: RuleMask, **params: Any) -> CustomRule:
         """Add a custom rule from a mask."""
         import uuid
-        
+
         custom = CustomRule(
             instance_id=f"custom_{uuid.uuid4().hex[:8]}",
             mask=mask,
@@ -201,36 +198,36 @@ class Ruleset:
         )
         self.custom_rules.append(custom)
         return custom
-    
+
     def disable_rule(self, rule_id: str):
         """Disable a rule by ID."""
         for instance in self.active_rules:
             if instance.rule_id == rule_id:
                 instance.state = RuleInstanceState.DISABLED
                 return
-    
+
     def enable_rule(self, rule_id: str):
         """Enable a rule by ID."""
         for instance in self.active_rules:
             if instance.rule_id == rule_id:
                 instance.state = RuleInstanceState.ENABLED
                 return
-    
+
     def get_rule(self, rule_id: str) -> RuleInstance | None:
         """Get a rule instance by ID."""
         for instance in self.active_rules:
             if instance.rule_id == rule_id:
                 return instance
         return None
-    
+
     def get_enabled_rules(self) -> list[RuleInstance]:
         """Get all enabled rule instances."""
         return [r for r in self.active_rules if r.state == RuleInstanceState.ENABLED]
-    
+
     def get_enabled_custom_rules(self) -> list[CustomRule]:
         """Get all enabled custom rules."""
         return [r for r in self.custom_rules if r.state == RuleInstanceState.ENABLED]
-    
+
     def build_all_specs(self, registry: RuleRegistry) -> list[Specification]:
         """
         Build Specifications for all enabled rules.
@@ -239,28 +236,28 @@ class Ruleset:
             List of all active specifications
         """
         specs = []
-        
+
         # Add base rules if enforced
         if self.enforce_base_rules:
             for rule_def in registry.get_base_rules():
                 specs.append(rule_def.create_spec())
-        
+
         # Add active standard rules
         for instance in self.get_enabled_rules():
             spec = instance.create_spec(registry)
             if spec:
                 specs.append(spec)
-        
+
         # Add custom rules
         for custom in self.get_enabled_custom_rules():
             spec = custom.create_spec(registry)
             if spec:
                 specs.append(spec)
-        
+
         return specs
-    
+
     def build_combined_spec(
-        self, 
+        self,
         registry: RuleRegistry,
         composition: str = "all"
     ) -> Specification:
@@ -275,16 +272,16 @@ class Ruleset:
             Combined specification
         """
         specs = self.build_all_specs(registry)
-        
+
         if not specs:
             from domain.specs.base import AlwaysTrue
             return AlwaysTrue()
-        
+
         if composition == "any":
             return AnyOf(*specs)
         else:
             return AllOf(*specs, short_circuit=True)
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Serialize ruleset for storage."""
         return {
@@ -297,7 +294,7 @@ class Ruleset:
             "author": self.author,
             "enforce_base_rules": self.enforce_base_rules,
         }
-    
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Ruleset:
         """Deserialize ruleset from storage."""
@@ -311,21 +308,21 @@ class Ruleset:
             author=data.get("author", ""),
             enforce_base_rules=data.get("enforce_base_rules", True),
         )
-    
+
     def to_json(self) -> str:
         """Export as JSON string."""
         return json.dumps(self.to_dict(), indent=2)
-    
+
     @classmethod
     def from_json(cls, json_str: str) -> Ruleset:
         """Import from JSON string."""
         return cls.from_dict(json.loads(json_str))
-    
+
     def save(self, path: str | Path):
         """Save ruleset to file."""
         path = Path(path)
         path.write_text(self.to_json())
-    
+
     @classmethod
     def load(cls, path: str | Path) -> Ruleset:
         """Load ruleset from file."""
@@ -345,12 +342,12 @@ def create_default_ruleset() -> Ruleset:
         description="Standard D&D 5th Edition rules",
         enforce_base_rules=True,
     )
-    
+
     # Add standard combat rules
     ruleset.add_rule("skill_check", skill="Perception", dc=10)
     ruleset.add_rule("is_alive")
     ruleset.add_rule("can_take_action")
-    
+
     return ruleset
 
 
@@ -372,16 +369,16 @@ def create_dungeon_crawl_ruleset() -> Ruleset:
         description="Rules for dungeon exploration with trap support",
         enforce_base_rules=True,
     )
-    
+
     # Add perception checks for traps
     ruleset.add_rule("skill_check", skill="Perception", dc=15)
     ruleset.add_rule("skill_check", skill="Investigation", dc=12)
-    
+
     # Movement rules
     ruleset.add_rule("tile_passable")
     ruleset.add_rule("tile_not_occupied")
     ruleset.add_rule("has_movement", required=5)
-    
+
     return ruleset
 
 
@@ -398,47 +395,47 @@ class RulesetManager:
     - Preset ruleset library
     - Active ruleset for current scenario
     """
-    
+
     def __init__(self, storage_path: str | Path | None = None):
         self._rulesets: dict[str, Ruleset] = {}
         self._active_ruleset_id: str | None = None
         self._storage_path = Path(storage_path) if storage_path else None
-        
+
         # Register preset rulesets
         self._register_presets()
-    
+
     def _register_presets(self):
         """Register built-in presets."""
         self.register(create_default_ruleset())
         self.register(create_minimal_ruleset())
         self.register(create_dungeon_crawl_ruleset())
-    
+
     def register(self, ruleset: Ruleset):
         """Register a ruleset."""
         self._rulesets[ruleset.ruleset_id] = ruleset
-    
+
     def get(self, ruleset_id: str) -> Ruleset | None:
         """Get a ruleset by ID."""
         return self._rulesets.get(ruleset_id)
-    
+
     def get_all(self) -> list[Ruleset]:
         """Get all rulesets."""
         return list(self._rulesets.values())
-    
+
     def set_active(self, ruleset_id: str):
         """Set the active ruleset for the current scenario."""
         if ruleset_id in self._rulesets:
             self._active_ruleset_id = ruleset_id
-    
+
     def get_active(self) -> Ruleset | None:
         """Get the currently active ruleset."""
         if self._active_ruleset_id:
             return self._rulesets.get(self._active_ruleset_id)
         return None
-    
+
     def create_ruleset(
-        self, 
-        name: str, 
+        self,
+        name: str,
         description: str = "",
         copy_from: str | None = None
     ) -> Ruleset:
@@ -454,9 +451,9 @@ class RulesetManager:
             New Ruleset
         """
         import uuid
-        
+
         ruleset_id = f"custom_{uuid.uuid4().hex[:8]}"
-        
+
         if copy_from and copy_from in self._rulesets:
             # Copy existing ruleset
             source = self._rulesets[copy_from]
@@ -470,33 +467,33 @@ class RulesetManager:
                 name=name,
                 description=description,
             )
-        
+
         self.register(ruleset)
         return ruleset
-    
+
     def delete(self, ruleset_id: str):
         """Delete a ruleset."""
         if ruleset_id in self._rulesets:
             del self._rulesets[ruleset_id]
             if self._active_ruleset_id == ruleset_id:
                 self._active_ruleset_id = None
-    
+
     def save_all(self):
         """Save all rulesets to storage."""
         if not self._storage_path:
             return
-        
+
         self._storage_path.mkdir(parents=True, exist_ok=True)
-        
+
         for ruleset in self._rulesets.values():
             path = self._storage_path / f"{ruleset.ruleset_id}.json"
             ruleset.save(path)
-    
+
     def load_all(self):
         """Load all rulesets from storage."""
         if not self._storage_path or not self._storage_path.exists():
             return
-        
+
         for path in self._storage_path.glob("*.json"):
             try:
                 ruleset = Ruleset.load(path)
@@ -518,29 +515,29 @@ class TriggerRuleBinding:
     """
     trigger_id: str
     ruleset: Ruleset
-    
+
     # Which rules from the ruleset to use as pre_specs
     pre_spec_rule_ids: list[str] = field(default_factory=list)
-    
+
     # Which custom rules to use
     pre_spec_custom_ids: list[str] = field(default_factory=list)
-    
+
     def build_pre_specs(self, registry: RuleRegistry) -> list[Specification]:
         """Build pre_specs from the configured rules."""
         specs = []
-        
+
         for rule_id in self.pre_spec_rule_ids:
             instance = self.ruleset.get_rule(rule_id)
             if instance:
                 spec = instance.create_spec(registry)
                 if spec:
                     specs.append(spec)
-        
+
         for custom_id in self.pre_spec_custom_ids:
             for custom in self.ruleset.custom_rules:
                 if custom.instance_id == custom_id:
                     spec = custom.create_spec(registry)
                     if spec:
                         specs.append(spec)
-        
+
         return specs

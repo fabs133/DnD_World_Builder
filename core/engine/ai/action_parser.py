@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-import re
 import random
+import re
 from typing import Any
 
-from core.engine.game_state import GameState
 from core.engine.actions.attack_action import AttackAction
-from core.engine.actions.move_action import MoveAction
 from core.engine.actions.end_turn_action import EndTurnAction
+from core.engine.actions.move_action import MoveAction
+from core.engine.game_state import GameState
 
 
 class ParseError(Exception):
@@ -46,7 +46,7 @@ class ActionParser:
         actor: Any,
         game_state: GameState,
         entities_by_name: dict[str, Any] | None = None,
-    ) -> "Action":
+    ) -> Action:
         """Parse LLM output into an Action.
 
         Args:
@@ -64,7 +64,7 @@ class ActionParser:
         match = ACTION_PATTERN.search(llm_output)
         if not match:
             raise ParseError(
-                f"Could not find ACTION: pattern in output",
+                "Could not find ACTION: pattern in output",
                 raw_output=llm_output,
             )
 

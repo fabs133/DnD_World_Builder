@@ -1,8 +1,7 @@
 import pytest
 from PyQt5.QtCore import QPointF
 
-from ui.dialogs.trigger_editor.trigger_node import TriggerNodeItem, PORT_RADIUS
-
+from ui.dialogs.trigger_editor.trigger_node import PORT_RADIUS, TriggerNodeItem
 
 # ---------------------------------------------------------------------------
 # Stubs

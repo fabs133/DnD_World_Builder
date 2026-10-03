@@ -10,17 +10,17 @@ trigger_presets : dict
 """
 
 from core.gameCreation.trigger import Trigger
-from models.flow.reaction.reactions_list import ApplyDamage as apply_damage
 from models.flow.condition.condition_list import AlwaysTrue as always_true
 from models.flow.condition.condition_list import PerceptionCheck as perception_check
 from models.flow.reaction.reactions_list import AlertGamemaster as alert_gamemaster
+from models.flow.reaction.reactions_list import ApplyDamage as apply_damage
 
 #: Preset triggers for different entity types.
-#: 
+#:
 #: Keys are entity types (str), values are lists of Trigger objects.
 trigger_presets = {
     "player": [],
-    
+
     "npc": [
         Trigger(
             "TALKED_TO",

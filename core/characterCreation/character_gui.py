@@ -1,14 +1,32 @@
 import json
-from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QFormLayout, QLineEdit, QComboBox,
-    QSpinBox, QGroupBox, QPushButton, QHBoxLayout, QListWidget, QListWidgetItem,
-    QTextEdit, QLabel, QInputDialog, QTabWidget, QMessageBox, QFileDialog,
-    QCheckBox, QScrollArea, QGridLayout,
-)
-from PyQt5.QtCore import Qt
 
-from models.entities.game_entity import GameEntity
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (
+    QApplication,
+    QCheckBox,
+    QComboBox,
+    QFileDialog,
+    QFormLayout,
+    QGridLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QInputDialog,
+    QLabel,
+    QLineEdit,
+    QListWidget,
+    QListWidgetItem,
+    QMessageBox,
+    QPushButton,
+    QScrollArea,
+    QSpinBox,
+    QTabWidget,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
+)
+
 from core.logger import app_logger
+from models.entities.game_entity import GameEntity
 
 CLASS_TO_SPELL_ABILITY = {
     "Bard": "CHA", "Cleric": "WIS", "Druid": "WIS", "Paladin": "CHA",
@@ -275,7 +293,7 @@ class CharacterCreationWindow(QWidget):
             return
 
         try:
-            with open(file_path, 'r') as file:
+            with open(file_path) as file:
                 data = json.load(file)
             entity = GameEntity.from_dict(data)
 
@@ -356,7 +374,7 @@ class CharacterCreationWindow(QWidget):
 
 
 
-        
+
     def _wrap_layout(self, layout):
         container = QWidget()
         container.setLayout(layout)

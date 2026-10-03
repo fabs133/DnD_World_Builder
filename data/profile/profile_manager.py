@@ -1,9 +1,9 @@
 import json
-from pathlib import Path
-from versioning.updater import Updater
-from versioning.update_registry import update_registry
-from utils.backup import create_backup
+
 from core.logger import AppLogger
+from utils.backup import create_backup
+from versioning.update_registry import update_registry
+from versioning.updater import Updater
 
 logger = AppLogger().get_logger()
 updater = Updater(update_registry)
@@ -144,6 +144,6 @@ class UserProfile:
         :return: The loaded user profile.
         :rtype: UserProfile
         """
-        with open(path, 'r') as f:
+        with open(path) as f:
             data = json.load(f)
         return UserProfile(name, data)

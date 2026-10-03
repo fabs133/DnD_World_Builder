@@ -22,7 +22,7 @@ import socket
 import aiohttp
 from aiohttp import web
 
-from network.transport import TransportConnection, TransportServer, TransportClient
+from network.transport import TransportClient, TransportConnection, TransportServer
 
 logger = logging.getLogger(__name__)
 

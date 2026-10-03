@@ -4,8 +4,8 @@ import pytest
 
 from core.testing.behavioral.harness import (
     BehavioralTestHarness,
-    ScenarioConfig,
     HarnessConfig,
+    ScenarioConfig,
 )
 
 

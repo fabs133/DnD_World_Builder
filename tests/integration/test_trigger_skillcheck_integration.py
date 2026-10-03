@@ -1,9 +1,10 @@
 import pytest
+
 from core.gameCreation.event_bus import EventBus
 from core.gameCreation.trigger import Trigger
+from models.entities.game_entity import GameEntity
 from models.flow.reaction.reactions_list import ApplyDamage
 from models.flow.skill_check import SkillCheck
-from models.entities.game_entity import GameEntity
 
 
 class CombatEntity(GameEntity):
@@ -27,7 +28,7 @@ def test_skillcheck_pass_prevents_damage(monkeypatch):
     skill = SkillCheck(skill_name="Stealth", dc=10)
 
     # Always succeed
-    
+
 
 
     trigger = Trigger(
@@ -50,7 +51,7 @@ def test_skillcheck_fail_triggers_damage(monkeypatch):
     skill = SkillCheck(skill_name="Stealth", dc=15)
 
     # Always fail
-    
+
 
 
 

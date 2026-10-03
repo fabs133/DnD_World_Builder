@@ -1,8 +1,10 @@
 import logging
+
 import pytest
 
-from models.flow.condition.condition_list import AlwaysTrue, PerceptionCheck
 from core.logger import app_logger
+from models.flow.condition.condition_list import AlwaysTrue, PerceptionCheck
+
 
 def test_always_true_behavior_and_dict():
     at = AlwaysTrue()
@@ -32,7 +34,7 @@ def test_perception_check_valid_and_invalid(dc, perception, expected, caplog):
     pc = PerceptionCheck(dc)
     # build event_data dict only if perception is not dict
     event_data = {}
-    if perception is not {}:
+    if perception != {}:
         event_data = {"perception": perception}
     else:
         event_data = {}  # simulate missing key

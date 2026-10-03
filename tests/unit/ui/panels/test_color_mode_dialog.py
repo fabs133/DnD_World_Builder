@@ -1,9 +1,8 @@
 """Tests for ColorModeDialog: init, color preview, toggle."""
 
-import pytest
-from unittest.mock import MagicMock, patch
 
 from PyQt5.QtWidgets import QDialog
+
 from ui.panels.color_mode_dialog import ColorModeDialog
 
 
