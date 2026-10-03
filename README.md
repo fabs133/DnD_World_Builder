@@ -182,11 +182,11 @@ pytest --cov
 
 ## Roadmap
 
-See [V1_RELEASE_PLAN.md](V1_RELEASE_PLAN.md) for the full v1.0.0 release plan.
+See [ROADMAP.md](ROADMAP.md) for current status and planned work. Older plans are in [docs/archive/](docs/archive/).
 
 **Current priorities:**
+* Unify GUI and headless engine (Stage 3), including the initiative panel
 * Fog of War / vision system
-* Initiative tracker panel
 * Drag & drop entity placement
 * Map layers system
 * Distance measurement tool
