@@ -1,5 +1,6 @@
 import json
 import math
+import random
 from datetime import datetime
 from pathlib import Path
 
@@ -26,6 +27,9 @@ from models.tiles.square_tile_item import SquareTileItem
 from models.tiles.tile_data import TileData
 from ui.entity_tokens import EntityTokenLayer
 from ui.map_view import MapView
+
+# Pause before an AI-controlled turn is played, so the turn highlight is visible.
+AI_TURN_DELAY_MS = 600
 
 
 class _EncounterSignals(QObject):
@@ -68,6 +72,9 @@ class MainWindow(QMainWindow):
 
         # Multiplayer session
         self.session_manager = None
+
+        # Heuristic AI adapter for enemy turns; built per encounter start.
+        self._ai_adapter = None
 
         self._auto_save_timer = QTimer(self)
         self._auto_save_timer.timeout.connect(self._auto_save)
@@ -211,6 +218,12 @@ class MainWindow(QMainWindow):
         self._end_encounter_action.setShortcut("Ctrl+Shift+Q")
         self._end_encounter_action.triggered.connect(self.end_encounter)
         encounter_menu.addAction(self._end_encounter_action)
+
+        encounter_menu.addSeparator()
+        self._autoplay_action = QAction("&Auto-play Enemy Turns", self)
+        self._autoplay_action.setCheckable(True)
+        self._autoplay_action.setChecked(True)
+        encounter_menu.addAction(self._autoplay_action)
         self._update_encounter_actions()
 
         # --- Session menu ---
@@ -588,6 +601,10 @@ class MainWindow(QMainWindow):
         from core.engine.encounter import EncounterError
 
         gm = self.get_gamemaster()
+        # Built before start(): starting already announces the first turn.
+        self._ai_adapter = self._build_ai_adapter(gm)
+        # Shown before start(): the first turn's notification may replace it (e.g. AI status).
+        self.statusBar().showMessage("Encounter started")
         try:
             order = gm.encounter.start()
         except EncounterError:
@@ -597,7 +614,6 @@ class MainWindow(QMainWindow):
         self.initiative_panel.set_initiative_order(order)
         self._initiative_dock.show()
         self._update_encounter_actions()
-        self.statusBar().showMessage("Encounter started")
 
     def next_turn(self):
         from core.engine.encounter import EncounterError
@@ -624,6 +640,84 @@ class MainWindow(QMainWindow):
         else:
             self.initiative_panel.clear()
         self._update_encounter_actions()
+        self.refresh_entity_tokens()
+        self._maybe_schedule_ai_turn(info)
+
+    # ------------------------------------------------------------------
+    # AI-controlled enemy turns
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _build_ai_adapter(gm):
+        from core.engine.ai.heuristic_adapter import HeuristicAIAdapter
+
+        return HeuristicAIAdapter(
+            entities_by_name={e.name: e for e in gm.game_entities},
+            rng=random.Random(),
+            world_tile_manager=gm.world_tile_manager,
+        )
+
+    def _claimed_entity_names(self):
+        sm = self.session_manager
+        if sm is None:
+            return set()
+        try:
+            return set(sm.claimed_entities())
+        except Exception:
+            return set()
+
+    def _is_ai_controlled(self, entity):
+        if entity is None:
+            return False
+        kind = getattr(entity.entity_type, "value", entity.entity_type)
+        if str(kind).strip().lower() != "enemy":
+            return False
+        return entity.name not in self._claimed_entity_names()
+
+    def _maybe_schedule_ai_turn(self, info):
+        """Schedule the AI to play the current turn when it is an unclaimed enemy's."""
+        gm = self.gamemaster
+        if info.entity_name is None or gm is None or not self._autoplay_action.isChecked():
+            return
+        enc = gm.encounter
+        if not enc.is_active or enc.current_entity_name != info.entity_name:
+            return
+        if not self._is_ai_controlled(enc.current_entity):
+            return
+        if not any(
+            str(getattr(e.entity_type, "value", e.entity_type)).strip().lower() == "player"
+            and getattr(e, "hp", 1) > 0
+            for e in gm.game_entities
+        ):
+            self.statusBar().showMessage("Encounter over: no players left")
+            return
+        name, round_number = info.entity_name, info.round_number
+        QTimer.singleShot(AI_TURN_DELAY_MS, lambda: self._play_ai_turn(name, round_number))
+
+    def _play_ai_turn(self, name, round_number):
+        """Timer callback: play the AI turn unless the situation changed meanwhile."""
+        gm = self.gamemaster
+        if gm is None or not self._autoplay_action.isChecked():
+            return
+        enc = gm.encounter
+        if not enc.is_active or enc.current_entity_name != name or enc.round_number != round_number:
+            return
+        if not self._is_ai_controlled(enc.current_entity):
+            return
+        if self._ai_adapter is None:
+            self._ai_adapter = self._build_ai_adapter(gm)
+        try:
+            result = enc.take_ai_turn(self._ai_adapter)
+        except Exception as e:  # never let an AI failure break the GUI
+            app_logger.error(f"[AI Turn] {name}: {e}")
+            self.statusBar().showMessage(f"{name}: AI turn failed ({e})")
+            return
+        if result.success:
+            log = [line for line in (result.execution_log or []) if line]
+            text = log[-1] if log else "acts"
+            self.statusBar().showMessage(f"{name}: {text}")
+        else:
+            self.statusBar().showMessage(f"{name}: {result.error}")
         self.refresh_entity_tokens()
 
     def _build_gamemaster_from_scene(self):

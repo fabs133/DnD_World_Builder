@@ -169,6 +169,13 @@ class SessionManager:
             logger.error(f"Failed to start hosting: {e}")
             self.signals.connection_error.emit(str(e))
 
+    def claimed_entities(self) -> set[str]:
+        """Names of entities claimed by network players (empty when not hosting)."""
+        host = self._host
+        if not self._is_hosting or host is None:
+            return set()
+        return set(getattr(host, "_entity_claims", {}))
+
     def stop_hosting(self):
         """Stop the hosted session and shut down the background event loop."""
         if not self._is_hosting:
