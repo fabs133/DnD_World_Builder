@@ -483,6 +483,7 @@ class MainWindow(QMainWindow):
         )
         self.session_manager.signals.chat_received.connect(self.session_panel.append_chat)
         self.session_manager.signals.entity_claimed.connect(self.session_panel.set_entity_claim)
+        self.session_manager.signals.turn_changed.connect(self._on_remote_turn_changed)
         self.session_manager.signals.disconnected.connect(self._on_session_ended)
         self.session_manager.signals.connection_error.connect(
             lambda e: self.statusBar().showMessage(f"Connection error: {e}")
@@ -517,6 +518,11 @@ class MainWindow(QMainWindow):
     def _on_chat_submitted(self, message):
         if self.session_manager:
             self.session_manager.send_chat(message)
+
+    def _on_remote_turn_changed(self, entity_name, round_number):
+        """Client side: show the host's current turn."""
+        self._initiative_dock.show()
+        self.initiative_panel.set_current_turn(entity_name, round_number)
 
     # ------------------------------------------------------------------
     # Encounter

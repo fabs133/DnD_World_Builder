@@ -93,7 +93,8 @@ class SessionClient:
 
         Call after :meth:`connect`. Updates :attr:`world_state` and
         :attr:`turn_state` from FULL_STATE and STATE_DELTA messages,
-        and fires registered callbacks via :meth:`on`.
+        and fires registered callbacks via :meth:`on` for every message type,
+        including ``TURN_CHANGE`` broadcasts.
         """
         while self.conn and not self.conn.closed:
             try:

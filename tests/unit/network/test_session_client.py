@@ -206,3 +206,32 @@ class TestSendMethods:
             await host.stop()
 
         event_loop.run_until_complete(_test())
+
+
+class TestTurnChange:
+
+    def test_turn_change_handler_fires(self, event_loop, gamemaster):
+        from network.protocol import make_turn_change
+
+        async def _test():
+            server = InMemoryServer()
+            host = SessionHost(gamemaster, server)
+            await host.start()
+
+            client = SessionClient("Alice", InMemoryClient(server))
+            await client.connect()
+            received = []
+            client.on(MessageType.TURN_CHANGE, lambda m: received.append(m))
+            listen = asyncio.ensure_future(client.listen())
+            await asyncio.sleep(0.05)
+
+            await host.broadcast(make_turn_change("Goblin", 2))
+            await asyncio.sleep(0.05)
+
+            assert len(received) == 1
+            assert received[0].payload == {"current_entity": "Goblin", "round": 2}
+
+            listen.cancel()
+            await host.stop()
+
+        event_loop.run_until_complete(_test())

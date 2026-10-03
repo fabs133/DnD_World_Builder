@@ -125,3 +125,10 @@ def test_listener_from_background_thread_updates_panel(mw, qtbot):
     t.start()
     t.join()
     qtbot.waitUntil(lambda: _rows(mw) == 0, timeout=2000)
+
+
+def test_remote_turn_change_shows_dock_and_highlight(mw):
+    mw._on_remote_turn_changed("Goblin", 4)
+    assert not mw._initiative_dock.isHidden()
+    assert mw.initiative_panel._current_entity == "Goblin"
+    assert mw.initiative_panel._round_label.text() == "Round: 4"

@@ -135,6 +135,20 @@ class TestSessionManagerJoin:
         assert len(chat_received) == 1
         assert chat_received[0] == ("Alice", "Hello!")
 
+    def test_turn_change_signal_wiring(self, gamemaster):
+        """The _on_turn_change callback emits turn_changed(entity, round)."""
+        from network.protocol import make_turn_change
+
+        sm = SessionManager(gamemaster=gamemaster)
+        received = []
+        sm.signals.turn_changed.connect(lambda name, rnd: received.append((name, rnd)))
+
+        sm._on_turn_change(make_turn_change("Goblin", 3))
+
+        _wait_for_signals(0.2)
+
+        assert received == [("Goblin", 3)]
+
 
 class TestSessionManagerSignals:
 
