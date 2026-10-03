@@ -69,6 +69,9 @@ class MainWindow(QMainWindow):
 
         # Color mode state (replaces paint_mode_active / active_tile_preset)
         self.color_mode_active = False
+        # True while showing a host's map as a joined player (no local edits).
+        self.read_only = False
+        self._local_map_snapshot = None
         self.active_color = "#CCCCCC"
 
         # Multiplayer session
@@ -160,6 +163,8 @@ class MainWindow(QMainWindow):
         from network.ui.session_panel import SessionPanel
         self.session_panel = SessionPanel()
         self.session_panel.disconnect_requested.connect(self._disconnect_session)
+        self.session_panel.claim_requested.connect(self._on_claim_requested)
+        self.session_panel.chat_submitted.connect(self._on_chat_submitted)
         self._session_dock = QDockWidget("Session", self)
         self._session_dock.setWidget(self.session_panel)
         self.addDockWidget(Qt.RightDockWidgetArea, self._session_dock)
@@ -365,6 +370,9 @@ class MainWindow(QMainWindow):
         """Called by tile items on click; loads the tile into the side panel."""
         if self.color_mode_active:
             return  # color mode overrides normal selection
+        if self.read_only:
+            self.statusBar().showMessage("Viewing the host's map (read-only)", 3000)
+            return
         self.selected_tile = tile_item
         self.side_panel.load_tile(tile_item.tile_data, tile_item, self)
 
@@ -374,6 +382,8 @@ class MainWindow(QMainWindow):
 
     def activate_color_mode(self, color: str):
         """Enable color-painting mode with the given hex color."""
+        if self.read_only:
+            return
         self.color_mode_active = True
         self.active_color = color
         self.color_bar.show()
@@ -407,7 +417,11 @@ class MainWindow(QMainWindow):
 
         full_map_data = {
             "version": "1.0",
-            "meta": {"author": "Fabio", "created": datetime.now().isoformat()},
+            "meta": {
+                "author": "Fabio",
+                "created": datetime.now().isoformat(),
+                "grid_type": self.grid_type,
+            },
             "tiles": tile_data_list,
         }
 
@@ -473,7 +487,15 @@ class MainWindow(QMainWindow):
             app_logger.info(f"[Grid Initialized] Empty map loaded with {rows}x{cols}")
             return
 
-        for td_data in tiles:
+        self._populate_scene(tiles)
+
+        self.fog_overlay.reset()
+        self.refresh_entity_tokens()
+        app_logger.info(f"[Loaded] {len(tiles)} tiles loaded from {filename}")
+
+    def _populate_scene(self, tile_dicts):
+        """Add one tile item per serialized tile (``TileData.to_dict`` format) for ``self.grid_type``."""
+        for td_data in tile_dicts:
             tile_data = TileData.from_dict(td_data)
             row, col = tile_data.position
 
@@ -491,10 +513,6 @@ class MainWindow(QMainWindow):
 
             tile_data.tile_item = tile
             self.scene.addItem(tile)
-
-        self.fog_overlay.reset()
-        self.refresh_entity_tokens()
-        app_logger.info(f"[Loaded] {len(tiles)} tiles loaded from {filename}")
 
     # ------------------------------------------------------------------
     # Auto-save
@@ -549,7 +567,6 @@ class MainWindow(QMainWindow):
         self.session_manager = SessionManager(gamemaster=gm, settings=self.settings)
         self.session_manager.signals.chat_received.connect(self.session_panel.append_chat)
         self.session_manager.signals.disconnected.connect(self._on_session_ended)
-        self.session_panel.chat_submitted.connect(self._on_chat_submitted)
         self.session_manager.host(port)
 
         self.session_panel.set_hosting(
@@ -569,11 +586,12 @@ class MainWindow(QMainWindow):
         self.session_manager.signals.chat_received.connect(self.session_panel.append_chat)
         self.session_manager.signals.entity_claimed.connect(self.session_panel.set_entity_claim)
         self.session_manager.signals.turn_changed.connect(self._on_remote_turn_changed)
+        self.session_manager.signals.world_changed.connect(self.show_remote_world)
+        self.session_manager.signals.entity_claimed.connect(self._on_remote_claim_changed)
         self.session_manager.signals.disconnected.connect(self._on_session_ended)
         self.session_manager.signals.connection_error.connect(
             lambda e: self.statusBar().showMessage(f"Connection error: {e}")
         )
-        self.session_panel.chat_submitted.connect(self._on_chat_submitted)
         self.session_manager.join(host_addr, port, player_name)
 
         self._session_dock.show()
@@ -595,6 +613,7 @@ class MainWindow(QMainWindow):
         self._on_session_ended()
 
     def _on_session_ended(self):
+        self._leave_remote_view()
         self._disconnect_action.setEnabled(False)
         self._session_dock.hide()
         self.session_panel.clear()
@@ -603,6 +622,87 @@ class MainWindow(QMainWindow):
     def _on_chat_submitted(self, message):
         if self.session_manager:
             self.session_manager.send_chat(message)
+
+    # ------------------------------------------------------------------
+    # Joined player: read-only view of the host's map
+    # ------------------------------------------------------------------
+
+    def show_remote_world(self, world_state):
+        """Client side: replace the scene with the host's map (read-only, fog of war on).
+
+        :param world_state: Dict in :func:`network.sync.serialize_world` format.
+        """
+        if not self.read_only:
+            self._enter_remote_view()
+        self.grid_type = world_state.get("tile_type", self.grid_type)
+        self.scene.clear()
+        self._populate_scene(world_state.get("tiles", {}).values())
+        self._update_remote_vision()
+
+        players = sorted(
+            entity.get("name", "")
+            for tile in world_state.get("tiles", {}).values()
+            for entity in tile.get("entities", [])
+            if str(entity.get("entity_type", "")).lower() == "player"
+        )
+        self.session_panel.set_claimable([] if self._my_claim() else players)
+
+    def _my_claim(self):
+        sm = self.session_manager
+        return getattr(sm, "claimed_entity", None) if sm is not None else None
+
+    def _update_remote_vision(self):
+        claim = self._my_claim()
+        # Before claiming a character, a joined player sees what the whole party sees.
+        self.fog_overlay.viewer_names = {claim} if claim else None
+        self.refresh_entity_tokens()
+
+    def _on_claim_requested(self, entity_name):
+        if self.session_manager is not None:
+            self.session_manager.claim_entity(entity_name)
+
+    def _on_remote_claim_changed(self, _entity_id, _player_id):
+        if self.read_only:
+            self._update_remote_vision()
+            if self._my_claim():
+                self.session_panel.set_claimable([])
+
+    def _enter_remote_view(self):
+        """Remember the local map and switch to read-only player view."""
+        self._local_map_snapshot = {
+            "grid_type": self.grid_type,
+            "tiles": [i.tile_data.to_dict() for i in self.scene.items() if hasattr(i, "tile_data")],
+            "map_path": self.current_map_path,
+            "player_view": self._player_view_action.isChecked(),
+        }
+        self.read_only = True
+        self.current_map_path = None  # auto-save must never write the host's map to a local file
+        self.deactivate_color_mode()
+        self.undo_stack.clear()
+        self.gamemaster = None
+        self.fog_overlay.reset()
+        self.set_player_view(True)
+        self._player_view_action.setEnabled(False)  # players can't lift the fog
+        self._update_encounter_actions()
+        self.statusBar().showMessage("Viewing the host's map (read-only)")
+
+    def _leave_remote_view(self):
+        """Restore the local map after a joined session ends."""
+        if not self.read_only:
+            return
+        snapshot = self._local_map_snapshot or {}
+        self.read_only = False
+        self._local_map_snapshot = None
+        self.fog_overlay.viewer_names = None
+        self.fog_overlay.reset()
+        self.grid_type = snapshot.get("grid_type", self.grid_type)
+        self.current_map_path = snapshot.get("map_path")
+        self.scene.clear()
+        self._populate_scene(snapshot.get("tiles", []))
+        self._player_view_action.setEnabled(True)
+        self.set_player_view(snapshot.get("player_view", False))
+        self.refresh_entity_tokens()
+        self._update_encounter_actions()
 
     def _on_remote_turn_changed(self, entity_name, round_number):
         """Client side: show the host's current turn."""
@@ -636,7 +736,7 @@ class MainWindow(QMainWindow):
 
     def _update_encounter_actions(self):
         active = bool(self.gamemaster and self.gamemaster.encounter.is_active)
-        self._start_encounter_action.setEnabled(not active)
+        self._start_encounter_action.setEnabled(not active and not self.read_only)
         self._next_turn_action.setEnabled(active)
         self._end_encounter_action.setEnabled(active)
         self.initiative_panel.next_turn_button.setEnabled(active)

@@ -9,6 +9,7 @@ input field, and a disconnect button.
 
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import (
+    QComboBox,
     QHBoxLayout,
     QLabel,
     QLineEdit,
@@ -30,6 +31,7 @@ class SessionPanel(QWidget):
     Signals:
         chat_submitted(str): Emitted when the user sends a chat message.
         disconnect_requested(): Emitted when the user clicks *Disconnect*.
+        claim_requested(str): Emitted with an entity name when the user claims a character.
 
     :param parent: Parent widget.
     """
@@ -38,6 +40,8 @@ class SessionPanel(QWidget):
     chat_submitted = pyqtSignal(str)
     #: Emitted when the user clicks the Disconnect button.
     disconnect_requested = pyqtSignal()
+    #: Emitted when the user claims a character (entity name).
+    claim_requested = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -61,6 +65,18 @@ class SessionPanel(QWidget):
         self._player_list = QListWidget()
         self._player_list.setMaximumHeight(120)
         layout.addWidget(self._player_list)
+
+        # Character claim (joined players only; hidden until claimable entities are known)
+        self._claim_row = QWidget()
+        claim_layout = QHBoxLayout(self._claim_row)
+        claim_layout.setContentsMargins(0, 0, 0, 0)
+        self._claim_combo = QComboBox()
+        claim_layout.addWidget(self._claim_combo, 1)
+        self._claim_btn = QPushButton("Claim")
+        self._claim_btn.clicked.connect(self._request_claim)
+        claim_layout.addWidget(self._claim_btn)
+        self._claim_row.hide()
+        layout.addWidget(self._claim_row)
 
         # Chat area
         chat_label = QLabel("Chat:")
@@ -141,6 +157,20 @@ class SessionPanel(QWidget):
             self._players[player_id] = (name, entity_id)
             self._rebuild_player_list()
 
+    def set_claimable(self, entity_names):
+        """Offer these characters for claiming (an empty list hides the claim row).
+
+        :param entity_names: Names of unclaimed player characters.
+        :type entity_names: list[str]
+        """
+        current = self._claim_combo.currentText()
+        self._claim_combo.clear()
+        self._claim_combo.addItems(list(entity_names))
+        index = self._claim_combo.findText(current)
+        if index >= 0:
+            self._claim_combo.setCurrentIndex(index)
+        self._claim_row.setVisible(bool(entity_names))
+
     def append_chat(self, sender: str, message: str):
         """Append a message to the chat log.
 
@@ -158,10 +188,16 @@ class SessionPanel(QWidget):
         self._chat_log.clear()
         self._chat_input.clear()
         self._status_label.setText("Not connected")
+        self.set_claimable([])
 
     # ------------------------------------------------------------------
     # Private
     # ------------------------------------------------------------------
+
+    def _request_claim(self):
+        name = self._claim_combo.currentText()
+        if name:
+            self.claim_requested.emit(name)
 
     def _rebuild_player_list(self):
         self._player_list.clear()

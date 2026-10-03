@@ -48,6 +48,9 @@ class FogOfWarLayer:
         self.enabled = False
         self._items: list = []
         self._has_viewers = False
+        #: When set, only these entities (by name, any type) provide vision — e.g. the
+        #: character a joined player claimed. ``None`` means all living player entities.
+        self.viewer_names: set[str] | None = None
 
     @property
     def overlays(self) -> list:
@@ -96,7 +99,7 @@ class FogOfWarLayer:
             viewers = []
             for td in by_pos.values():
                 for ent in getattr(td, "entities", None) or []:
-                    if _is_player(ent) and not is_dead(ent):
+                    if self._provides_vision(ent):
                         viewers.append((td.position, vision_range_tiles(ent)))
         self._has_viewers = bool(viewers)
 
@@ -116,6 +119,13 @@ class FogOfWarLayer:
                 and self.fog.state(token.data(TOKEN_POS_KEY)) is not Visibility.VISIBLE
             )
             token.setVisible(not hide)
+
+    def _provides_vision(self, entity) -> bool:
+        if is_dead(entity):
+            return False
+        if self.viewer_names is not None:
+            return getattr(entity, "name", None) in self.viewer_names
+        return _is_player(entity)
 
     def _add_overlay(self, polygon: QPolygonF, color: QColor) -> None:
         item = QGraphicsPolygonItem(polygon)

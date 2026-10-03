@@ -18,6 +18,7 @@ In **client mode** it creates a
 """
 
 import asyncio
+import copy
 import logging
 import threading
 
@@ -46,6 +47,8 @@ class SessionSignals(QObject):
     turn_changed = pyqtSignal(str, int)
     #: Emitted when the world state has changed.
     state_updated = pyqtSignal()
+    #: Client side: a copy of the host's world state (dict from ``serialize_world``) after each update.
+    world_changed = pyqtSignal(object)
     #: Emitted on connection failure (error message).
     connection_error = pyqtSignal(str)
     #: Emitted when the client has connected successfully.
@@ -168,6 +171,12 @@ class SessionManager:
         except Exception as e:
             logger.error(f"Failed to start hosting: {e}")
             self.signals.connection_error.emit(str(e))
+
+    @property
+    def claimed_entity(self) -> str | None:
+        """Client side: name of the entity this player has claimed, if any."""
+        client = getattr(self, "_client", None)
+        return getattr(client, "claimed_entity_id", None) if client else None
 
     def claimed_entities(self) -> set[str]:
         """Names of entities claimed by network players (empty when not hosting)."""
@@ -331,10 +340,17 @@ class SessionManager:
     # ------------------------------------------------------------------
 
     def _on_full_state(self, msg):
-        self.signals.state_updated.emit()
+        self._emit_world()
 
     def _on_state_delta(self, msg):
+        self._emit_world()
+
+    def _emit_world(self):
         self.signals.state_updated.emit()
+        world = getattr(self._client, "world_state", None)
+        if world:
+            # Copied on the network thread so the GUI never shares the client's dict.
+            self.signals.world_changed.emit(copy.deepcopy(world))
 
     def _on_entity_claimed(self, msg):
         entity_id = msg.payload.get("entity_id", "")
