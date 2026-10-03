@@ -30,7 +30,12 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from domain.specs.builder import RuleMask
+    from domain.specs.registry import RuleRegistry
+    from domain.specs.ruleset import Ruleset
 
 
 class PackCategory(Enum):

@@ -123,7 +123,7 @@ class TriggerPropertyEditor(QWidget):
         # Iterate over constructor parameters and create widgets for each
         for param in _editable_params(condition_cls):
             # Create widget based on parameter type
-            if param.annotation == int:
+            if param.annotation is int:
                 widget = QSpinBox()
             else:
                 widget = QLineEdit()
@@ -157,7 +157,7 @@ class TriggerPropertyEditor(QWidget):
         for param in _editable_params(reaction_cls):
             name = param.name
             # Create widget based on parameter type
-            if param.annotation == int:
+            if param.annotation is int:
                 widget = QSpinBox()
             else:
                 widget = QLineEdit()

@@ -30,10 +30,13 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from domain.specs.base import AllOf, AlwaysTrue, AnyOf, Specification
 from domain.specs.registry import RuleCategory, RuleParameter
+
+if TYPE_CHECKING:
+    from domain.specs.registry import RuleRegistry
 
 
 class CompositionType(Enum):

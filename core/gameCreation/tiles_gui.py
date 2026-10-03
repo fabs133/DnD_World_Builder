@@ -1,3 +1,5 @@
+import sys
+
 from PyQt5.QtWidgets import QApplication, QComboBox, QDialog, QFileDialog, QLabel, QPushButton, QSpinBox, QVBoxLayout
 
 from core.logger import AppLogger, app_logger

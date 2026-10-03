@@ -1,4 +1,3 @@
-from core.rulebook.importer_base import BaseImporter
 from utils.string.slugify import slugify
 
 from .importer_base import BaseImporter

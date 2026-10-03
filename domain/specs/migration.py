@@ -29,9 +29,12 @@ Usage:
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from domain.specs.base import Specification, SpecResult
+
+if TYPE_CHECKING:
+    from domain.specs.triggers import TriggerSpec
 
 
 class LegacyConditionAdapter(Specification):

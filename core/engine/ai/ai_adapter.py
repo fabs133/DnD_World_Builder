@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import random
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import requests
 
@@ -22,6 +22,9 @@ from models.ai.prompt_builder import (
     TacticalPromptBuilder,
 )
 from models.flow.action.action import Action
+
+if TYPE_CHECKING:
+    from core.engine.ai.heuristic_adapter import HeuristicAIAdapter
 
 # Connection errors that indicate Ollama is unreachable (not a parse/logic bug).
 _CONNECTION_ERRORS = (

@@ -4,12 +4,15 @@ from __future__ import annotations
 
 import random
 import re
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from core.engine.actions.attack_action import AttackAction
 from core.engine.actions.end_turn_action import EndTurnAction
 from core.engine.actions.move_action import MoveAction
 from core.engine.game_state import GameState
+
+if TYPE_CHECKING:
+    from models.flow.action.action import Action
 
 
 class ParseError(Exception):
