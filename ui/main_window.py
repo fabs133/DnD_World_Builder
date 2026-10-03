@@ -178,6 +178,14 @@ class MainWindow(QMainWindow):
         self.addDockWidget(Qt.RightDockWidgetArea, self._initiative_dock)
         self._initiative_dock.hide()
 
+        # --- Dice roller dock (hidden by default) ---
+        from ui.panels.dice_panel import DicePanel
+        self.dice_panel = DicePanel()
+        self._dice_dock = QDockWidget("Dice", self)
+        self._dice_dock.setWidget(self.dice_panel)
+        self.addDockWidget(Qt.RightDockWidgetArea, self._dice_dock)
+        self._dice_dock.hide()
+
         # One gamemaster (and thus one encounter) per window; see get_gamemaster().
         self.gamemaster = None
         self._encounter_signals = _EncounterSignals()
@@ -211,6 +219,11 @@ class MainWindow(QMainWindow):
         initiative_toggle.setText("&Initiative Tracker")
         initiative_toggle.setShortcut("Ctrl+I")
         view_menu.addAction(initiative_toggle)
+
+        dice_toggle = self._dice_dock.toggleViewAction()
+        dice_toggle.setText("&Dice Roller")
+        dice_toggle.setShortcut("Ctrl+Shift+D")
+        view_menu.addAction(dice_toggle)
 
         self._player_view_action = QAction("&Player View (Fog of War)", self)
         self._player_view_action.setShortcut("Ctrl+Shift+F")
@@ -566,6 +579,7 @@ class MainWindow(QMainWindow):
         gm = self.get_gamemaster()
         self.session_manager = SessionManager(gamemaster=gm, settings=self.settings)
         self.session_manager.signals.chat_received.connect(self.session_panel.append_chat)
+        self._wire_dice_session()
         self.session_manager.signals.disconnected.connect(self._on_session_ended)
         self.session_manager.host(port)
 
@@ -584,6 +598,7 @@ class MainWindow(QMainWindow):
             lambda: self.session_panel.set_connected(host_addr)
         )
         self.session_manager.signals.chat_received.connect(self.session_panel.append_chat)
+        self._wire_dice_session()
         self.session_manager.signals.entity_claimed.connect(self.session_panel.set_entity_claim)
         self.session_manager.signals.turn_changed.connect(self._on_remote_turn_changed)
         self.session_manager.signals.world_changed.connect(self.show_remote_world)
@@ -612,7 +627,19 @@ class MainWindow(QMainWindow):
             self.session_manager = None
         self._on_session_ended()
 
+    # --- Dice roller <-> session wiring ---
+
+    def _wire_dice_session(self):
+        """Route dice rolls through the session and mirror roll results."""
+        self.dice_panel.set_remote(self.session_manager.send_chat)
+        self.session_manager.signals.chat_received.connect(self._on_dice_chat)
+
+    def _on_dice_chat(self, sender, message):
+        if sender.startswith("\U0001f3b2"):
+            self.dice_panel.add_history(f"{sender}  {message}")
+
     def _on_session_ended(self):
+        self.dice_panel.set_remote(None)
         self._leave_remote_view()
         self._disconnect_action.setEnabled(False)
         self._session_dock.hide()
