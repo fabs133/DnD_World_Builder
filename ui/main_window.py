@@ -24,6 +24,7 @@ from core.logger import app_logger
 from models.tiles.hex_tile_item import HexTileItem
 from models.tiles.square_tile_item import SquareTileItem
 from models.tiles.tile_data import TileData
+from ui.entity_tokens import EntityTokenLayer
 from ui.map_view import MapView
 
 
@@ -75,6 +76,11 @@ class MainWindow(QMainWindow):
         self.init_ui()
         self.init_menu()
 
+        # Redraw tokens when the entities panel adds/removes entities.
+        from core.gameCreation.event_bus import EventBus
+        EventBus.subscribe("entity_added", self._on_entities_changed)
+        EventBus.subscribe("entity_removed", self._on_entities_changed)
+
         if rows is not None and cols is not None:
             self.init_grid(rows, cols)
 
@@ -86,6 +92,7 @@ class MainWindow(QMainWindow):
         """Build the main layout: map (left) + side panel (right) in a QSplitter."""
         self.view = MapView()
         self.scene = QGraphicsScene(self)
+        self.entity_tokens = EntityTokenLayer(self.scene)
         self.view.setScene(self.scene)
 
         # --- Map container (left column) ---
@@ -244,6 +251,26 @@ class MainWindow(QMainWindow):
             self.create_hex_grid(rows, cols, 30)
         else:
             raise ValueError("Unsupported grid type. Use 'square' or 'hex'.")
+        self.refresh_entity_tokens()
+
+    def refresh_entity_tokens(self):
+        """Redraw entity tokens from the tiles' current entities."""
+        try:
+            self.entity_tokens.refresh()
+        except RuntimeError:  # window/scene already torn down
+            pass
+
+    def _on_entities_changed(self, _data=None):
+        self.refresh_entity_tokens()
+
+    def closeEvent(self, event):
+        from core.gameCreation.event_bus import EventBus
+        for name in ("entity_added", "entity_removed"):
+            try:
+                EventBus.unsubscribe(name, self._on_entities_changed)
+            except Exception:
+                pass
+        super().closeEvent(event)
 
     def create_square_grid(self, rows, cols, size):
         for i in range(rows):
@@ -409,6 +436,7 @@ class MainWindow(QMainWindow):
             tile_data.tile_item = tile
             self.scene.addItem(tile)
 
+        self.refresh_entity_tokens()
         app_logger.info(f"[Loaded] {len(tiles)} tiles loaded from {filename}")
 
     # ------------------------------------------------------------------
@@ -596,6 +624,7 @@ class MainWindow(QMainWindow):
         else:
             self.initiative_panel.clear()
         self._update_encounter_actions()
+        self.refresh_entity_tokens()
 
     def _build_gamemaster_from_scene(self):
         """Create a Gamemaster populated from the current scene."""
