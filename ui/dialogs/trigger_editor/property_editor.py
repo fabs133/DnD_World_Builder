@@ -13,6 +13,25 @@ import inspect
 import uuid
 import copy
 
+
+def _editable_params(cls):
+    """
+    Return the constructor parameters of ``cls`` that can be edited as form fields.
+
+    Skips ``self`` and variadic ``*args``/``**kwargs``, which cannot be
+    represented as a single input widget.
+
+    :param cls: The condition or reaction class to inspect.
+    :type cls: type
+    :return: List of :class:`inspect.Parameter`.
+    :rtype: list
+    """
+    variadic = (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD)
+    return [
+        param for param in inspect.signature(cls.__init__).parameters.values()
+        if param.name != "self" and param.kind not in variadic
+    ]
+
 class TriggerPropertyEditor(QWidget):
     """
     Widget for editing the properties of a Trigger object.
@@ -102,21 +121,8 @@ class TriggerPropertyEditor(QWidget):
 
         self.condition_params = {}
 
-        # Inspect the signature of the condition class' constructor
-        sig = inspect.signature(condition_cls.__init__)
-
-        # Check if there are any parameters other than 'self', 'args', or 'kwargs'
-        parameters = [
-            param for param in sig.parameters.values()
-            if param.name not in ('self', 'args', 'kwargs')
-        ]
-
-        # If there are no parameters (besides 'self', 'args', and 'kwargs'), don't add any fields
-        if not parameters:
-            return  # Exit if no parameters to show
-
-        # Iterate over parameters and create widgets for each
-        for param in parameters:
+        # Iterate over constructor parameters and create widgets for each
+        for param in _editable_params(condition_cls):
             # Create widget based on parameter type
             if param.annotation == int:
                 widget = QSpinBox()
@@ -149,11 +155,8 @@ class TriggerPropertyEditor(QWidget):
 
         self.reaction_params = {}
 
-        sig = inspect.signature(reaction_cls.__init__)
-        for name, param in sig.parameters.items():
-            if name == 'self':
-                continue
-
+        for param in _editable_params(reaction_cls):
+            name = param.name
             # Create widget based on parameter type
             if param.annotation == int:
                 widget = QSpinBox()
@@ -189,7 +192,10 @@ class TriggerPropertyEditor(QWidget):
             self.reaction_input.setCurrentText(self.trigger.reaction.__class__.__name__)
 
             self.update_condition_fields(self.trigger.condition.__class__.__name__)
-            self.build_reaction_fields(type(self.trigger.reaction))
+            reaction_name = self.trigger.reaction.__class__.__name__
+            self.build_reaction_fields(
+                reaction_registry.get_class(reaction_name) or type(self.trigger.reaction)
+            )
 
             if hasattr(self.trigger, "next_trigger") and self.trigger.next_trigger:
                 idx = self.next_trigger_input.findText(self.trigger.next_trigger)

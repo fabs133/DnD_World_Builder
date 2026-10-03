@@ -96,6 +96,16 @@ class TestBuildFields:
             editor.build_condition_fields(cls)
             assert len(editor.condition_params) == 0
 
+    def test_variadic_params_are_not_turned_into_fields(self, editor):
+        class Variadic:
+            def __init__(self, amount: int, *args, **kwargs):
+                pass
+
+        editor.build_condition_fields(Variadic)
+        editor.build_reaction_fields(Variadic)
+        assert list(editor.condition_params) == ["amount"]
+        assert list(editor.reaction_params) == ["amount"]
+
     def test_build_reaction_fields_creates_widgets(self, editor):
         from registries.reaction_registry import reaction_registry
         cls = reaction_registry.get_class("ApplyDamage")
