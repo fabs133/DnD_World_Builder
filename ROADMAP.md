@@ -63,10 +63,16 @@ Remaining follow-ups:
 ### Stage 4 (after Stage 3)
 1. Fog of war: DONE. Engine in `core/engine/vision.py` (line of sight, `BLOCKS_VISION`,
    explored memory) plus a GUI player view (`ui/fog_overlay.py`, View menu).
-   Limitations: the view is per window only (multiplayer clients do not get fog-filtered state
-   yet; see item 2); vision uses `entity.vision_range` in tiles with a 12-tile default; no
-   lighting or darkvision rules.
-2. Player-only view in multiplayer: hosts send each player only what their characters can see.
+   Limitations: vision uses `entity.vision_range` in tiles with a 12-tile default; no lighting
+   or darkvision rules.
+2. Player view in multiplayer: DONE (display level). Joined players see the host's map
+   read-only with fog of war centred on the character they claim in the session panel (the
+   whole party's vision before claiming); their own map is restored when the session ends.
+   Not done yet:
+   - Secrecy: clients still receive the full world state, so the fog is a display filter.
+     Filtering FULL_STATE / STATE_DELTA per player on the host would close that.
+   - Player controls: joined players cannot yet move or attack from the map; the host already
+     validates `ACTION_REQUEST`s, the client UI to send them is missing.
 3. Dice roller in chat: DONE. Engine in `core/engine/dice.py`; `/roll <expr>` in session chat is
    rolled by the host and broadcast to everyone; a Dice dock (View > Dice Roller, Ctrl+Shift+D)
    rolls locally offline and through the host in a session.

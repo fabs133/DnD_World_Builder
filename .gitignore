@@ -198,3 +198,6 @@ docs/_static/
 docs/html/
 docs/latex/
 docs/overview/
+
+# Claude Code agent worktrees
+.claude/worktrees/

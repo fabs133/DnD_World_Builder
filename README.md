@@ -191,7 +191,9 @@ affects this window; multiplayer clients are not filtered yet.
 2. Go to **Session > Join Session**
 3. Enter the DM's IP address and port
 4. Enter your player name and click **Connect**
-5. Claim your character from the available entities
+5. The DM's map replaces yours (read-only) with fog of war; pick your character in the
+   Session panel and click **Claim** — from then on you see what your character sees
+6. When you disconnect, your own map comes back
 
 > **Note:** For internet play, the host may need to configure port forwarding on their router for the chosen port. For LAN play, no extra configuration is needed.
 
