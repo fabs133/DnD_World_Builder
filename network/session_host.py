@@ -12,6 +12,7 @@ authoritative source of truth for all game state.
 
 import asyncio
 import logging
+import random
 import uuid
 
 from network.protocol import (
@@ -61,10 +62,14 @@ class SessionHost:
     :param gamemaster: The authoritative game state holder.
     :param transport: The transport server to accept connections on.
     :type transport: ~network.transport.TransportServer
+    :param rng: Optional :class:`random.Random` for ``/roll`` (tests inject a
+        seeded one).
     """
 
-    def __init__(self, gamemaster, transport: TransportServer):
+    def __init__(self, gamemaster, transport: TransportServer, rng=None):
         self.gamemaster = gamemaster
+        #: Host-owned RNG used for ``/roll`` so results are authoritative.
+        self.rng = rng if rng is not None else random.Random()
         self.transport = transport
         self.session_id = str(uuid.uuid4())[:8]
         self.players = {}  # player_id -> ConnectedPlayer
@@ -364,10 +369,53 @@ class SessionHost:
 
         return None
 
+    def _roll_chat(self, sender, text):
+        """Resolve a ``/roll <expr>`` chat line.
+
+        :return: ``(chat_message, error_text)``; exactly one is not ``None``.
+            ``(None, None)`` means *text* is not a roll command.
+        """
+        stripped = text.strip()
+        if stripped.lower() != "/roll" and not stripped.lower().startswith("/roll "):
+            return None, None
+        from core.engine.dice import format_roll, roll
+
+        try:
+            result = roll(stripped[5:].strip(), rng=self.rng)
+        except ValueError as exc:
+            return None, str(exc)
+        return make_chat(f"\U0001f3b2 {sender}", format_roll(result)), None
+
     async def _handle_chat(self, player, msg):
-        """Broadcast a CHAT message to all connected players."""
-        chat = make_chat(player.player_name, msg.payload.get("message", ""))
+        """Broadcast a CHAT message to all connected players.
+
+        ``/roll <expr>`` is rolled by the host and broadcast as a CHAT from
+        ``"🎲 <player>"``. A bad expression is answered with a CHAT from
+        ``"🎲"`` to the requester only (clients display CHAT lines; ERROR
+        messages are not surfaced after the handshake).
+        """
+        text = msg.payload.get("message", "")
+        chat, error = self._roll_chat(player.player_name, text)
+        if error is not None:
+            await player.conn.send(make_chat("\U0001f3b2", error).to_json())
+            return
+        if chat is None:
+            chat = make_chat(player.player_name, text)
         await self.broadcast(chat)
+
+    async def host_chat(self, sender, text):
+        """Send chat as the host (DM), applying the same ``/roll`` handling.
+
+        :return: The CHAT message that was broadcast (or the error CHAT, not
+            broadcast, for a bad roll) so the caller can show it locally.
+        """
+        chat, error = self._roll_chat(sender, text)
+        if error is not None:
+            return make_chat("\U0001f3b2", error)
+        if chat is None:
+            chat = make_chat(sender, text)
+        await self.broadcast(chat)
+        return chat
 
     async def _handle_disconnect(self, player, msg):
         """Close the connection for a disconnecting player."""

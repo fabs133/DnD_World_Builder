@@ -323,6 +323,22 @@ class SessionManager:
             asyncio.run_coroutine_threadsafe(
                 self._client.send_chat(message), self._loop
             )
+        elif self._is_hosting and self._host and self._loop:
+            fut = asyncio.run_coroutine_threadsafe(
+                self._host.host_chat("DM", message), self._loop
+            )
+            fut.add_done_callback(self._on_host_chat_done)
+
+    def _on_host_chat_done(self, future):
+        """Show the host's own chat/roll locally (the host gets no echo)."""
+        try:
+            chat = future.result()
+        except Exception as e:
+            logger.error(f"Host chat failed: {e}")
+            return
+        self.signals.chat_received.emit(
+            chat.payload.get("sender", ""), chat.payload.get("message", "")
+        )
 
     def claim_entity(self, entity_id: str):
         """Claim an entity (client mode only).
